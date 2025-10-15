@@ -152,15 +152,17 @@ function InsightsContent() {
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Section Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3">
-            <FinancialAdvisorChat metrics={metrics} />
-            <Lightbulb className="h-8 w-8 text-primary" />
-            <div>
-              <h2 className="text-3xl font-bold text-foreground">Financial Insights</h2>
-              <p className="text-muted-foreground mt-1">
-                {currentProject ? `Analysis for ${currentProject.project_name}` : 'Comprehensive analysis across all your budget plans'}
-              </p>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Lightbulb className="h-8 w-8 text-primary" />
+              <div>
+                <h2 className="text-3xl font-bold text-foreground">Financial Insights</h2>
+                <p className="text-muted-foreground mt-1">
+                  {currentProject ? `Analysis for ${currentProject.project_name}` : 'Comprehensive analysis across all your budget plans'}
+                </p>
+              </div>
             </div>
+            <FinancialAdvisorChat metrics={metrics} />
           </div>
         </div>
 
