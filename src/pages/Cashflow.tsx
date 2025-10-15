@@ -390,11 +390,11 @@ function CashflowContent() {
                   <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                     <div className="grid grid-cols-7 gap-4 w-full pr-4 text-sm">
                       <div className="font-bold">Total</div>
-                      <div className="text-right font-bold">${(monthlyNetIncome * 12).toFixed(2)}</div>
-                      <div className="text-right font-bold">${(monthlyExpenses * 12).toFixed(2)}</div>
-                      <div className="text-right font-bold">${(monthlyPayment * 12).toFixed(2)}</div>
-                      <div className="text-right font-bold">${totalAnnualInterest.toFixed(2)}</div>
-                      <div className="text-right font-bold">${((monthlyExpenses + monthlyPayment + totalMonthlyInterest) * 12).toFixed(2)}</div>
+                      <div className="text-right font-bold">${(monthlyNetIncome * 12).toFixed(0)}</div>
+                      <div className="text-right font-bold">${(monthlyExpenses * 12).toFixed(0)}</div>
+                      <div className="text-right font-bold">${(monthlyPayment * 12).toFixed(0)}</div>
+                      <div className="text-right font-bold">${totalAnnualInterest.toFixed(0)}</div>
+                      <div className="text-right font-bold">${((monthlyExpenses + monthlyPayment + totalMonthlyInterest) * 12).toFixed(0)}</div>
                       <div className="text-right font-bold text-muted-foreground">-</div>
                     </div>
                   </AccordionTrigger>
@@ -421,11 +421,11 @@ function CashflowContent() {
                         return (
                           <div key={month} className="grid grid-cols-7 gap-4 text-sm py-2 hover:bg-muted/50 rounded px-2">
                             <div>{month}</div>
-                            <div className="text-right">${monthlyNetIncome.toFixed(2)}</div>
-                            <div className="text-right">${expenses.toFixed(2)}</div>
-                            <div className="text-right">${monthlyDebt.toFixed(2)}</div>
-                            <div className="text-right">${monthlyInterest.toFixed(2)}</div>
-                            <div className="text-right font-medium">${subTotal.toFixed(2)}</div>
+                            <div className="text-right">${monthlyNetIncome.toFixed(0)}</div>
+                            <div className="text-right">${expenses.toFixed(0)}</div>
+                            <div className="text-right">${monthlyDebt.toFixed(0)}</div>
+                            <div className="text-right">${monthlyInterest.toFixed(0)}</div>
+                            <div className="text-right font-medium">${subTotal.toFixed(0)}</div>
                             <div className="text-right text-muted-foreground">$0.00</div>
                           </div>
                         );
