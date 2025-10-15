@@ -64,8 +64,9 @@ function CashflowContent() {
         .single();
 
       if (budgetData) {
-        setMonthlyExpenses(Number(budgetData.total_expenses) || 0);
-        setMonthlyNetIncome(Number(budgetData.net_income) || 0);
+        // Convert annual values to monthly
+        setMonthlyExpenses(Number(budgetData.total_expenses) / 12 || 0);
+        setMonthlyNetIncome(Number(budgetData.net_income) / 12 || 0);
       }
 
       // Load cashflow records
