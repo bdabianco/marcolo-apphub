@@ -394,7 +394,7 @@ function CashflowContent() {
                       <div className="text-right font-bold">${(monthlyExpenses * 12).toFixed(0)}</div>
                       <div className="text-right font-bold">${(monthlyPayment * 12).toFixed(0)}</div>
                       <div className="text-right font-bold">${totalAnnualInterest.toFixed(0)}</div>
-                      <div className="text-right font-bold">${((monthlyExpenses + monthlyPayment + totalMonthlyInterest) * 12).toFixed(0)}</div>
+                      <div className="text-right font-bold">${((monthlyNetIncome - monthlyExpenses - monthlyPayment - totalMonthlyInterest) * 12).toFixed(0)}</div>
                       <div className="text-right font-bold text-muted-foreground">-</div>
                     </div>
                   </AccordionTrigger>
@@ -407,7 +407,7 @@ function CashflowContent() {
                         <div className="text-right">Expenses</div>
                         <div className="text-right">Debt</div>
                         <div className="text-right">Interest</div>
-                        <div className="text-right">Sub Total</div>
+                        <div className="text-right">Surplus</div>
                         <div className="text-right">Adjustment</div>
                       </div>
                       
@@ -416,7 +416,7 @@ function CashflowContent() {
                         const expenses = monthlyExpenses;
                         const monthlyDebt = monthlyPayment;
                         const monthlyInterest = totalMonthlyInterest;
-                        const subTotal = expenses + monthlyDebt + monthlyInterest;
+                        const surplus = monthlyNetIncome - expenses - monthlyDebt - monthlyInterest;
                         
                         return (
                           <div key={month} className="grid grid-cols-7 gap-4 text-sm py-2 hover:bg-muted/50 rounded px-2">
@@ -425,7 +425,7 @@ function CashflowContent() {
                             <div className="text-right">${expenses.toFixed(0)}</div>
                             <div className="text-right">${monthlyDebt.toFixed(0)}</div>
                             <div className="text-right">${monthlyInterest.toFixed(0)}</div>
-                            <div className="text-right font-medium">${subTotal.toFixed(0)}</div>
+                            <div className="text-right font-medium">${surplus.toFixed(0)}</div>
                             <div className="text-right text-muted-foreground">$0.00</div>
                           </div>
                         );
