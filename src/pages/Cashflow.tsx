@@ -658,7 +658,148 @@ function CashflowContent() {
           </CardContent>
         </Card>
 
-        {/* Adjustments Section */}
+
+
+        {/* Cashflow Table */}
+        {currentProject && (() => {
+          // Calculate monthly adjustment impact
+          const calculateMonthlyAdjustment = () => {
+            let adjustment = 0;
+            
+            // Income adjustment
+            if (incomeAdjAmount) {
+              const adjAmount = parseFloat(incomeAdjAmount) || 0;
+              if (incomeAdjType === 'net') {
+                adjustment += adjAmount;
+              } else {
+                // Approximate net from gross (assuming 25% deductions)
+                adjustment += adjAmount * 0.75;
+              }
+            }
+            
+            // Expense adjustments
+            expenseAdjustments.forEach(adj => {
+              const originalExpense = expenses.find(e => e.id === adj.expenseId);
+              if (originalExpense && adj.newAmount !== '') {
+                adjustment += (originalExpense.amount - (typeof adj.newAmount === 'number' ? adj.newAmount : parseFloat(adj.newAmount) || 0));
+              }
+            });
+            
+            // Debt consolidation
+            if (consolidateDebt1 && consolidateDebt2 && consolidatedPayment) {
+              const debt1 = debts.find(d => d.id === consolidateDebt1);
+              const debt2 = debts.find(d => d.id === consolidateDebt2);
+              const oldPayments = (debt1?.monthlyPayment || 0) + (debt2?.monthlyPayment || 0);
+              const newPayment = parseFloat(consolidatedPayment) || 0;
+              adjustment += (oldPayments - newPayment);
+            }
+            
+            return adjustment;
+          };
+          
+          const monthlyAdjustment = calculateMonthlyAdjustment();
+          const totalAdjustment = monthlyAdjustment * 12;
+          
+          return (
+            <Card>
+              <CardHeader>
+                <CardTitle>Cashflow Projection</CardTitle>
+                <CardDescription>Monthly breakdown of income and expenses</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Accordion type="multiple" defaultValue={['total']}>
+                  {/* Total Row - Shown by Default */}
+                <AccordionItem value="total">
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline bg-primary/5 px-4 py-3 rounded-lg">
+                      <div className="grid grid-cols-8 gap-3 w-full pr-4 text-sm">
+                        <div className="font-bold text-primary">Annual Totals</div>
+                        <div className="text-right">
+                          <div className="text-xs text-muted-foreground mb-1">Net Income</div>
+                          <div className="font-bold text-primary">${formatCurrency(monthlyNetIncome * 12)}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs text-muted-foreground mb-1">Expenses</div>
+                          <div className="font-bold text-destructive">${formatCurrency(monthlyExpenses * 12)}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs text-muted-foreground mb-1">Debt</div>
+                          <div className="font-bold">${formatCurrency((totalMonthlyPayment - totalMonthlyInterest) * 12)}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs text-muted-foreground mb-1">Interest</div>
+                          <div className="font-bold">${formatCurrency(totalMonthlyInterest * 12)}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs text-muted-foreground mb-1">Cum. Surplus</div>
+                          <div className={`font-bold ${(monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                            ${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12)}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs text-muted-foreground mb-1">Adjustments</div>
+                          <div className={`font-bold ${totalAdjustment >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                            ${formatCurrency(totalAdjustment)}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs text-muted-foreground mb-1">Adj. Surplus</div>
+                          <div className={`font-bold ${((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 + totalAdjustment) >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                            ${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 + totalAdjustment)}
+                          </div>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-2 bg-muted/30 p-4 rounded-lg">
+                        {/* Header Row */}
+                        <div className="grid grid-cols-8 gap-3 text-sm font-semibold border-b-2 border-primary/20 pb-3 mb-2">
+                          <div className="text-primary">Month</div>
+                          <div className="text-right">Net Income</div>
+                          <div className="text-right">Expenses</div>
+                          <div className="text-right">Debt</div>
+                          <div className="text-right">Interest</div>
+                          <div className="text-right">Surplus</div>
+                          <div className="text-right">Adjustment</div>
+                          <div className="text-right">Adj. Surplus</div>
+                        </div>
+                        
+                        {/* Monthly Rows */}
+                        {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => {
+                          const expenses = calculateMonthlyExpense(index);
+                          const monthlyDebtPrincipal = totalMonthlyPayment - totalMonthlyInterest;
+                          const monthlyInterest = totalMonthlyInterest;
+                          const surplus = monthlyNetIncome - expenses - totalMonthlyPayment;
+                          const adjustedSurplus = surplus + monthlyAdjustment;
+                          
+                          return (
+                            <div key={month} className="grid grid-cols-8 gap-3 text-sm py-3 hover:bg-primary/5 rounded-lg px-3 transition-colors border-b border-muted">
+                              <div className="font-medium">{month}</div>
+                              <div className="text-right">${formatCurrency(monthlyNetIncome)}</div>
+                              <div className="text-right text-destructive">${formatCurrency(expenses)}</div>
+                              <div className="text-right">${formatCurrency(monthlyDebtPrincipal)}</div>
+                              <div className="text-right">${formatCurrency(monthlyInterest)}</div>
+                              <div className={`text-right font-semibold ${surplus >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                                ${formatCurrency(surplus)}
+                              </div>
+                              <div className={`text-right ${monthlyAdjustment >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                                ${formatCurrency(monthlyAdjustment)}
+                              </div>
+                              <div className={`text-right font-semibold ${adjustedSurplus >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                                ${formatCurrency(adjustedSurplus)}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </CardContent>
+            </Card>
+          );
+        })()}
+
+        {/* Adjustments Section - moved after Cashflow Projection */}
         <Card className="mb-6 border-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardHeader className="bg-gradient-to-r from-accent/5 via-accent/3 to-transparent">
             <div className="flex items-center gap-2">
@@ -897,146 +1038,6 @@ function CashflowContent() {
             </Accordion>
           </CardContent>
         </Card>
-
-
-        {/* Cashflow Table */}
-        {currentProject && (() => {
-          // Calculate monthly adjustment impact
-          const calculateMonthlyAdjustment = () => {
-            let adjustment = 0;
-            
-            // Income adjustment
-            if (incomeAdjAmount) {
-              const adjAmount = parseFloat(incomeAdjAmount) || 0;
-              if (incomeAdjType === 'net') {
-                adjustment += adjAmount;
-              } else {
-                // Approximate net from gross (assuming 25% deductions)
-                adjustment += adjAmount * 0.75;
-              }
-            }
-            
-            // Expense adjustments
-            expenseAdjustments.forEach(adj => {
-              const originalExpense = expenses.find(e => e.id === adj.expenseId);
-              if (originalExpense && adj.newAmount !== '') {
-                adjustment += (originalExpense.amount - (typeof adj.newAmount === 'number' ? adj.newAmount : parseFloat(adj.newAmount) || 0));
-              }
-            });
-            
-            // Debt consolidation
-            if (consolidateDebt1 && consolidateDebt2 && consolidatedPayment) {
-              const debt1 = debts.find(d => d.id === consolidateDebt1);
-              const debt2 = debts.find(d => d.id === consolidateDebt2);
-              const oldPayments = (debt1?.monthlyPayment || 0) + (debt2?.monthlyPayment || 0);
-              const newPayment = parseFloat(consolidatedPayment) || 0;
-              adjustment += (oldPayments - newPayment);
-            }
-            
-            return adjustment;
-          };
-          
-          const monthlyAdjustment = calculateMonthlyAdjustment();
-          const totalAdjustment = monthlyAdjustment * 12;
-          
-          return (
-            <Card>
-              <CardHeader>
-                <CardTitle>Cashflow Projection</CardTitle>
-                <CardDescription>Monthly breakdown of income and expenses</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Accordion type="multiple" defaultValue={['total']}>
-                  {/* Total Row - Shown by Default */}
-                <AccordionItem value="total">
-                    <AccordionTrigger className="text-lg font-semibold hover:no-underline bg-primary/5 px-4 py-3 rounded-lg">
-                      <div className="grid grid-cols-8 gap-3 w-full pr-4 text-sm">
-                        <div className="font-bold text-primary">Annual Totals</div>
-                        <div className="text-right">
-                          <div className="text-xs text-muted-foreground mb-1">Net Income</div>
-                          <div className="font-bold text-primary">${formatCurrency(monthlyNetIncome * 12)}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-muted-foreground mb-1">Expenses</div>
-                          <div className="font-bold text-destructive">${formatCurrency(monthlyExpenses * 12)}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-muted-foreground mb-1">Debt</div>
-                          <div className="font-bold">${formatCurrency((totalMonthlyPayment - totalMonthlyInterest) * 12)}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-muted-foreground mb-1">Interest</div>
-                          <div className="font-bold">${formatCurrency(totalMonthlyInterest * 12)}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-muted-foreground mb-1">Cum. Surplus</div>
-                          <div className={`font-bold ${(monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 >= 0 ? 'text-primary' : 'text-destructive'}`}>
-                            ${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12)}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-muted-foreground mb-1">Adjustments</div>
-                          <div className={`font-bold ${totalAdjustment >= 0 ? 'text-primary' : 'text-destructive'}`}>
-                            ${formatCurrency(totalAdjustment)}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-muted-foreground mb-1">Adj. Surplus</div>
-                          <div className={`font-bold ${((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 + totalAdjustment) >= 0 ? 'text-primary' : 'text-destructive'}`}>
-                            ${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 + totalAdjustment)}
-                          </div>
-                        </div>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-2 bg-muted/30 p-4 rounded-lg">
-                        {/* Header Row */}
-                        <div className="grid grid-cols-8 gap-3 text-sm font-semibold border-b-2 border-primary/20 pb-3 mb-2">
-                          <div className="text-primary">Month</div>
-                          <div className="text-right">Net Income</div>
-                          <div className="text-right">Expenses</div>
-                          <div className="text-right">Debt</div>
-                          <div className="text-right">Interest</div>
-                          <div className="text-right">Surplus</div>
-                          <div className="text-right">Adjustment</div>
-                          <div className="text-right">Adj. Surplus</div>
-                        </div>
-                        
-                        {/* Monthly Rows */}
-                        {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => {
-                          const expenses = calculateMonthlyExpense(index);
-                          const monthlyDebtPrincipal = totalMonthlyPayment - totalMonthlyInterest;
-                          const monthlyInterest = totalMonthlyInterest;
-                          const surplus = monthlyNetIncome - expenses - totalMonthlyPayment;
-                          const adjustedSurplus = surplus + monthlyAdjustment;
-                          
-                          return (
-                            <div key={month} className="grid grid-cols-8 gap-3 text-sm py-3 hover:bg-primary/5 rounded-lg px-3 transition-colors border-b border-muted">
-                              <div className="font-medium">{month}</div>
-                              <div className="text-right">${formatCurrency(monthlyNetIncome)}</div>
-                              <div className="text-right text-destructive">${formatCurrency(expenses)}</div>
-                              <div className="text-right">${formatCurrency(monthlyDebtPrincipal)}</div>
-                              <div className="text-right">${formatCurrency(monthlyInterest)}</div>
-                              <div className={`text-right font-semibold ${surplus >= 0 ? 'text-primary' : 'text-destructive'}`}>
-                                ${formatCurrency(surplus)}
-                              </div>
-                              <div className={`text-right ${monthlyAdjustment >= 0 ? 'text-primary' : 'text-destructive'}`}>
-                                ${formatCurrency(monthlyAdjustment)}
-                              </div>
-                              <div className={`text-right font-semibold ${adjustedSurplus >= 0 ? 'text-primary' : 'text-destructive'}`}>
-                                ${formatCurrency(adjustedSurplus)}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </CardContent>
-            </Card>
-          );
-        })()}
       </main>
     </div>
   );
