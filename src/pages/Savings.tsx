@@ -785,43 +785,77 @@ function SavingsContent() {
           </div>
         </div>
 
-        {/* Assets Summary Card */}
-        <Card className="mb-6 border-2 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
-            <CardTitle className="flex items-center justify-between">
-              <span>Portfolio Overview</span>
-              <Tabs value={futureYears.toString()} onValueChange={(v) => setFutureYears(Number(v))}>
-                <TabsList>
-                  <TabsTrigger value="5">5Y</TabsTrigger>
-                  <TabsTrigger value="10">10Y</TabsTrigger>
-                  <TabsTrigger value="15">15Y</TabsTrigger>
-                  <TabsTrigger value="20">20Y</TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Current Total Value</p>
-                <div className="text-3xl font-bold text-primary">
-                  ${formatCurrency(totalCurrentValue)}
+        {/* Assets Summary Card - Collapsible */}
+        <Collapsible open={isAssetsOpen} onOpenChange={setIsAssetsOpen}>
+          <Card className="mb-6 border-2 shadow-lg">
+            <CollapsibleTrigger className="w-full">
+              <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent cursor-pointer hover:bg-primary/10 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="text-left flex-1">
+                    <CardTitle>Portfolio Overview</CardTitle>
+                    <CardDescription>Your total investment and asset value</CardDescription>
+                  </div>
+                  {!isAssetsOpen && (
+                    <div className="flex items-center gap-4 mr-4">
+                      <div className="grid grid-cols-3 gap-4 text-center">
+                        <div className="bg-background/50 p-2 rounded-lg">
+                          <div className="text-xs text-muted-foreground">Assets</div>
+                          <div className="font-bold text-lg">{assets.length}</div>
+                        </div>
+                        <div className="bg-background/50 p-2 rounded-lg">
+                          <div className="text-xs text-muted-foreground">Current</div>
+                          <div className="font-bold text-lg text-primary">
+                            ${formatCurrency(totalCurrentValue)}
+                          </div>
+                        </div>
+                        <div className="bg-background/50 p-2 rounded-lg">
+                          <div className="text-xs text-muted-foreground">Future ({futureYears}Y)</div>
+                          <div className="font-bold text-lg text-green-600 dark:text-green-400">
+                            ${formatCurrency(totalFutureValue)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <ChevronDown className={`h-5 w-5 transition-transform flex-shrink-0 ml-2 ${isAssetsOpen ? 'rotate-180' : ''}`} />
                 </div>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">
-                  Projected Value ({futureYears} years)
-                </p>
-                <div className="text-3xl font-bold text-green-600 dark:text-green-400">
-                  ${formatCurrency(totalFutureValue)}
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent className="pt-6">
+                <div className="mb-6 flex justify-end">
+                  <Tabs value={futureYears.toString()} onValueChange={(v) => setFutureYears(Number(v))}>
+                    <TabsList>
+                      <TabsTrigger value="5">5Y</TabsTrigger>
+                      <TabsTrigger value="10">10Y</TabsTrigger>
+                      <TabsTrigger value="15">15Y</TabsTrigger>
+                      <TabsTrigger value="20">20Y</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Growth: +${formatCurrency(totalFutureValue - totalCurrentValue)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Current Total Value</p>
+                    <div className="text-3xl font-bold text-primary">
+                      ${formatCurrency(totalCurrentValue)}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Projected Value ({futureYears} years)
+                    </p>
+                    <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                      ${formatCurrency(totalFutureValue)}
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Growth: +${formatCurrency(totalFutureValue - totalCurrentValue)}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
 
         {/* Properties Section */}
         <Card className="mb-6">
