@@ -79,7 +79,7 @@ function DashboardContent() {
           <div className="flex items-center gap-3">
             <img src={marcoloLogo} alt="Marcolo" className="h-10 w-10" />
             <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Marcolo Cashflow
+              Mycashflow
             </h1>
           </div>
           <Button variant="outline" onClick={handleSignOut}>

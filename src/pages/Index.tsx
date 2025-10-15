@@ -26,7 +26,7 @@ const Index = () => {
           
           <h1 className="mb-6 text-5xl md:text-6xl font-bold">
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Marcolo Cashflow
+              Mycashflow
             </span>
           </h1>
           
