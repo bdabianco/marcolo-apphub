@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Trash2, CalendarIcon } from 'lucide-react';
+import { Plus, Trash2, CalendarIcon, DollarSign, TrendingDown, CreditCard, Wallet, Calculator, PiggyBank, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -259,14 +259,21 @@ function BudgetContent() {
       <AppHeader />
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Income</CardTitle>
-            <CardDescription>Add your income sources (gross or net)</CardDescription>
+        <Card className="mb-6 border-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/10">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-green-500/10 rounded-lg">
+                <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <CardTitle>Income</CardTitle>
+                <CardDescription>Add your income sources (gross or net)</CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <Accordion type="multiple" defaultValue={['income']} className="w-full">
-              <AccordionItem value="income">
+              <AccordionItem value="income" className="border rounded-lg px-4">
                 <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                   <div className="flex justify-between w-full pr-4">
                     <span>Income Details</span>
@@ -305,14 +312,14 @@ function BudgetContent() {
                         <SelectItem value="annual">Annual</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button onClick={addIncome}>
+                    <Button onClick={addIncome} className="hover:scale-105 transition-transform">
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
 
                   <div className="space-y-2">
                     {incomes.map((income) => (
-                      <div key={income.id} className="flex items-center justify-between bg-muted p-3 rounded">
+                      <div key={income.id} className="flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/10 p-3 rounded-lg border shadow-sm hover:shadow-md transition-all duration-200">
                         <div className="flex flex-col">
                           <span>{income.name}</span>
                           <span className="text-xs text-muted-foreground">
@@ -367,14 +374,21 @@ function BudgetContent() {
           </CardContent>
         </Card>
 
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Expenses</CardTitle>
-            <CardDescription>Add your monthly expenses with optional start date and duration</CardDescription>
+        <Card className="mb-6 border-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/10">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-orange-500/10 rounded-lg">
+                <TrendingDown className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+              </div>
+              <div>
+                <CardTitle>Expenses</CardTitle>
+                <CardDescription>Add your monthly expenses with optional start date and duration</CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <Accordion type="multiple" defaultValue={['expenses']} className="w-full">
-              <AccordionItem value="expenses">
+              <AccordionItem value="expenses" className="border rounded-lg px-4">
                 <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                   <div className="flex justify-between w-full pr-4">
                     <span>Expense Details</span>
@@ -425,7 +439,7 @@ function BudgetContent() {
                       min="1"
                       max="12"
                     />
-                    <Button onClick={addExpense}>
+                    <Button onClick={addExpense} className="hover:scale-105 transition-transform">
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
@@ -474,14 +488,14 @@ function BudgetContent() {
                               <SelectItem value="annual">Annual</SelectItem>
                             </SelectContent>
                           </Select>
-                          <Button onClick={addSubscription}>
+                          <Button onClick={addSubscription} className="hover:scale-105 transition-transform">
                             <Plus className="h-4 w-4" />
                           </Button>
                         </div>
 
                         <div className="space-y-2 max-h-60 overflow-y-auto">
                           {subscriptions.map((sub) => (
-                            <div key={sub.id} className="flex items-center justify-between bg-muted p-3 rounded">
+                            <div key={sub.id} className="flex items-center justify-between bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/10 p-3 rounded-lg border shadow-sm hover:shadow-md transition-all duration-200">
                               <div className="flex flex-col">
                                 <span>{sub.name}</span>
                                 <span className="text-xs text-muted-foreground capitalize">
@@ -516,7 +530,7 @@ function BudgetContent() {
 
                   <div className="space-y-2">
                     {expenses.map((expense) => (
-                      <div key={expense.id} className="flex items-center justify-between bg-muted p-3 rounded">
+                      <div key={expense.id} className="flex items-center justify-between bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/10 p-3 rounded-lg border shadow-sm hover:shadow-md transition-all duration-200">
                         <div className="flex flex-col">
                           <span>{expense.name}</span>
                           {(expense.startDate || expense.duration) && (
@@ -545,18 +559,54 @@ function BudgetContent() {
           </CardContent>
         </Card>
 
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex justify-between items-center">
-              <span className="text-lg font-semibold">Monthly Surplus:</span>
-              <span className={`text-2xl font-bold ${surplus >= 0 ? 'text-primary' : 'text-destructive'}`}>
-                ${surplus.toFixed(2)}
-              </span>
+        <Card className="border-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/10">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-blue-500/10 rounded-lg">
+                <Calculator className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <CardTitle>Summary</CardTitle>
+                <CardDescription>Monthly financial overview</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950/30 dark:to-emerald-900/20 p-4 rounded-lg border-2 border-green-200 dark:border-green-800 shadow-md hover:shadow-lg transition-all duration-300">
+                <div className="flex items-center gap-2 mb-2">
+                  <Wallet className="h-4 w-4 text-green-600" />
+                  <div className="text-sm text-muted-foreground">Total Income</div>
+                </div>
+                <div className="text-2xl font-bold">${totalMonthlyNetIncome.toFixed(2)}</div>
+              </div>
+              <div className="bg-gradient-to-br from-orange-50 to-red-100 dark:from-orange-950/30 dark:to-red-900/20 p-4 rounded-lg border-2 border-orange-200 dark:border-orange-800 shadow-md hover:shadow-lg transition-all duration-300">
+                <div className="flex items-center gap-2 mb-2">
+                  <CreditCard className="h-4 w-4 text-orange-600" />
+                  <div className="text-sm text-muted-foreground">Total Expenses</div>
+                </div>
+                <div className="text-2xl font-bold">${totalExpenses.toFixed(2)}</div>
+              </div>
+              <div className={cn(
+                "p-4 rounded-lg border-2 shadow-md hover:shadow-lg transition-all duration-300",
+                surplus >= 0 
+                  ? "bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/30 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800" 
+                  : "bg-gradient-to-br from-red-50 to-pink-100 dark:from-red-950/30 dark:to-pink-900/20 border-red-200 dark:border-red-800"
+              )}>
+                <div className="flex items-center gap-2 mb-2">
+                  <PiggyBank className={cn("h-4 w-4", surplus >= 0 ? "text-blue-600" : "text-red-600")} />
+                  <div className="text-sm text-muted-foreground">Surplus/Deficit</div>
+                </div>
+                <div className={cn("text-2xl font-bold", surplus >= 0 ? "text-blue-600" : "text-red-600")}>
+                  ${surplus.toFixed(2)}
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Button onClick={saveBudget} className="w-full" size="lg">
+        <Button onClick={saveBudget} className="w-full shadow-md hover:shadow-lg transition-all duration-300" size="lg">
+          <DollarSign className="h-4 w-4 mr-2" />
           Save Budget Plan
         </Button>
       </main>
