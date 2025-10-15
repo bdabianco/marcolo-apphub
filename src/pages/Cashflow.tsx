@@ -271,16 +271,17 @@ function CashflowContent() {
 
   const addDebt = () => {
     if (newDebtName && newDebtBalance && newDebtPayment) {
-      setDebts([
-        ...debts,
-        {
-          id: Date.now().toString(),
-          name: newDebtName,
-          balance: parseFloat(newDebtBalance) || 0,
-          monthlyPayment: parseFloat(newDebtPayment) || 0,
-          interestRate: parseFloat(newDebtInterest) || 0,
-        },
-      ]);
+      const newDebt = {
+        id: Date.now().toString(),
+        name: newDebtName,
+        balance: parseFloat(newDebtBalance) || 0,
+        monthlyPayment: parseFloat(newDebtPayment) || 0,
+        interestRate: parseFloat(newDebtInterest) || 0,
+      };
+      
+      setDebts([...debts, newDebt]);
+      
+      // Clear input fields after adding
       setNewDebtName('');
       setNewDebtBalance('');
       setNewDebtPayment('');
