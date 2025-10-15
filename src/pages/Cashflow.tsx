@@ -15,6 +15,7 @@ interface Debt {
   name: string;
   balance: number;
   monthlyPayment: number;
+  interestRate: number;
 }
 
 function CashflowContent() {
@@ -24,6 +25,7 @@ function CashflowContent() {
   const [newDebtName, setNewDebtName] = useState('');
   const [newDebtBalance, setNewDebtBalance] = useState('');
   const [newDebtPayment, setNewDebtPayment] = useState('');
+  const [newDebtInterest, setNewDebtInterest] = useState('');
 
   const totalDebt = debts.reduce((sum, debt) => sum + debt.balance, 0);
   const monthlyPayment = debts.reduce((sum, debt) => sum + debt.monthlyPayment, 0);
@@ -37,11 +39,13 @@ function CashflowContent() {
           name: newDebtName,
           balance: parseFloat(newDebtBalance) || 0,
           monthlyPayment: parseFloat(newDebtPayment) || 0,
+          interestRate: parseFloat(newDebtInterest) || 0,
         },
       ]);
       setNewDebtName('');
       setNewDebtBalance('');
       setNewDebtPayment('');
+      setNewDebtInterest('');
     }
   };
 
@@ -81,7 +85,7 @@ function CashflowContent() {
             <CardDescription>Manage your debts and monthly payments</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
               <Input
                 placeholder="Debt name (e.g., Car Loan)"
                 value={newDebtName}
@@ -92,6 +96,12 @@ function CashflowContent() {
                 placeholder="Total balance"
                 value={newDebtBalance}
                 onChange={(e) => setNewDebtBalance(e.target.value)}
+              />
+              <Input
+                type="number"
+                placeholder="Interest rate (%)"
+                value={newDebtInterest}
+                onChange={(e) => setNewDebtInterest(e.target.value)}
               />
               <div className="flex gap-2">
                 <Input
@@ -119,10 +129,14 @@ function CashflowContent() {
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-3 gap-4 text-sm">
                     <div>
                       <span className="text-muted-foreground">Balance:</span>
                       <span className="ml-2 font-medium">${debt.balance.toFixed(2)}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Interest:</span>
+                      <span className="ml-2 font-medium">{debt.interestRate.toFixed(2)}%</span>
                     </div>
                     <div>
                       <span className="text-muted-foreground">Monthly:</span>
