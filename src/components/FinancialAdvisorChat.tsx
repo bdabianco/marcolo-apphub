@@ -82,60 +82,60 @@ export function FinancialAdvisorChat({ metrics }: FinancialAdvisorChatProps) {
       </CardHeader>
       <CardContent className="pt-6">
         {messages.length === 0 ? (
-          <div className="text-center py-8 space-y-4">
-            <p className="text-muted-foreground">
-              Ask me anything about your financial situation:
+          <div className="text-center py-4 space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Ask me anything about your financial situation
             </p>
-            <div className="grid gap-2 text-sm">
+            <div className="grid grid-cols-2 gap-2 text-xs">
               <button
                 onClick={() => setInput("How can I improve my savings rate?")}
-                className="p-3 text-left hover:bg-muted rounded-lg transition-colors"
+                className="p-2 text-left hover:bg-muted rounded-lg transition-colors"
               >
-                💡 How can I improve my savings rate?
+                💡 Improve savings rate
               </button>
               <button
                 onClick={() => setInput("What should I prioritize: debt reduction or savings?")}
-                className="p-3 text-left hover:bg-muted rounded-lg transition-colors"
+                className="p-2 text-left hover:bg-muted rounded-lg transition-colors"
               >
-                📊 What should I prioritize: debt reduction or savings?
+                📊 Debt vs savings priority
               </button>
               <button
                 onClick={() => setInput("How does my net worth compare to others my age?")}
-                className="p-3 text-left hover:bg-muted rounded-lg transition-colors"
+                className="p-2 text-left hover:bg-muted rounded-lg transition-colors"
               >
-                👥 How does my net worth compare to others my age?
+                👥 Net worth comparison
               </button>
               <button
                 onClick={() => setInput("What are the most important changes I should make?")}
-                className="p-3 text-left hover:bg-muted rounded-lg transition-colors"
+                className="p-2 text-left hover:bg-muted rounded-lg transition-colors"
               >
-                🎯 What are the most important changes I should make?
+                🎯 Key changes needed
               </button>
             </div>
           </div>
         ) : (
-          <ScrollArea className="h-[400px] pr-4">
-            <div className="space-y-4">
+          <ScrollArea className="h-[250px] pr-4">
+            <div className="space-y-3">
               {messages.map((message, index) => (
                 <div
                   key={index}
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-lg p-3 ${
+                    className={`max-w-[85%] rounded-lg p-2.5 ${
                       message.role === 'user'
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-muted'
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                    <p className="text-xs whitespace-pre-wrap leading-relaxed">{message.content}</p>
                   </div>
                 </div>
               ))}
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-muted rounded-lg p-3">
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                  <div className="bg-muted rounded-lg p-2.5">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   </div>
                 </div>
               )}
@@ -143,17 +143,17 @@ export function FinancialAdvisorChat({ metrics }: FinancialAdvisorChatProps) {
           </ScrollArea>
         )}
 
-        <div className="flex gap-2 mt-4">
+        <div className="flex gap-2 mt-3">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Ask about your finances..."
             disabled={isLoading}
-            className="flex-1"
+            className="flex-1 h-9 text-sm"
           />
-          <Button onClick={sendMessage} disabled={isLoading || !input.trim()}>
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          <Button onClick={sendMessage} disabled={isLoading || !input.trim()} size="sm">
+            {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
           </Button>
         </div>
       </CardContent>
