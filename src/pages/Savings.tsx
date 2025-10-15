@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth, ProtectedRoute } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -8,15 +8,54 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AppHeader } from '@/components/AppHeader';
+import { useProject } from '@/contexts/ProjectContext';
+import { formatCurrency } from '@/lib/utils';
 
 function SavingsContent() {
   const { user } = useAuth();
+  const { currentProject } = useProject();
   const navigate = useNavigate();
   const [goalName, setGoalName] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
   const [currentAmount, setCurrentAmount] = useState('0');
   const [monthlyContribution, setMonthlyContribution] = useState('');
   const [targetDate, setTargetDate] = useState('');
+  const [availableSurplus, setAvailableSurplus] = useState(0);
+
+  useEffect(() => {
+    loadCashflowSurplus();
+  }, [currentProject]);
+
+  const loadCashflowSurplus = async () => {
+    if (!currentProject || !user) return;
+
+    try {
+      // Get budget data
+      const { data: budgetData } = await supabase
+        .from('budget_plans')
+        .select('net_income, total_expenses')
+        .eq('id', currentProject.id)
+        .single();
+
+      // Get cashflow data for debt payments
+      const { data: cashflowData } = await supabase
+        .from('cashflow_records')
+        .select('monthly_debt_payment')
+        .eq('budget_plan_id', currentProject.id)
+        .maybeSingle();
+
+      if (budgetData) {
+        const monthlyNetIncome = Number(budgetData.net_income || 0) / 12;
+        const monthlyExpenses = Number(budgetData.total_expenses || 0) / 12;
+        const monthlyDebtPayment = Number(cashflowData?.monthly_debt_payment || 0);
+        
+        const surplus = monthlyNetIncome - monthlyExpenses - monthlyDebtPayment;
+        setAvailableSurplus(Math.max(0, surplus));
+      }
+    } catch (error) {
+      console.error('Error loading cashflow surplus:', error);
+    }
+  };
 
   const target = parseFloat(targetAmount) || 0;
   const current = parseFloat(currentAmount) || 0;
@@ -26,14 +65,30 @@ function SavingsContent() {
   const progress = target > 0 ? (current / target) * 100 : 0;
 
   const saveSavingsGoal = async () => {
-    if (!user || !goalName || !targetAmount) {
+    if (!user || !currentProject) {
+      toast.error('Please select a project first');
+      return;
+    }
+
+    if (!goalName || !targetAmount) {
       toast.error('Please fill in all required fields');
       return;
     }
 
+    if (availableSurplus <= 0) {
+      toast.error('No surplus available. You need positive cashflow surplus to create savings goals.');
+      return;
+    }
+
+    if (monthly > availableSurplus) {
+      toast.error(`Monthly contribution cannot exceed available surplus of $${formatCurrency(availableSurplus)}`);
+      return;
+    }
+
     try {
-      const { error } = await supabase.from('savings_goals').insert({
+      console.log('Attempting to save savings goal:', {
         user_id: user.id,
+        budget_plan_id: currentProject.id,
         goal_name: goalName,
         target_amount: target,
         current_amount: current,
@@ -41,11 +96,26 @@ function SavingsContent() {
         target_date: targetDate || null,
       });
 
-      if (error) throw error;
+      const { data, error } = await supabase.from('savings_goals').insert({
+        user_id: user.id,
+        budget_plan_id: currentProject.id,
+        goal_name: goalName,
+        target_amount: target,
+        current_amount: current,
+        monthly_contribution: monthly,
+        target_date: targetDate || null,
+      }).select();
 
+      if (error) {
+        console.error('Save error:', error);
+        throw error;
+      }
+
+      console.log('Savings goal created successfully:', data);
       toast.success('Savings goal created successfully!');
       navigate('/dashboard');
     } catch (error: any) {
+      console.error('Failed to create savings goal:', error);
       toast.error(error.message || 'Failed to create savings goal');
     }
   };
@@ -55,6 +125,24 @@ function SavingsContent() {
       <AppHeader />
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
+        {/* Available Surplus Card */}
+        <Card className="mb-6 border-2 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
+            <CardTitle>Available Surplus</CardTitle>
+            <CardDescription>
+              {availableSurplus > 0 
+                ? 'Monthly surplus available for savings after income, expenses, and debt payments'
+                : 'No surplus available. Create a budget and manage cashflow to generate surplus for savings.'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="text-3xl font-bold text-primary">
+              ${formatCurrency(availableSurplus)}
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">per month</p>
+          </CardContent>
+        </Card>
+
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Create Savings Goal</CardTitle>
@@ -97,13 +185,22 @@ function SavingsContent() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="monthlyContribution">Monthly Contribution ($)</Label>
+                <Label htmlFor="monthlyContribution">
+                  Monthly Contribution ($)
+                  {availableSurplus > 0 && (
+                    <span className="text-xs text-muted-foreground ml-2">
+                      (Max: ${formatCurrency(availableSurplus)})
+                    </span>
+                  )}
+                </Label>
                 <Input
                   id="monthlyContribution"
                   type="number"
                   value={monthlyContribution}
                   onChange={(e) => setMonthlyContribution(e.target.value)}
                   placeholder="0.00"
+                  max={availableSurplus}
+                  disabled={availableSurplus <= 0}
                 />
               </div>
 
@@ -142,7 +239,7 @@ function SavingsContent() {
               <div className="grid grid-cols-2 gap-4 pt-2">
                 <div>
                   <div className="text-sm text-muted-foreground">Remaining</div>
-                  <div className="text-xl font-bold">${remaining.toFixed(2)}</div>
+                  <div className="text-xl font-bold">${formatCurrency(remaining)}</div>
                 </div>
                 {monthly > 0 && (
                   <div>
@@ -155,7 +252,12 @@ function SavingsContent() {
           </Card>
         )}
 
-        <Button onClick={saveSavingsGoal} className="w-full" size="lg">
+        <Button 
+          onClick={saveSavingsGoal} 
+          className="w-full" 
+          size="lg"
+          disabled={availableSurplus <= 0}
+        >
           Create Savings Goal
         </Button>
       </main>
