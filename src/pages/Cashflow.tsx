@@ -28,6 +28,12 @@ function CashflowContent() {
   const [newDebtBalance, setNewDebtBalance] = useState('');
   const [newDebtPayment, setNewDebtPayment] = useState('');
   const [newDebtInterest, setNewDebtInterest] = useState('');
+  
+  // Mortgage states
+  const [primaryMortgageBalance, setPrimaryMortgageBalance] = useState('');
+  const [primaryMortgageInterest, setPrimaryMortgageInterest] = useState('');
+  const [secondaryMortgageBalance, setSecondaryMortgageBalance] = useState('');
+  const [secondaryMortgageInterest, setSecondaryMortgageInterest] = useState('');
 
   // Load existing cashflow data
   useEffect(() => {
@@ -54,6 +60,17 @@ function CashflowContent() {
           : data.debts;
         setDebts(parsedDebts || []);
       }
+
+      // Load mortgage data
+      if (data && data.mortgage) {
+        const mortgageData = typeof data.mortgage === 'string'
+          ? JSON.parse(data.mortgage)
+          : data.mortgage;
+        setPrimaryMortgageBalance(mortgageData.primary?.balance?.toString() || '');
+        setPrimaryMortgageInterest(mortgageData.primary?.interestRate?.toString() || '');
+        setSecondaryMortgageBalance(mortgageData.secondary?.balance?.toString() || '');
+        setSecondaryMortgageInterest(mortgageData.secondary?.interestRate?.toString() || '');
+      }
     } catch (error: any) {
       console.error('Error loading cashflow data:', error);
     }
@@ -61,6 +78,17 @@ function CashflowContent() {
 
   const totalDebt = debts.reduce((sum, debt) => sum + debt.balance, 0);
   const monthlyPayment = debts.reduce((sum, debt) => sum + debt.monthlyPayment, 0);
+  
+  // Calculate mortgage totals
+  const primaryMortgageBalanceNum = parseFloat(primaryMortgageBalance) || 0;
+  const primaryMortgageInterestNum = parseFloat(primaryMortgageInterest) || 0;
+  const secondaryMortgageBalanceNum = parseFloat(secondaryMortgageBalance) || 0;
+  const secondaryMortgageInterestNum = parseFloat(secondaryMortgageInterest) || 0;
+  
+  const primaryAnnualInterest = (primaryMortgageBalanceNum * primaryMortgageInterestNum) / 100;
+  const secondaryAnnualInterest = (secondaryMortgageBalanceNum * secondaryMortgageInterestNum) / 100;
+  const totalAnnualInterest = primaryAnnualInterest + secondaryAnnualInterest;
+  const totalMonthlyInterest = totalAnnualInterest / 12;
 
   const addDebt = () => {
     if (newDebtName && newDebtBalance && newDebtPayment) {
@@ -99,12 +127,24 @@ function CashflowContent() {
         .eq('budget_plan_id', currentProject.id)
         .maybeSingle();
 
+      const mortgageData = {
+        primary: {
+          balance: primaryMortgageBalanceNum,
+          interestRate: primaryMortgageInterestNum,
+        },
+        secondary: {
+          balance: secondaryMortgageBalanceNum,
+          interestRate: secondaryMortgageInterestNum,
+        },
+      };
+
       if (existingRecord) {
         // Update existing record
         const { error } = await supabase
           .from('cashflow_records')
           .update({
             debts: JSON.stringify(debts),
+            mortgage: JSON.stringify(mortgageData),
             total_debt: totalDebt,
             monthly_debt_payment: monthlyPayment,
             available_cashflow: 0,
@@ -120,6 +160,7 @@ function CashflowContent() {
             user_id: user.id,
             budget_plan_id: currentProject.id,
             debts: JSON.stringify(debts),
+            mortgage: JSON.stringify(mortgageData),
             total_debt: totalDebt,
             monthly_debt_payment: monthlyPayment,
             available_cashflow: 0,
@@ -142,11 +183,76 @@ function CashflowContent() {
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Debt Tracking</CardTitle>
-            <CardDescription>Manage your debts and monthly payments</CardDescription>
+            <div className="flex items-start justify-between">
+              <div>
+                <CardTitle>Debt Tracking</CardTitle>
+                <CardDescription>Manage your debts and monthly payments</CardDescription>
+              </div>
+              <Button onClick={saveCashflow}>
+                Save Cashflow Data
+              </Button>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+          <CardContent className="space-y-6">
+            {/* Mortgage Section */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Mortgages</h3>
+              
+              {/* Primary Mortgage */}
+              <div className="bg-muted p-4 rounded space-y-2">
+                <div className="font-medium">Primary Mortgage</div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Total Balance</Label>
+                    <Input
+                      type="number"
+                      placeholder="Total balance"
+                      value={primaryMortgageBalance}
+                      onChange={(e) => setPrimaryMortgageBalance(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label>Interest Rate (%)</Label>
+                    <Input
+                      type="number"
+                      placeholder="Interest rate"
+                      value={primaryMortgageInterest}
+                      onChange={(e) => setPrimaryMortgageInterest(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Secondary Mortgage */}
+              <div className="bg-muted p-4 rounded space-y-2">
+                <div className="font-medium">Secondary Mortgage</div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Total Balance</Label>
+                    <Input
+                      type="number"
+                      placeholder="Total balance"
+                      value={secondaryMortgageBalance}
+                      onChange={(e) => setSecondaryMortgageBalance(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label>Interest Rate (%)</Label>
+                    <Input
+                      type="number"
+                      placeholder="Interest rate"
+                      value={secondaryMortgageInterest}
+                      onChange={(e) => setSecondaryMortgageInterest(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Other Debts Section */}
+            <div className="space-y-4 border-t pt-4">
+              <h3 className="font-semibold text-lg">Other Debts</h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
               <Input
                 placeholder="Debt name (e.g., Car Loan)"
                 value={newDebtName}
@@ -220,12 +326,31 @@ function CashflowContent() {
                 </div>
               </div>
             )}
+            </div>
           </CardContent>
         </Card>
 
-        <Button onClick={saveCashflow} className="w-full" size="lg">
-          Save Cashflow Data
-        </Button>
+        {/* Interest Summary Card */}
+        {(primaryMortgageBalanceNum > 0 || secondaryMortgageBalanceNum > 0) && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Interest Summary</CardTitle>
+              <CardDescription>Mortgage interest calculations</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-muted p-4 rounded">
+                  <div className="text-sm text-muted-foreground mb-1">Monthly Interest</div>
+                  <div className="text-2xl font-bold">${totalMonthlyInterest.toFixed(2)}</div>
+                </div>
+                <div className="bg-muted p-4 rounded">
+                  <div className="text-sm text-muted-foreground mb-1">Annual Interest</div>
+                  <div className="text-2xl font-bold">${totalAnnualInterest.toFixed(2)}</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </main>
     </div>
   );
