@@ -448,9 +448,9 @@ function CashflowContent() {
                       <div className="font-bold">Total</div>
                       <div className="text-right font-bold">${formatCurrency(monthlyNetIncome * 12)}</div>
                       <div className="text-right font-bold">${formatCurrency(monthlyExpenses * 12)}</div>
-                      <div className="text-right font-bold">${formatCurrency(totalMonthlyPayment * 12)}</div>
+                      <div className="text-right font-bold">${formatCurrency((totalMonthlyPayment * 12) - totalAnnualInterest)}</div>
                       <div className="text-right font-bold">${formatCurrency(totalAnnualInterest)}</div>
-                      <div className="text-right font-bold">${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment - totalMonthlyInterest) * 12)}</div>
+                      <div className="text-right font-bold">${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12)}</div>
                       <div className="text-right font-bold text-muted-foreground">-</div>
                     </div>
                   </AccordionTrigger>
@@ -470,16 +470,16 @@ function CashflowContent() {
                       {/* Monthly Rows */}
                       {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => {
                         const expenses = monthlyExpenses;
-                        const monthlyDebt = totalMonthlyPayment;
+                        const monthlyDebtPrincipal = totalMonthlyPayment - totalMonthlyInterest;
                         const monthlyInterest = totalMonthlyInterest;
-                        const surplus = monthlyNetIncome - expenses - monthlyDebt - monthlyInterest;
+                        const surplus = monthlyNetIncome - expenses - totalMonthlyPayment;
                         
                         return (
                           <div key={month} className="grid grid-cols-7 gap-4 text-sm py-2 hover:bg-muted/50 rounded px-2">
                             <div>{month}</div>
                             <div className="text-right">${formatCurrency(monthlyNetIncome)}</div>
                             <div className="text-right">${formatCurrency(expenses)}</div>
-                            <div className="text-right">${formatCurrency(monthlyDebt)}</div>
+                            <div className="text-right">${formatCurrency(monthlyDebtPrincipal)}</div>
                             <div className="text-right">${formatCurrency(monthlyInterest)}</div>
                             <div className="text-right font-medium">${formatCurrency(surplus)}</div>
                             <div className="text-right text-muted-foreground">$0.00</div>
