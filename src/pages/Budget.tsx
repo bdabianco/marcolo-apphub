@@ -273,6 +273,43 @@ function BudgetContent() {
           </CardContent>
         </Card>
 
+        {monthlyGrossIncome > 0 && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Tax Deductions (Canadian - Gross Income Only)</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Federal Tax:</span>
+                <span className="font-medium">${taxes.federalTax.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Provincial Tax:</span>
+                <span className="font-medium">${taxes.provincialTax.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">CPP:</span>
+                <span className="font-medium">${taxes.cpp.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">EI:</span>
+                <span className="font-medium">${taxes.ei.toFixed(2)}</span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <div className="flex justify-between items-center">
+              <span className="text-lg font-semibold">Total Monthly Net Income:</span>
+              <span className="text-2xl font-bold text-primary">
+                ${totalMonthlyNetIncome.toFixed(2)}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Expenses</CardTitle>
