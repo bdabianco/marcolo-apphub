@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ArrowLeft, Plus, Trash2, CalendarIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -23,6 +24,13 @@ interface Income {
   schedule: 'monthly' | 'quarterly' | 'annual';
 }
 
+interface Subscription {
+  id: string;
+  name: string;
+  amount: number;
+  billingCycle: 'monthly' | 'quarterly' | 'annual';
+}
+
 interface Expense {
   id: string;
   name: string;
@@ -36,6 +44,8 @@ function BudgetContent() {
   const navigate = useNavigate();
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [subscriptionsDialogOpen, setSubscriptionsDialogOpen] = useState(false);
   const [newIncomeName, setNewIncomeName] = useState('');
   const [newIncomeAmount, setNewIncomeAmount] = useState('');
   const [newIncomeType, setNewIncomeType] = useState<'gross' | 'net'>('net');
@@ -44,6 +54,9 @@ function BudgetContent() {
   const [newExpenseAmount, setNewExpenseAmount] = useState('');
   const [newExpenseStartDate, setNewExpenseStartDate] = useState<Date>();
   const [newExpenseDuration, setNewExpenseDuration] = useState('');
+  const [newSubscriptionName, setNewSubscriptionName] = useState('');
+  const [newSubscriptionAmount, setNewSubscriptionAmount] = useState('');
+  const [newSubscriptionBillingCycle, setNewSubscriptionBillingCycle] = useState<'monthly' | 'quarterly' | 'annual'>('monthly');
 
   // Convert all income to monthly amounts
   const convertToMonthly = (amount: number, schedule: 'monthly' | 'quarterly' | 'annual') => {
@@ -77,7 +90,15 @@ function BudgetContent() {
   const annualNetFromGross = annualGrossIncome - taxes.federalTax - taxes.provincialTax - taxes.cpp - taxes.ei;
   const totalMonthlyNetIncome = (annualNetFromGross / 12) + monthlyNetIncome;
   
-  const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+  // Calculate total subscriptions as annual amount
+  const totalAnnualSubscriptions = subscriptions.reduce((sum, sub) => {
+    const annualAmount = sub.billingCycle === 'monthly' ? sub.amount * 12 :
+                        sub.billingCycle === 'quarterly' ? sub.amount * 4 :
+                        sub.amount;
+    return sum + annualAmount;
+  }, 0);
+  
+  const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0) + (totalAnnualSubscriptions / 12);
   const surplus = totalMonthlyNetIncome - totalExpenses;
 
   const addIncome = () => {
@@ -126,6 +147,27 @@ function BudgetContent() {
     setExpenses(expenses.filter((exp) => exp.id !== id));
   };
 
+  const addSubscription = () => {
+    if (newSubscriptionName && newSubscriptionAmount) {
+      setSubscriptions([
+        ...subscriptions,
+        {
+          id: Date.now().toString(),
+          name: newSubscriptionName,
+          amount: parseFloat(newSubscriptionAmount) || 0,
+          billingCycle: newSubscriptionBillingCycle,
+        },
+      ]);
+      setNewSubscriptionName('');
+      setNewSubscriptionAmount('');
+      setNewSubscriptionBillingCycle('monthly');
+    }
+  };
+
+  const removeSubscription = (id: string) => {
+    setSubscriptions(subscriptions.filter((sub) => sub.id !== id));
+  };
+
   const saveBudget = async () => {
     if (!user) return;
 
@@ -141,6 +183,7 @@ function BudgetContent() {
         net_income: totalMonthlyNetIncome * 12,
         income_categories: JSON.stringify(incomes),
         expenses: JSON.stringify(expenses),
+        subscriptions: JSON.stringify(subscriptions),
         total_expenses: totalExpenses * 12,
         surplus: surplus * 12,
       });
@@ -326,6 +369,90 @@ function BudgetContent() {
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
+
+            {/* Subscriptions Special Entry */}
+            <Dialog open={subscriptionsDialogOpen} onOpenChange={setSubscriptionsDialogOpen}>
+              <DialogTrigger asChild>
+                <div className="flex items-center justify-between bg-primary/10 p-3 rounded cursor-pointer hover:bg-primary/20 transition-colors border-2 border-primary/30">
+                  <div className="flex flex-col">
+                    <span className="font-semibold">Subscriptions</span>
+                    <span className="text-xs text-muted-foreground">
+                      {subscriptions.length} subscription{subscriptions.length !== 1 ? 's' : ''} • Click to manage
+                    </span>
+                  </div>
+                  <span className="font-medium">${(totalAnnualSubscriptions / 12).toFixed(2)}/mo</span>
+                </div>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Manage Subscriptions</DialogTitle>
+                  <DialogDescription>
+                    Add and manage your recurring subscriptions. Total is calculated annually.
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                    <Input
+                      placeholder="Subscription name"
+                      value={newSubscriptionName}
+                      onChange={(e) => setNewSubscriptionName(e.target.value)}
+                    />
+                    <Input
+                      type="number"
+                      placeholder="Amount"
+                      value={newSubscriptionAmount}
+                      onChange={(e) => setNewSubscriptionAmount(e.target.value)}
+                    />
+                    <Select value={newSubscriptionBillingCycle} onValueChange={(val: 'monthly' | 'quarterly' | 'annual') => setNewSubscriptionBillingCycle(val)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                        <SelectItem value="quarterly">Quarterly</SelectItem>
+                        <SelectItem value="annual">Annual</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button onClick={addSubscription}>
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {subscriptions.map((sub) => (
+                      <div key={sub.id} className="flex items-center justify-between bg-muted p-3 rounded">
+                        <div className="flex flex-col">
+                          <span>{sub.name}</span>
+                          <span className="text-xs text-muted-foreground capitalize">
+                            {sub.billingCycle}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">${sub.amount.toFixed(2)}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeSubscription(sub.id)}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex justify-between border-t pt-3">
+                    <span className="font-semibold">Total Annual Cost:</span>
+                    <span className="font-bold text-primary">${totalAnnualSubscriptions.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Monthly Equivalent:</span>
+                    <span className="text-sm font-medium">${(totalAnnualSubscriptions / 12).toFixed(2)}</span>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
 
             <div className="space-y-2">
               {expenses.map((expense) => (
