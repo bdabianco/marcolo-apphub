@@ -121,28 +121,43 @@ function InsightsContent() {
     let totalMortgagePayment = 0;
     
     cashflows?.forEach(cf => {
+      console.log('Processing cashflow record:', cf);
+      
       // Add mortgage if exists
       if (cf.mortgage && typeof cf.mortgage === 'object') {
         const mortgage = cf.mortgage as any;
-        if (mortgage.primary?.balance > 0) {
+        console.log('Mortgage data:', mortgage);
+        
+        if (mortgage.primary && mortgage.primary.balance > 0) {
+          const primaryBalance = Number(mortgage.primary.balance || 0);
+          const primaryPayment = Number(mortgage.primary.monthlyPayment || 0);
+          const primaryRate = Number(mortgage.primary.interestRate || 0);
+          
           allDebts.push({
             name: 'Mortgage (Primary)',
-            balance: Number(mortgage.primary.balance || 0),
-            monthlyPayment: Number(mortgage.primary.monthlyPayment || 0),
-            interestRate: Number(mortgage.primary.interestRate || 0),
+            balance: primaryBalance,
+            monthlyPayment: primaryPayment,
+            interestRate: primaryRate,
           });
-          totalMortgageBalance += Number(mortgage.primary.balance || 0);
-          totalMortgagePayment += Number(mortgage.primary.monthlyPayment || 0);
+          totalMortgageBalance += primaryBalance;
+          totalMortgagePayment += primaryPayment;
+          console.log('Added primary mortgage:', { primaryBalance, primaryPayment });
         }
-        if (mortgage.secondary?.balance > 0) {
+        
+        if (mortgage.secondary && mortgage.secondary.balance > 0) {
+          const secondaryBalance = Number(mortgage.secondary.balance || 0);
+          const secondaryPayment = Number(mortgage.secondary.monthlyPayment || 0);
+          const secondaryRate = Number(mortgage.secondary.interestRate || 0);
+          
           allDebts.push({
             name: 'Mortgage (Secondary)',
-            balance: Number(mortgage.secondary.balance || 0),
-            monthlyPayment: Number(mortgage.secondary.monthlyPayment || 0),
-            interestRate: Number(mortgage.secondary.interestRate || 0),
+            balance: secondaryBalance,
+            monthlyPayment: secondaryPayment,
+            interestRate: secondaryRate,
           });
-          totalMortgageBalance += Number(mortgage.secondary.balance || 0);
-          totalMortgagePayment += Number(mortgage.secondary.monthlyPayment || 0);
+          totalMortgageBalance += secondaryBalance;
+          totalMortgagePayment += secondaryPayment;
+          console.log('Added secondary mortgage:', { secondaryBalance, secondaryPayment });
         }
       }
       
@@ -161,15 +176,24 @@ function InsightsContent() {
       }
     });
     
+    console.log('All debts breakdown:', allDebts);
+    console.log('Total mortgage balance:', totalMortgageBalance);
+    console.log('Total mortgage payment:', totalMortgagePayment);
+    
     setDebtBreakdown(allDebts);
     
     // Calculate total debts including mortgage
     const otherDebts = cashflows?.reduce((sum, c) => sum + Number(c.total_debt || 0), 0) || 0;
     const totalDebts = otherDebts + totalMortgageBalance;
     
+    console.log('Other debts:', otherDebts);
+    console.log('Total debts (with mortgage):', totalDebts);
+    
     // Calculate total monthly debt payment including mortgage
     const otherDebtPayments = cashflows?.reduce((sum, c) => sum + Number(c.monthly_debt_payment || 0), 0) || 0;
     const monthlyDebtPayment = otherDebtPayments + totalMortgagePayment;
+    
+    console.log('Monthly debt payment (with mortgage):', monthlyDebtPayment);
     
     const totalAssets = assets?.reduce((sum, a) => sum + Number(a.current_value || 0), 0) || 0;
     
