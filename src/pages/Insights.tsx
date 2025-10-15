@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppHeader } from '@/components/AppHeader';
 import { formatCurrency } from '@/lib/utils';
 import { useProject } from '@/contexts/ProjectContext';
+import { FinancialAdvisorChat } from '@/components/FinancialAdvisorChat';
 
 interface Metrics {
   totalAnnualIncome: number;
@@ -447,6 +448,9 @@ function InsightsContent() {
             )}
           </CardContent>
         </Card>
+
+        {/* AI Financial Advisor */}
+        <FinancialAdvisorChat metrics={metrics} />
       </main>
     </div>
   );
