@@ -87,7 +87,10 @@ function CashflowContent() {
   
   const primaryAnnualInterest = (primaryMortgageBalanceNum * primaryMortgageInterestNum) / 100;
   const secondaryAnnualInterest = (secondaryMortgageBalanceNum * secondaryMortgageInterestNum) / 100;
-  const totalAnnualInterest = primaryAnnualInterest + secondaryAnnualInterest;
+  const otherDebtsAnnualInterest = debts.reduce((sum, debt) => {
+    return sum + ((debt.balance * debt.interestRate) / 100);
+  }, 0);
+  const totalAnnualInterest = primaryAnnualInterest + secondaryAnnualInterest + otherDebtsAnnualInterest;
   const totalMonthlyInterest = totalAnnualInterest / 12;
 
   const addDebt = () => {
@@ -331,11 +334,11 @@ function CashflowContent() {
         </Card>
 
         {/* Interest Summary Card */}
-        {(primaryMortgageBalanceNum > 0 || secondaryMortgageBalanceNum > 0) && (
+        {(primaryMortgageBalanceNum > 0 || secondaryMortgageBalanceNum > 0 || debts.length > 0) && (
           <Card>
             <CardHeader>
               <CardTitle>Interest Summary</CardTitle>
-              <CardDescription>Mortgage interest calculations</CardDescription>
+              <CardDescription>Total interest calculations for all debts</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
