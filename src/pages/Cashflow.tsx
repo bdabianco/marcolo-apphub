@@ -446,11 +446,11 @@ function CashflowContent() {
                   <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                     <div className="grid grid-cols-7 gap-4 w-full pr-4 text-sm">
                       <div className="font-bold">Total</div>
-                      <div className="text-right font-bold">${formatCurrency(monthlyNetIncome * 12)}</div>
-                      <div className="text-right font-bold">${formatCurrency(monthlyExpenses * 12)}</div>
-                      <div className="text-right font-bold">${formatCurrency((totalMonthlyPayment * 12) - totalAnnualInterest)}</div>
-                      <div className="text-right font-bold">${formatCurrency(totalAnnualInterest)}</div>
-                      <div className="text-right font-bold">${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12)}</div>
+                      <div className="text-right font-bold">${formatCurrency(monthlyNetIncome)}</div>
+                      <div className="text-right font-bold">${formatCurrency(monthlyExpenses)}</div>
+                      <div className="text-right font-bold">${formatCurrency(totalMonthlyPayment - totalMonthlyInterest)}</div>
+                      <div className="text-right font-bold">${formatCurrency(totalMonthlyInterest)}</div>
+                      <div className="text-right font-bold">${formatCurrency(monthlyNetIncome - monthlyExpenses - totalMonthlyPayment)}</div>
                       <div className="text-right font-bold text-muted-foreground">-</div>
                     </div>
                   </AccordionTrigger>
