@@ -614,6 +614,24 @@ function CashflowContent() {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
+
+            {/* Interest Summary Section - moved under Debt Tracking */}
+            {(primaryMortgageBalanceNum > 0 || secondaryMortgageBalanceNum > 0 || debts.length > 0) && (
+              <div className="mt-6 pt-6 border-t">
+                <h3 className="text-lg font-semibold mb-4">Interest Summary</h3>
+                <div className="text-sm text-muted-foreground mb-4">Total interest calculations for all debts</div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-muted p-4 rounded">
+                    <div className="text-sm text-muted-foreground mb-1">Monthly Interest</div>
+                    <div className="text-2xl font-bold">${formatCurrency(totalMonthlyInterest)}</div>
+                  </div>
+                  <div className="bg-muted p-4 rounded">
+                    <div className="text-sm text-muted-foreground mb-1">Annual Interest</div>
+                    <div className="text-2xl font-bold">${formatCurrency(totalAnnualInterest)}</div>
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -835,27 +853,6 @@ function CashflowContent() {
           </CardContent>
         </Card>
 
-        {/* Interest Summary Card */}
-        {(primaryMortgageBalanceNum > 0 || secondaryMortgageBalanceNum > 0 || debts.length > 0) && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Interest Summary</CardTitle>
-              <CardDescription>Total interest calculations for all debts</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-muted p-4 rounded">
-                  <div className="text-sm text-muted-foreground mb-1">Monthly Interest</div>
-                  <div className="text-2xl font-bold">${formatCurrency(totalMonthlyInterest)}</div>
-                </div>
-                <div className="bg-muted p-4 rounded">
-                  <div className="text-sm text-muted-foreground mb-1">Annual Interest</div>
-                  <div className="text-2xl font-bold">${formatCurrency(totalAnnualInterest)}</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Cashflow Table */}
         {currentProject && (() => {
