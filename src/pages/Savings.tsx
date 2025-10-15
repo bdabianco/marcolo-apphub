@@ -63,12 +63,25 @@ function SavingsContent() {
         .eq('budget_plan_id', currentProject.id)
         .maybeSingle();
 
+      // Get existing savings goals to calculate committed contributions
+      const { data: savingsData } = await supabase
+        .from('savings_goals')
+        .select('monthly_contribution')
+        .eq('user_id', user.id)
+        .eq('budget_plan_id', currentProject.id)
+        .eq('is_active', true);
+
+      const totalCommittedSavings = (savingsData || []).reduce(
+        (sum, goal) => sum + Number(goal.monthly_contribution || 0),
+        0
+      );
+
       if (budgetData) {
         const monthlyNetIncome = Number(budgetData.net_income || 0) / 12;
         const monthlyExpenses = Number(budgetData.total_expenses || 0) / 12;
         const monthlyDebtPayment = Number(cashflowData?.monthly_debt_payment || 0);
         
-        const surplus = monthlyNetIncome - monthlyExpenses - monthlyDebtPayment;
+        const surplus = monthlyNetIncome - monthlyExpenses - monthlyDebtPayment - totalCommittedSavings;
         setAvailableSurplus(Math.max(0, surplus));
       }
     } catch (error) {
