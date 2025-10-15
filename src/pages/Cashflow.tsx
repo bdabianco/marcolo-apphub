@@ -224,12 +224,15 @@ function CashflowContent() {
         
         if (parsedAdjustments.debtConsolidation) {
           const dc = parsedAdjustments.debtConsolidation;
+          console.log('Loading debt consolidation from database:', dc);
           setConsolidateDebt1(dc.debt1Id || '');
           setConsolidateDebt2(dc.debt2Id || '');
           setConsolidatedName(dc.newDebtName || '');
           setConsolidatedBalance(dc.newBalance?.toString() || '');
           setConsolidatedRate(dc.newInterestRate?.toString() || '');
           setConsolidatedPayment(dc.newMonthlyPayment?.toString() || '');
+        } else {
+          console.log('No debt consolidation data found in database');
         }
       }
     } catch (error: any) {
@@ -356,6 +359,9 @@ function CashflowContent() {
           newInterestRate: parseFloat(consolidatedRate) || 0,
           newMonthlyPayment: parseFloat(consolidatedPayment) || 0,
         };
+        console.log('Saving debt consolidation:', adjustmentsData.debtConsolidation);
+      } else {
+        console.log('Debt consolidation not saved. Values:', { consolidateDebt1, consolidateDebt2, consolidatedName });
       }
 
       if (existingRecord) {
