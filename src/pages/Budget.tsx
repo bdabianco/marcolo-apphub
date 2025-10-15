@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Trash2, CalendarIcon, DollarSign, TrendingDown, CreditCard, Wallet, Calculator, PiggyBank, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, CalendarIcon, DollarSign, TrendingDown, CreditCard, Wallet, Calculator, PiggyBank, ChevronRight, Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -390,8 +391,22 @@ function BudgetContent() {
             <Accordion type="multiple" defaultValue={['expenses']} className="w-full">
               <AccordionItem value="expenses" className="border rounded-lg px-4">
                 <AccordionTrigger className="text-lg font-semibold hover:no-underline">
-                  <div className="flex justify-between w-full pr-4">
-                    <span>Expense Details</span>
+                  <div className="flex justify-between items-center w-full pr-4">
+                    <div className="flex items-center gap-2">
+                      <span>Expense Details</span>
+                      <TooltipProvider delayDuration={300}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button type="button" className="inline-flex" onClick={(e) => e.stopPropagation()}>
+                              <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="right" className="max-w-xs z-50 bg-popover border">
+                            <p className="text-sm">Monthly mortgage/debt payments should be configured in the Cashflow section, not as monthly expenses here.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                     <span className="font-bold">${formatCurrency(totalExpenses)}</span>
                   </div>
                 </AccordionTrigger>
