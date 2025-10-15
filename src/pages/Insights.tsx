@@ -154,22 +154,23 @@ function InsightsContent() {
       <AppHeader />
 
       <main className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
-              <Lightbulb className="h-7 w-7 text-primary" />
-              Your Financial Insights
-            </h2>
-            <p className="text-muted-foreground">
-              {currentProject ? `Analysis for ${currentProject.project_name}` : 'Comprehensive analysis across all your budget plans'}
-            </p>
+        {/* Section Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3">
+            <Lightbulb className="h-8 w-8 text-primary" />
+            <div>
+              <h2 className="text-3xl font-bold text-foreground">Financial Insights</h2>
+              <p className="text-muted-foreground mt-1">
+                {currentProject ? `Analysis for ${currentProject.project_name}` : 'Comprehensive analysis across all your budget plans'}
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Key Metrics */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
-          <Card>
-            <CardHeader className="pb-2">
+          <Card className="border-2">
+            <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
               <CardTitle className="text-sm font-medium">Annual Income</CardTitle>
             </CardHeader>
             <CardContent>
@@ -179,8 +180,8 @@ function InsightsContent() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-2">
+          <Card className="border-2">
+            <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
               <CardTitle className="text-sm font-medium">Annual Expenses</CardTitle>
             </CardHeader>
             <CardContent>
@@ -190,8 +191,8 @@ function InsightsContent() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-2">
+          <Card className="border-2">
+            <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
               <CardTitle className="text-sm font-medium">Annual Surplus</CardTitle>
             </CardHeader>
             <CardContent>
@@ -201,8 +202,8 @@ function InsightsContent() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-2">
+          <Card className="border-2">
+            <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
               <CardTitle className="text-sm font-medium">Savings Rate</CardTitle>
             </CardHeader>
             <CardContent>
@@ -214,8 +215,8 @@ function InsightsContent() {
         </div>
 
         {/* Financial Ratios */}
-        <Card className="mb-6">
-          <CardHeader>
+        <Card className="mb-6 border-2 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
             <CardTitle>Financial Ratios</CardTitle>
             <CardDescription>Key indicators of your financial health</CardDescription>
           </CardHeader>
@@ -266,8 +267,8 @@ function InsightsContent() {
 
         {/* Savings Goals Progress */}
         {metrics.savingsGoalsCount > 0 && (
-          <Card className="mb-6">
-            <CardHeader>
+          <Card className="mb-6 border-2 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-accent/5 via-accent/3 to-transparent">
               <CardTitle className="flex items-center gap-2">
                 <Target className="h-5 w-5" />
                 Savings Goals Progress
@@ -327,8 +328,8 @@ function InsightsContent() {
 
         {/* Debt Payoff Timeline */}
         {metrics.totalDebts > 0 && (
-          <Card className="mb-6">
-            <CardHeader>
+          <Card className="mb-6 border-2 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-destructive/5 via-destructive/3 to-transparent">
               <CardTitle className="flex items-center gap-2">
                 <CreditCard className="h-5 w-5" />
                 Debt Payoff Timeline
@@ -370,8 +371,8 @@ function InsightsContent() {
         )}
 
         {/* Net Worth */}
-        <Card className="mb-6">
-          <CardHeader>
+        <Card className="mb-6 border-2 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
             <CardTitle>Net Worth Analysis</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -412,8 +413,8 @@ function InsightsContent() {
         </Card>
 
         {/* Recommendations */}
-        <Card>
-          <CardHeader>
+        <Card className="border-2 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-accent/5 via-accent/3 to-transparent">
             <CardTitle>Recommendations</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
