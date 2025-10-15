@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ProtectedRoute } from '@/lib/auth';
-import { DollarSign, TrendingUp, PiggyBank, FileText, LogOut } from 'lucide-react';
+import { DollarSign, TrendingUp, PiggyBank, FileText, LogOut, LineChart, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import marcoloLogo from '@/assets/marcolo-logo.png';
 import { toast } from 'sonner';
@@ -19,9 +19,25 @@ function DashboardContent() {
     savingsGoals: 0,
   });
 
+  const [isAdmin, setIsAdmin] = useState(false);
+
   useEffect(() => {
     loadStats();
+    checkAdminStatus();
   }, []);
+
+  const checkAdminStatus = async () => {
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'admin')
+      .maybeSingle();
+
+    setIsAdmin(!!data);
+  };
 
   const loadStats = async () => {
     if (!user) return;
@@ -138,7 +154,7 @@ function DashboardContent() {
             <CardTitle>Quick Actions</CardTitle>
             <CardDescription>Get started with your financial planning</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-3">
+          <CardContent className="grid gap-4 md:grid-cols-4">
             <Button 
               onClick={() => navigate('/budget')}
               className="h-24 flex-col gap-2"
@@ -162,8 +178,34 @@ function DashboardContent() {
               <PiggyBank className="h-6 w-6" />
               <span>Set Savings Goals</span>
             </Button>
+            <Button 
+              onClick={() => navigate('/insights')}
+              variant="outline"
+              className="h-24 flex-col gap-2"
+            >
+              <LineChart className="h-6 w-6" />
+              <span>View Insights</span>
+            </Button>
           </CardContent>
         </Card>
+
+        {/* Admin Panel */}
+        {isAdmin && (
+          <Card className="border-primary">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-primary" />
+                Admin Panel
+              </CardTitle>
+              <CardDescription>Manage users and view system-wide statistics</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={() => navigate('/admin')} className="w-full">
+                Manage Users
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </main>
     </div>
   );
