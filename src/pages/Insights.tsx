@@ -56,6 +56,8 @@ function InsightsContent() {
     loadMetrics();
   }, [user, currentProject]);
 
+  const [debtBreakdown, setDebtBreakdown] = useState<any[]>([]);
+
   const loadMetrics = async () => {
     if (!user) return;
 
@@ -107,6 +109,39 @@ function InsightsContent() {
       totalExpenses = budgets.reduce((sum, b) => sum + Number(b.total_expenses || 0), 0);
     }
 
+    // Extract debt breakdown from cashflows
+    const allDebts: any[] = [];
+    cashflows?.forEach(cf => {
+      // Add mortgage if exists
+      if (cf.mortgage && typeof cf.mortgage === 'object') {
+        const mortgage = cf.mortgage as any;
+        if (mortgage.balance > 0) {
+          allDebts.push({
+            name: 'Mortgage',
+            balance: Number(mortgage.balance || 0),
+            monthlyPayment: Number(mortgage.monthlyPayment || 0),
+            interestRate: Number(mortgage.interestRate || 0),
+          });
+        }
+      }
+      
+      // Add other debts
+      if (cf.debts && Array.isArray(cf.debts)) {
+        cf.debts.forEach((debt: any) => {
+          if (debt.balance > 0) {
+            allDebts.push({
+              name: debt.name || 'Unnamed Debt',
+              balance: Number(debt.balance || 0),
+              monthlyPayment: Number(debt.monthlyPayment || 0),
+              interestRate: Number(debt.interestRate || 0),
+            });
+          }
+        });
+      }
+    });
+    
+    setDebtBreakdown(allDebts);
+    
     const totalDebts = cashflows?.reduce((sum, c) => sum + Number(c.total_debt || 0), 0) || 0;
     const monthlyDebtPayment = cashflows?.reduce((sum, c) => sum + Number(c.monthly_debt_payment || 0), 0) || 0;
     const totalAssets = assets?.reduce((sum, a) => sum + Number(a.current_value || 0), 0) || 0;
@@ -357,8 +392,33 @@ function InsightsContent() {
                 </div>
               </div>
 
+              {/* Individual Debt Breakdown */}
+              {debtBreakdown.length > 0 && (
+                <div className="space-y-3 mt-4">
+                  <div className="text-sm font-semibold text-muted-foreground">Debt Breakdown</div>
+                  {debtBreakdown.map((debt, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded border">
+                      <div className="flex-1">
+                        <div className="font-medium">{debt.name}</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {debt.interestRate > 0 && `${debt.interestRate}% APR`}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold text-destructive">
+                          ${formatCurrency(debt.balance)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          ${formatCurrency(debt.monthlyPayment)}/mo
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {metrics.debtFreeMonths > 0 && (
-                <div className="bg-muted/50 p-3 rounded">
+                <div className="bg-muted/50 p-3 rounded mt-4">
                   <div className="text-sm font-medium mb-1">Projected Debt-Free Date</div>
                   <div className="text-lg font-bold">
                     {new Date(Date.now() + metrics.debtFreeMonths * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
