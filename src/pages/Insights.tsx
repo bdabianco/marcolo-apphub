@@ -153,6 +153,7 @@ function InsightsContent() {
         {/* Section Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3">
+            <FinancialAdvisorChat metrics={metrics} />
             <Lightbulb className="h-8 w-8 text-primary" />
             <div>
               <h2 className="text-3xl font-bold text-foreground">Financial Insights</h2>
@@ -448,9 +449,6 @@ function InsightsContent() {
             )}
           </CardContent>
         </Card>
-
-        {/* AI Financial Advisor */}
-        <FinancialAdvisorChat metrics={metrics} />
       </main>
     </div>
   );

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageCircle, Send, Loader2 } from 'lucide-react';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { MessageCircle, Send, Loader2, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -17,6 +17,7 @@ interface FinancialAdvisorChatProps {
 }
 
 export function FinancialAdvisorChat({ metrics }: FinancialAdvisorChatProps) {
+  const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -70,93 +71,102 @@ export function FinancialAdvisorChat({ metrics }: FinancialAdvisorChatProps) {
   };
 
   return (
-    <Card className="border-2 shadow-lg">
-      <CardHeader className="bg-gradient-to-r from-accent/5 via-accent/3 to-transparent">
-        <div className="flex items-center gap-2">
-          <MessageCircle className="h-5 w-5 text-primary" />
-          <div>
-            <CardTitle>AI Financial Advisor</CardTitle>
-            <CardDescription>Ask questions about your finances and get personalized advice</CardDescription>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-6">
-        {messages.length === 0 ? (
-          <div className="text-center py-4 space-y-3">
-            <p className="text-sm text-muted-foreground">
-              Ask me anything about your financial situation
-            </p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <button
-                onClick={() => setInput("How can I improve my savings rate?")}
-                className="p-2 text-left hover:bg-muted rounded-lg transition-colors"
-              >
-                💡 Improve savings rate
-              </button>
-              <button
-                onClick={() => setInput("What should I prioritize: debt reduction or savings?")}
-                className="p-2 text-left hover:bg-muted rounded-lg transition-colors"
-              >
-                📊 Debt vs savings priority
-              </button>
-              <button
-                onClick={() => setInput("How does my net worth compare to others my age?")}
-                className="p-2 text-left hover:bg-muted rounded-lg transition-colors"
-              >
-                👥 Net worth comparison
-              </button>
-              <button
-                onClick={() => setInput("What are the most important changes I should make?")}
-                className="p-2 text-left hover:bg-muted rounded-lg transition-colors"
-              >
-                🎯 Key changes needed
-              </button>
-            </div>
-          </div>
-        ) : (
-          <ScrollArea className="h-[250px] pr-4">
-            <div className="space-y-3">
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[85%] rounded-lg p-2.5 ${
-                      message.role === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted'
-                    }`}
-                  >
-                    <p className="text-xs whitespace-pre-wrap leading-relaxed">{message.content}</p>
-                  </div>
-                </div>
-              ))}
-              {isLoading && (
-                <div className="flex justify-start">
-                  <div className="bg-muted rounded-lg p-2.5">
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  </div>
-                </div>
-              )}
-            </div>
-          </ScrollArea>
-        )}
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="sm" className="gap-2">
+          <Sparkles className="h-4 w-4" />
+          AI Advisor
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-[400px] sm:w-[540px]">
+        <SheetHeader>
+          <SheetTitle className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5 text-primary" />
+            AI Financial Advisor
+          </SheetTitle>
+          <SheetDescription>
+            Ask questions about your finances and get personalized advice
+          </SheetDescription>
+        </SheetHeader>
 
-        <div className="flex gap-2 mt-3">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Ask about your finances..."
-            disabled={isLoading}
-            className="flex-1 h-9 text-sm"
-          />
-          <Button onClick={sendMessage} disabled={isLoading || !input.trim()} size="sm">
-            {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
-          </Button>
+        <div className="mt-6 flex flex-col h-[calc(100vh-120px)]">
+          {messages.length === 0 ? (
+            <div className="flex-1 flex flex-col justify-center space-y-3">
+              <p className="text-sm text-muted-foreground text-center">
+                Ask me anything about your financial situation
+              </p>
+              <div className="grid grid-cols-1 gap-2 text-xs">
+                <button
+                  onClick={() => setInput("How can I improve my savings rate?")}
+                  className="p-3 text-left hover:bg-muted rounded-lg transition-colors border"
+                >
+                  💡 How can I improve my savings rate?
+                </button>
+                <button
+                  onClick={() => setInput("What should I prioritize: debt reduction or savings?")}
+                  className="p-3 text-left hover:bg-muted rounded-lg transition-colors border"
+                >
+                  📊 What should I prioritize: debt reduction or savings?
+                </button>
+                <button
+                  onClick={() => setInput("How does my net worth compare to others my age?")}
+                  className="p-3 text-left hover:bg-muted rounded-lg transition-colors border"
+                >
+                  👥 How does my net worth compare to others my age?
+                </button>
+                <button
+                  onClick={() => setInput("What are the most important changes I should make?")}
+                  className="p-3 text-left hover:bg-muted rounded-lg transition-colors border"
+                >
+                  🎯 What are the most important changes I should make?
+                </button>
+              </div>
+            </div>
+          ) : (
+            <ScrollArea className="flex-1 pr-4">
+              <div className="space-y-4">
+                {messages.map((message, index) => (
+                  <div
+                    key={index}
+                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-[85%] rounded-lg p-3 ${
+                        message.role === 'user'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted'
+                      }`}
+                    >
+                      <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                    </div>
+                  </div>
+                ))}
+                {isLoading && (
+                  <div className="flex justify-start">
+                    <div className="bg-muted rounded-lg p-3">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
+          )}
+
+          <div className="flex gap-2 mt-4 pt-4 border-t">
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Ask about your finances..."
+              disabled={isLoading}
+              className="flex-1"
+            />
+            <Button onClick={sendMessage} disabled={isLoading || !input.trim()} size="sm">
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </SheetContent>
+    </Sheet>
   );
 }
