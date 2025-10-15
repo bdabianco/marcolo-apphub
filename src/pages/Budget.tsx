@@ -14,7 +14,7 @@ import { Plus, Trash2, CalendarIcon, DollarSign, TrendingDown, CreditCard, Walle
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { cn, formatCurrency } from '@/lib/utils';
 import { AppHeader } from '@/components/AppHeader';
 import { useProject } from '@/contexts/ProjectContext';
 
@@ -277,7 +277,7 @@ function BudgetContent() {
                 <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                   <div className="flex justify-between w-full pr-4">
                     <span>Income Details</span>
-                    <span className="font-bold text-primary">${totalMonthlyNetIncome.toFixed(2)}</span>
+                    <span className="font-bold text-primary">${formatCurrency(totalMonthlyNetIncome)}</span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
@@ -327,7 +327,7 @@ function BudgetContent() {
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">${income.amount.toFixed(2)}</span>
+                          <span className="font-medium">${formatCurrency(income.amount)}</span>
                           <Button
                             variant="ghost"
                             size="icon"
@@ -346,19 +346,19 @@ function BudgetContent() {
                       <div className="bg-muted p-3 rounded space-y-2">
                         <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">Federal Tax:</span>
-                          <span className="font-medium">${taxes.federalTax.toFixed(2)}</span>
+                          <span className="font-medium">${formatCurrency(taxes.federalTax)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">Provincial Tax:</span>
-                          <span className="font-medium">${taxes.provincialTax.toFixed(2)}</span>
+                          <span className="font-medium">${formatCurrency(taxes.provincialTax)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">CPP:</span>
-                          <span className="font-medium">${taxes.cpp.toFixed(2)}</span>
+                          <span className="font-medium">${formatCurrency(taxes.cpp)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">EI:</span>
-                          <span className="font-medium">${taxes.ei.toFixed(2)}</span>
+                          <span className="font-medium">${formatCurrency(taxes.ei)}</span>
                         </div>
                       </div>
                     </div>
@@ -366,7 +366,7 @@ function BudgetContent() {
 
                   <div className="flex justify-between border-t pt-3">
                     <span className="font-semibold">Total Monthly Net Income:</span>
-                    <span className="font-bold text-primary">${totalMonthlyNetIncome.toFixed(2)}</span>
+                    <span className="font-bold text-primary">${formatCurrency(totalMonthlyNetIncome)}</span>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -392,7 +392,7 @@ function BudgetContent() {
                 <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                   <div className="flex justify-between w-full pr-4">
                     <span>Expense Details</span>
-                    <span className="font-bold">${totalExpenses.toFixed(2)}</span>
+                    <span className="font-bold">${formatCurrency(totalExpenses)}</span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
@@ -454,7 +454,7 @@ function BudgetContent() {
                             {subscriptions.length} subscription{subscriptions.length !== 1 ? 's' : ''} • Click to manage
                           </span>
                         </div>
-                        <span className="font-medium">${(totalAnnualSubscriptions / 12).toFixed(2)}/mo</span>
+                        <span className="font-medium">${formatCurrency(totalAnnualSubscriptions / 12)}/mo</span>
                       </div>
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl">
@@ -503,7 +503,7 @@ function BudgetContent() {
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <span className="font-medium">${sub.amount.toFixed(2)}</span>
+                                <span className="font-medium">${formatCurrency(sub.amount)}</span>
                                 <Button
                                   variant="ghost"
                                   size="icon"
@@ -518,11 +518,11 @@ function BudgetContent() {
 
                         <div className="flex justify-between border-t pt-3">
                           <span className="font-semibold">Total Annual Cost:</span>
-                          <span className="font-bold text-primary">${totalAnnualSubscriptions.toFixed(2)}</span>
+                          <span className="font-bold text-primary">${formatCurrency(totalAnnualSubscriptions)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-sm text-muted-foreground">Monthly Equivalent:</span>
-                          <span className="text-sm font-medium">${(totalAnnualSubscriptions / 12).toFixed(2)}</span>
+                          <span className="text-sm font-medium">${formatCurrency(totalAnnualSubscriptions / 12)}</span>
                         </div>
                       </div>
                     </DialogContent>
@@ -541,7 +541,7 @@ function BudgetContent() {
                           )}
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">${expense.amount.toFixed(2)}</span>
+                          <span className="font-medium">${formatCurrency(expense.amount)}</span>
                           <Button
                             variant="ghost"
                             size="icon"
@@ -578,14 +578,14 @@ function BudgetContent() {
                   <Wallet className="h-4 w-4 text-green-600" />
                   <div className="text-sm text-muted-foreground">Total Income</div>
                 </div>
-                <div className="text-2xl font-bold">${totalMonthlyNetIncome.toFixed(2)}</div>
+                <div className="text-2xl font-bold">${formatCurrency(totalMonthlyNetIncome)}</div>
               </div>
               <div className="bg-gradient-to-br from-orange-50 to-red-100 dark:from-orange-950/30 dark:to-red-900/20 p-4 rounded-lg border-2 border-orange-200 dark:border-orange-800 shadow-md hover:shadow-lg transition-all duration-300">
                 <div className="flex items-center gap-2 mb-2">
                   <CreditCard className="h-4 w-4 text-orange-600" />
                   <div className="text-sm text-muted-foreground">Total Expenses</div>
                 </div>
-                <div className="text-2xl font-bold">${totalExpenses.toFixed(2)}</div>
+                <div className="text-2xl font-bold">${formatCurrency(totalExpenses)}</div>
               </div>
               <div className={cn(
                 "p-4 rounded-lg border-2 shadow-md hover:shadow-lg transition-all duration-300",
@@ -598,7 +598,7 @@ function BudgetContent() {
                   <div className="text-sm text-muted-foreground">Surplus/Deficit</div>
                 </div>
                 <div className={cn("text-2xl font-bold", surplus >= 0 ? "text-blue-600" : "text-red-600")}>
-                  ${surplus.toFixed(2)}
+                  ${formatCurrency(surplus)}
                 </div>
               </div>
             </div>

@@ -10,6 +10,7 @@ import { Plus, Trash2, Home, DollarSign, TrendingUp, Wallet, ChevronRight, Spark
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AppHeader } from '@/components/AppHeader';
+import { formatCurrency } from '@/lib/utils';
 import { useProject } from '@/contexts/ProjectContext';
 
 interface Debt {
@@ -90,11 +91,6 @@ function CashflowContent() {
   const [consolidatedBalance, setConsolidatedBalance] = useState('');
   const [consolidatedRate, setConsolidatedRate] = useState('');
   const [consolidatedPayment, setConsolidatedPayment] = useState('');
-
-  // Format currency with commas
-  const formatCurrency = (amount: number) => {
-    return amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  };
 
   // Calculate expenses for a specific month (0-indexed)
   const calculateMonthlyExpense = (monthIndex: number) => {
