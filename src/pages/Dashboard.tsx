@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth';
+import { useProject } from '@/contexts/ProjectContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,9 +9,11 @@ import { DollarSign, TrendingUp, PiggyBank, FileText, LogOut, LineChart, Shield 
 import { useNavigate } from 'react-router-dom';
 import marcoloLogo from '@/assets/marcolo-logo.png';
 import { toast } from 'sonner';
+import { ProjectSelector } from '@/components/ProjectSelector';
 
 function DashboardContent() {
   const { user, signOut } = useAuth();
+  const { currentProject } = useProject();
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     budgetPlans: 0,
@@ -24,7 +27,7 @@ function DashboardContent() {
   useEffect(() => {
     loadStats();
     checkAdminStatus();
-  }, []);
+  }, [currentProject]);
 
   const checkAdminStatus = async () => {
     if (!user) return;
@@ -40,27 +43,33 @@ function DashboardContent() {
   };
 
   const loadStats = async () => {
-    if (!user) return;
+    if (!user || !currentProject) return;
 
-    const { data: budgets } = await supabase
+    const { data: budget } = await supabase
       .from('budget_plans')
       .select('*')
-      .eq('user_id', user.id);
+      .eq('id', currentProject.id)
+      .single();
 
     const { data: savings } = await supabase
       .from('savings_goals')
       .select('*')
-      .eq('user_id', user.id);
+      .eq('user_id', user.id)
+      .eq('budget_plan_id', currentProject.id);
 
-    if (budgets && budgets.length > 0) {
-      const totalIncome = budgets.reduce((sum, b) => sum + Number(b.net_income || 0), 0);
-      const totalExpenses = budgets.reduce((sum, b) => sum + Number(b.total_expenses || 0), 0);
-      
+    if (budget) {
       setStats({
-        budgetPlans: budgets.length,
-        totalIncome,
-        totalExpenses,
+        budgetPlans: 1,
+        totalIncome: Number(budget.net_income || 0),
+        totalExpenses: Number(budget.total_expenses || 0),
         savingsGoals: savings?.length || 0,
+      });
+    } else {
+      setStats({
+        budgetPlans: 0,
+        totalIncome: 0,
+        totalExpenses: 0,
+        savingsGoals: 0,
       });
     }
   };
@@ -82,10 +91,13 @@ function DashboardContent() {
               Mycashflow
             </h1>
           </div>
-          <Button variant="outline" onClick={handleSignOut}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-3">
+            <ProjectSelector />
+            <Button variant="outline" onClick={handleSignOut}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </Button>
+          </div>
         </div>
       </header>
 
