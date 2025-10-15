@@ -615,21 +615,53 @@ function SavingsContent() {
         </Button>
 
         {/* Existing Savings Goals */}
-        {existingGoals.length > 0 && (
-          <Collapsible open={isGoalsOpen} onOpenChange={setIsGoalsOpen}>
-            <Card className="border-2 shadow-lg">
-              <CollapsibleTrigger className="w-full">
-                <CardHeader className="bg-gradient-to-r from-accent/5 via-accent/3 to-transparent cursor-pointer hover:bg-accent/10 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="text-left">
-                      <CardTitle>Your Savings Goals</CardTitle>
-                      <CardDescription>Track and manage your savings progress</CardDescription>
+        {existingGoals.length > 0 && (() => {
+          // Calculate summary stats
+          const totalGoals = existingGoals.length;
+          const totalTarget = existingGoals.reduce((sum, g) => sum + Number(g.target_amount), 0);
+          const totalCurrent = existingGoals.reduce((sum, g) => sum + Number(g.current_amount), 0);
+          const totalMonthly = existingGoals.reduce((sum, g) => sum + Number(g.monthly_contribution), 0);
+          const overallProgress = totalTarget > 0 ? (totalCurrent / totalTarget) * 100 : 0;
+
+          return (
+            <Collapsible open={isGoalsOpen} onOpenChange={setIsGoalsOpen}>
+              <Card className="border-2 shadow-lg">
+                <CollapsibleTrigger className="w-full">
+                  <CardHeader className="bg-gradient-to-r from-accent/5 via-accent/3 to-transparent cursor-pointer hover:bg-accent/10 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="text-left flex-1">
+                        <CardTitle>Your Savings Goals</CardTitle>
+                        <CardDescription>Track and manage your savings progress</CardDescription>
+                        
+                        {/* Summary when collapsed */}
+                        {!isGoalsOpen && (
+                          <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                            <div className="bg-background/50 p-2 rounded-lg">
+                              <div className="text-xs text-muted-foreground">Goals</div>
+                              <div className="font-bold text-lg">{totalGoals}</div>
+                            </div>
+                            <div className="bg-background/50 p-2 rounded-lg">
+                              <div className="text-xs text-muted-foreground">Progress</div>
+                              <div className="font-bold text-lg text-primary">{overallProgress.toFixed(0)}%</div>
+                            </div>
+                            <div className="bg-background/50 p-2 rounded-lg">
+                              <div className="text-xs text-muted-foreground">Saved</div>
+                              <div className="font-bold text-lg text-green-600 dark:text-green-400">
+                                ${formatCurrency(totalCurrent)}
+                              </div>
+                            </div>
+                            <div className="bg-background/50 p-2 rounded-lg">
+                              <div className="text-xs text-muted-foreground">Target</div>
+                              <div className="font-bold text-lg">${formatCurrency(totalTarget)}</div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <ChevronDown className={`h-5 w-5 transition-transform flex-shrink-0 ml-2 ${isGoalsOpen ? 'rotate-180' : ''}`} />
                     </div>
-                    <ChevronDown className={`h-5 w-5 transition-transform ${isGoalsOpen ? 'rotate-180' : ''}`} />
-                  </div>
-                </CardHeader>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
                 <CardContent className="space-y-4 pt-6">
               {existingGoals.map((goal) => {
                 const progress = goal.target_amount > 0 ? (Number(goal.current_amount) / Number(goal.target_amount)) * 100 : 0;
@@ -739,7 +771,8 @@ function SavingsContent() {
               </CollapsibleContent>
             </Card>
           </Collapsible>
-        )}
+          );
+        })()}
 
         {/* Investments & Assets Section */}
         <div className="mt-12 mb-8">
