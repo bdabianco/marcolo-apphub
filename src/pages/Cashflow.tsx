@@ -443,23 +443,40 @@ function CashflowContent() {
             <CardContent>
               <Accordion type="multiple" defaultValue={['total']}>
                 {/* Total Row - Shown by Default */}
-                <AccordionItem value="total">
-                  <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+              <AccordionItem value="total">
+                  <AccordionTrigger className="text-lg font-semibold hover:no-underline bg-primary/5 px-4 py-3 rounded-lg">
                     <div className="grid grid-cols-7 gap-4 w-full pr-4 text-sm">
-                      <div className="font-bold">Total</div>
-                      <div className="text-right font-bold">${formatCurrency(monthlyNetIncome)}</div>
-                      <div className="text-right font-bold">${formatCurrency(monthlyExpenses)}</div>
-                      <div className="text-right font-bold">${formatCurrency(totalMonthlyPayment - totalMonthlyInterest)}</div>
-                      <div className="text-right font-bold">${formatCurrency(totalMonthlyInterest)}</div>
-                      <div className="text-right font-bold">${formatCurrency(monthlyNetIncome - monthlyExpenses - totalMonthlyPayment)}</div>
-                      <div className="text-right font-bold text-muted-foreground">-</div>
+                      <div className="font-bold text-primary">Annual Totals</div>
+                      <div className="text-right">
+                        <div className="text-xs text-muted-foreground mb-1">Net Income</div>
+                        <div className="font-bold text-primary">${formatCurrency(monthlyNetIncome * 12)}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs text-muted-foreground mb-1">Expenses</div>
+                        <div className="font-bold text-destructive">${formatCurrency(monthlyExpenses * 12)}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs text-muted-foreground mb-1">Debt</div>
+                        <div className="font-bold">${formatCurrency((totalMonthlyPayment - totalMonthlyInterest) * 12)}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs text-muted-foreground mb-1">Interest</div>
+                        <div className="font-bold">${formatCurrency(totalMonthlyInterest * 12)}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs text-muted-foreground mb-1">Cum. Surplus</div>
+                        <div className={`font-bold ${(monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                          ${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12)}
+                        </div>
+                      </div>
+                      <div className="text-right text-muted-foreground">-</div>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>
-                    <div className="space-y-2">
+                    <div className="space-y-2 bg-muted/30 p-4 rounded-lg">
                       {/* Header Row */}
-                      <div className="grid grid-cols-7 gap-4 text-sm font-semibold border-b pb-2">
-                        <div>Month</div>
+                      <div className="grid grid-cols-7 gap-4 text-sm font-semibold border-b-2 border-primary/20 pb-3 mb-2">
+                        <div className="text-primary">Month</div>
                         <div className="text-right">Net Income</div>
                         <div className="text-right">Expenses</div>
                         <div className="text-right">Debt</div>
@@ -476,14 +493,16 @@ function CashflowContent() {
                         const surplus = monthlyNetIncome - expenses - totalMonthlyPayment;
                         
                         return (
-                          <div key={month} className="grid grid-cols-7 gap-4 text-sm py-2 hover:bg-muted/50 rounded px-2">
-                            <div>{month}</div>
+                          <div key={month} className="grid grid-cols-7 gap-4 text-sm py-3 hover:bg-primary/5 rounded-lg px-3 transition-colors border-b border-muted">
+                            <div className="font-medium">{month}</div>
                             <div className="text-right">${formatCurrency(monthlyNetIncome)}</div>
-                            <div className="text-right">${formatCurrency(expenses)}</div>
+                            <div className="text-right text-destructive">${formatCurrency(expenses)}</div>
                             <div className="text-right">${formatCurrency(monthlyDebtPrincipal)}</div>
                             <div className="text-right">${formatCurrency(monthlyInterest)}</div>
-                            <div className="text-right font-medium">${formatCurrency(surplus)}</div>
-                            <div className="text-right text-muted-foreground">$0.00</div>
+                            <div className={`text-right font-semibold ${surplus >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                              ${formatCurrency(surplus)}
+                            </div>
+                            <div className="text-right text-muted-foreground">$0</div>
                           </div>
                         );
                       })}
