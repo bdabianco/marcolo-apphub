@@ -181,8 +181,18 @@ function CashflowContent() {
   const primaryAnnualInterest = (primaryMortgageBalanceNum * primaryMortgageInterestNum) / 100;
   const secondaryAnnualInterest = (secondaryMortgageBalanceNum * secondaryMortgageInterestNum) / 100;
   const otherDebtsAnnualInterest = debts.reduce((sum, debt) => {
-    return sum + ((debt.balance * debt.interestRate) / 100);
+    const debtInterest = (debt.balance * debt.interestRate) / 100;
+    console.log(`Debt: ${debt.name}, Balance: ${debt.balance}, Rate: ${debt.interestRate}%, Annual Interest: ${debtInterest}`);
+    return sum + debtInterest;
   }, 0);
+  
+  console.log('Interest Breakdown:', {
+    primaryAnnual: primaryAnnualInterest,
+    secondaryAnnual: secondaryAnnualInterest,
+    otherDebtsAnnual: otherDebtsAnnualInterest,
+    totalAnnual: primaryAnnualInterest + secondaryAnnualInterest + otherDebtsAnnualInterest
+  });
+  
   const totalAnnualInterest = primaryAnnualInterest + secondaryAnnualInterest + otherDebtsAnnualInterest;
   const totalMonthlyInterest = totalAnnualInterest / 12;
   
