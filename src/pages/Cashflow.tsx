@@ -701,10 +701,17 @@ function CashflowContent() {
           const totalAdjustment = monthlyAdjustment * 12;
           
           return (
-            <Card>
-              <CardHeader>
-                <CardTitle>Cashflow Projection</CardTitle>
-                <CardDescription>Monthly breakdown of income and expenses</CardDescription>
+            <Card className="border-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <TrendingUp className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle>Cashflow Projection</CardTitle>
+                    <CardDescription>Monthly breakdown of income and expenses</CardDescription>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <Accordion type="multiple" defaultValue={['total']}>
