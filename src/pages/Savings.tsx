@@ -11,7 +11,8 @@ import { toast } from 'sonner';
 import { AppHeader } from '@/components/AppHeader';
 import { useProject } from '@/contexts/ProjectContext';
 import { formatCurrency } from '@/lib/utils';
-import { Pencil } from 'lucide-react';
+import { Pencil, ChevronDown } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 function SavingsContent() {
   const { user } = useAuth();
@@ -26,6 +27,7 @@ function SavingsContent() {
   const [existingGoals, setExistingGoals] = useState<any[]>([]);
   const [editingGoal, setEditingGoal] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isGoalsOpen, setIsGoalsOpen] = useState(true);
 
   useEffect(() => {
     loadCashflowSurplus();
@@ -207,6 +209,11 @@ function SavingsContent() {
       <AppHeader />
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-foreground">Savings Goals</h2>
+          <p className="text-muted-foreground mt-1">Set and track your savings targets</p>
+        </div>
+
         {/* Available Surplus Card */}
         <Card className="mb-6 border-2 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
@@ -382,12 +389,21 @@ function SavingsContent() {
 
         {/* Existing Savings Goals */}
         {existingGoals.length > 0 && (
-          <Card className="border-2 shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-accent/5 via-accent/3 to-transparent">
-              <CardTitle>Your Savings Goals</CardTitle>
-              <CardDescription>Track and manage your savings progress</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-6">
+          <Collapsible open={isGoalsOpen} onOpenChange={setIsGoalsOpen}>
+            <Card className="border-2 shadow-lg">
+              <CollapsibleTrigger className="w-full">
+                <CardHeader className="bg-gradient-to-r from-accent/5 via-accent/3 to-transparent cursor-pointer hover:bg-accent/10 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <CardTitle>Your Savings Goals</CardTitle>
+                      <CardDescription>Track and manage your savings progress</CardDescription>
+                    </div>
+                    <ChevronDown className={`h-5 w-5 transition-transform ${isGoalsOpen ? 'rotate-180' : ''}`} />
+                  </div>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="space-y-4 pt-6">
               {existingGoals.map((goal) => {
                 const progress = goal.target_amount > 0 ? (Number(goal.current_amount) / Number(goal.target_amount)) * 100 : 0;
                 const remaining = Number(goal.target_amount) - Number(goal.current_amount);
@@ -487,8 +503,10 @@ function SavingsContent() {
                   </div>
                 );
               })}
-            </CardContent>
-          </Card>
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
         )}
 
         {/* Edit Goal Dialog */}
