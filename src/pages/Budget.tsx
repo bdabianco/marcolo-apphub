@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth, ProtectedRoute } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { AppHeader } from '@/components/AppHeader';
+import { useProject } from '@/contexts/ProjectContext';
 
 interface Income {
   id: string;
@@ -42,6 +43,7 @@ interface Expense {
 function BudgetContent() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { currentProject } = useProject();
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
@@ -57,6 +59,55 @@ function BudgetContent() {
   const [newSubscriptionName, setNewSubscriptionName] = useState('');
   const [newSubscriptionAmount, setNewSubscriptionAmount] = useState('');
   const [newSubscriptionBillingCycle, setNewSubscriptionBillingCycle] = useState<'monthly' | 'quarterly' | 'annual'>('monthly');
+
+  // Load existing budget data
+  useEffect(() => {
+    if (currentProject) {
+      loadBudgetData();
+    }
+  }, [currentProject]);
+
+  const loadBudgetData = async () => {
+    if (!currentProject) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('budget_plans')
+        .select('*')
+        .eq('id', currentProject.id)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        // Load income categories
+        if (data.income_categories) {
+          const parsedIncomes = typeof data.income_categories === 'string' 
+            ? JSON.parse(data.income_categories) 
+            : data.income_categories;
+          setIncomes(parsedIncomes || []);
+        }
+
+        // Load expenses
+        if (data.expenses) {
+          const parsedExpenses = typeof data.expenses === 'string'
+            ? JSON.parse(data.expenses)
+            : data.expenses;
+          setExpenses(parsedExpenses || []);
+        }
+
+        // Load subscriptions
+        if (data.subscriptions) {
+          const parsedSubscriptions = typeof data.subscriptions === 'string'
+            ? JSON.parse(data.subscriptions)
+            : data.subscriptions;
+          setSubscriptions(parsedSubscriptions || []);
+        }
+      }
+    } catch (error: any) {
+      console.error('Error loading budget data:', error);
+    }
+  };
 
   // Convert all income to monthly amounts
   const convertToMonthly = (amount: number, schedule: 'monthly' | 'quarterly' | 'annual') => {
@@ -169,28 +220,33 @@ function BudgetContent() {
   };
 
   const saveBudget = async () => {
-    if (!user) return;
+    if (!user || !currentProject) {
+      toast.error('Please select a project first');
+      return;
+    }
 
     try {
-      const { error } = await supabase.from('budget_plans').insert({
-        user_id: user.id,
-        project_name: 'Budget Plan',
-        gross_income: annualGrossIncome,
-        federal_tax: taxes.federalTax,
-        provincial_tax: taxes.provincialTax,
-        cpp: taxes.cpp,
-        ei: taxes.ei,
-        net_income: totalMonthlyNetIncome * 12,
-        income_categories: JSON.stringify(incomes),
-        expenses: JSON.stringify(expenses),
-        subscriptions: JSON.stringify(subscriptions),
-        total_expenses: totalExpenses * 12,
-        surplus: surplus * 12,
-      });
+      // Update existing budget plan
+      const { error } = await supabase
+        .from('budget_plans')
+        .update({
+          gross_income: annualGrossIncome,
+          federal_tax: taxes.federalTax,
+          provincial_tax: taxes.provincialTax,
+          cpp: taxes.cpp,
+          ei: taxes.ei,
+          net_income: totalMonthlyNetIncome * 12,
+          income_categories: JSON.stringify(incomes),
+          expenses: JSON.stringify(expenses),
+          subscriptions: JSON.stringify(subscriptions),
+          total_expenses: totalExpenses * 12,
+          surplus: surplus * 12,
+        })
+        .eq('id', currentProject.id);
 
       if (error) throw error;
 
-      toast.success('Budget plan saved successfully!');
+      toast.success('Budget updated successfully!');
       navigate('/dashboard');
     } catch (error: any) {
       toast.error(error.message || 'Failed to save budget plan');
