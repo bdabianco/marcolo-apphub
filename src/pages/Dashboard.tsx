@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ProjectSelector } from '@/components/ProjectSelector';
 import { AppHeader } from '@/components/AppHeader';
+import { formatCurrency } from '@/lib/utils';
 
 function DashboardContent() {
   const { user, signOut } = useAuth();
@@ -122,7 +123,7 @@ function DashboardContent() {
               <DollarSign className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${stats.totalIncome.toFixed(2)}</div>
+              <div className="text-2xl font-bold">${formatCurrency(stats.totalIncome)}</div>
               <p className="text-xs text-muted-foreground">Total monthly</p>
             </CardContent>
           </Card>
@@ -133,7 +134,7 @@ function DashboardContent() {
               <TrendingUp className="h-4 w-4 text-secondary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${stats.totalExpenses.toFixed(2)}</div>
+              <div className="text-2xl font-bold">${formatCurrency(stats.totalExpenses)}</div>
               <p className="text-xs text-muted-foreground">Monthly total</p>
             </CardContent>
           </Card>
