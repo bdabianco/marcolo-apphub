@@ -38,6 +38,11 @@ function CashflowContent() {
   const [secondaryMortgageBalance, setSecondaryMortgageBalance] = useState('');
   const [secondaryMortgageInterest, setSecondaryMortgageInterest] = useState('');
 
+  // Format currency with commas
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
+
   // Load existing cashflow data
   useEffect(() => {
     if (currentProject) {
@@ -343,7 +348,7 @@ function CashflowContent() {
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>
                           <span className="text-muted-foreground">Balance:</span>
-                          <span className="ml-2 font-medium">${debt.balance.toFixed(2)}</span>
+                          <span className="ml-2 font-medium">${formatCurrency(debt.balance)}</span>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Interest:</span>
@@ -351,7 +356,7 @@ function CashflowContent() {
                         </div>
                         <div>
                           <span className="text-muted-foreground">Monthly:</span>
-                          <span className="ml-2 font-medium">${debt.monthlyPayment.toFixed(2)}</span>
+                          <span className="ml-2 font-medium">${formatCurrency(debt.monthlyPayment)}</span>
                         </div>
                       </div>
                     </div>
@@ -362,11 +367,11 @@ function CashflowContent() {
                   <div className="border-t pt-4 space-y-2">
                     <div className="flex justify-between">
                       <span className="font-semibold">Total Debt:</span>
-                      <span className="font-bold text-destructive">${totalDebt.toFixed(2)}</span>
+                      <span className="font-bold text-destructive">${formatCurrency(totalDebt)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="font-semibold">Monthly Debt Payment:</span>
-                      <span className="font-bold">${monthlyPayment.toFixed(2)}</span>
+                      <span className="font-bold">${formatCurrency(monthlyPayment)}</span>
                     </div>
                   </div>
                 )}
@@ -387,11 +392,11 @@ function CashflowContent() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-muted p-4 rounded">
                   <div className="text-sm text-muted-foreground mb-1">Monthly Interest</div>
-                  <div className="text-2xl font-bold">${totalMonthlyInterest.toFixed(2)}</div>
+                  <div className="text-2xl font-bold">${formatCurrency(totalMonthlyInterest)}</div>
                 </div>
                 <div className="bg-muted p-4 rounded">
                   <div className="text-sm text-muted-foreground mb-1">Annual Interest</div>
-                  <div className="text-2xl font-bold">${totalAnnualInterest.toFixed(2)}</div>
+                  <div className="text-2xl font-bold">${formatCurrency(totalAnnualInterest)}</div>
                 </div>
               </div>
             </CardContent>
@@ -412,11 +417,11 @@ function CashflowContent() {
                   <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                     <div className="grid grid-cols-7 gap-4 w-full pr-4 text-sm">
                       <div className="font-bold">Total</div>
-                      <div className="text-right font-bold">${(monthlyNetIncome * 12).toFixed(0)}</div>
-                      <div className="text-right font-bold">${(monthlyExpenses * 12).toFixed(0)}</div>
-                      <div className="text-right font-bold">${(monthlyPayment * 12).toFixed(0)}</div>
-                      <div className="text-right font-bold">${totalAnnualInterest.toFixed(0)}</div>
-                      <div className="text-right font-bold">${((monthlyNetIncome - monthlyExpenses - monthlyPayment - totalMonthlyInterest) * 12).toFixed(0)}</div>
+                      <div className="text-right font-bold">${formatCurrency(monthlyNetIncome * 12)}</div>
+                      <div className="text-right font-bold">${formatCurrency(monthlyExpenses * 12)}</div>
+                      <div className="text-right font-bold">${formatCurrency(monthlyPayment * 12)}</div>
+                      <div className="text-right font-bold">${formatCurrency(totalAnnualInterest)}</div>
+                      <div className="text-right font-bold">${formatCurrency((monthlyNetIncome - monthlyExpenses - monthlyPayment - totalMonthlyInterest) * 12)}</div>
                       <div className="text-right font-bold text-muted-foreground">-</div>
                     </div>
                   </AccordionTrigger>
@@ -443,11 +448,11 @@ function CashflowContent() {
                         return (
                           <div key={month} className="grid grid-cols-7 gap-4 text-sm py-2 hover:bg-muted/50 rounded px-2">
                             <div>{month}</div>
-                            <div className="text-right">${monthlyNetIncome.toFixed(0)}</div>
-                            <div className="text-right">${expenses.toFixed(0)}</div>
-                            <div className="text-right">${monthlyDebt.toFixed(0)}</div>
-                            <div className="text-right">${monthlyInterest.toFixed(0)}</div>
-                            <div className="text-right font-medium">${surplus.toFixed(0)}</div>
+                            <div className="text-right">${formatCurrency(monthlyNetIncome)}</div>
+                            <div className="text-right">${formatCurrency(expenses)}</div>
+                            <div className="text-right">${formatCurrency(monthlyDebt)}</div>
+                            <div className="text-right">${formatCurrency(monthlyInterest)}</div>
+                            <div className="text-right font-medium">${formatCurrency(surplus)}</div>
                             <div className="text-right text-muted-foreground">$0.00</div>
                           </div>
                         );
