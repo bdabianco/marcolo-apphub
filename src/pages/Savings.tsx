@@ -797,22 +797,46 @@ function SavingsContent() {
                   </div>
                   {!isAssetsOpen && (
                     <div className="flex items-center gap-4 mr-4">
-                      <div className="grid grid-cols-3 gap-4 text-center">
-                        <div className="bg-background/50 p-2 rounded-lg">
-                          <div className="text-xs text-muted-foreground">Assets</div>
-                          <div className="font-bold text-lg">{assets.length}</div>
-                        </div>
-                        <div className="bg-background/50 p-2 rounded-lg">
-                          <div className="text-xs text-muted-foreground">Current</div>
-                          <div className="font-bold text-lg text-primary">
-                            ${formatCurrency(totalCurrentValue)}
+                      <div className="grid grid-cols-3 gap-3">
+                        {/* Properties Summary */}
+                        <div className="bg-background/50 p-3 rounded-lg border border-border/50">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <Home className="h-3.5 w-3.5 text-muted-foreground" />
+                            <div className="text-xs text-muted-foreground">Properties ({properties.length})</div>
+                          </div>
+                          <div className="font-bold text-sm">
+                            ${formatCurrency(properties.reduce((sum, a) => sum + Number(a.current_value || 0), 0))}
                           </div>
                         </div>
-                        <div className="bg-background/50 p-2 rounded-lg">
-                          <div className="text-xs text-muted-foreground">Future ({futureYears}Y)</div>
-                          <div className="font-bold text-lg text-green-600 dark:text-green-400">
-                            ${formatCurrency(totalFutureValue)}
+                        
+                        {/* Standard Investments Summary */}
+                        <div className="bg-background/50 p-3 rounded-lg border border-border/50">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <Briefcase className="h-3.5 w-3.5 text-muted-foreground" />
+                            <div className="text-xs text-muted-foreground">Standard ({investments.length})</div>
                           </div>
+                          <div className="font-bold text-sm">
+                            ${formatCurrency(investments.reduce((sum, a) => sum + Number(a.current_value || 0), 0))}
+                          </div>
+                        </div>
+                        
+                        {/* Other Investments Summary */}
+                        <div className="bg-background/50 p-3 rounded-lg border border-border/50">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <TrendingUp className="h-3.5 w-3.5 text-muted-foreground" />
+                            <div className="text-xs text-muted-foreground">Other ({otherAssets.length})</div>
+                          </div>
+                          <div className="font-bold text-sm">
+                            ${formatCurrency(otherAssets.reduce((sum, a) => sum + Number(a.current_value || 0), 0))}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Total Summary */}
+                      <div className="bg-primary/10 p-3 rounded-lg border border-primary/20">
+                        <div className="text-xs text-muted-foreground mb-1">Total ({futureYears}Y)</div>
+                        <div className="font-bold text-base text-primary">
+                          ${formatCurrency(totalFutureValue)}
                         </div>
                       </div>
                     </div>
