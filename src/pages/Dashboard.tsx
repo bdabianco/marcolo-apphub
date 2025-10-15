@@ -7,9 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ProtectedRoute } from '@/lib/auth';
 import { DollarSign, TrendingUp, PiggyBank, FileText, LogOut, LineChart, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import marcoloLogo from '@/assets/marcolo-logo.png';
 import { toast } from 'sonner';
 import { ProjectSelector } from '@/components/ProjectSelector';
+import { AppHeader } from '@/components/AppHeader';
 
 function DashboardContent() {
   const { user, signOut } = useAuth();
@@ -82,14 +82,17 @@ function DashboardContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
-      {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-3">
-            <img src={marcoloLogo} alt="Marcolo" className="h-10 w-10" />
-            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Mycashflow
-            </h1>
+      <AppHeader />
+      
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div>
+            <h2 className="text-3xl font-bold text-foreground">
+              Welcome back!
+            </h2>
+            <p className="text-muted-foreground mt-1">
+              Manage your budget, track cashflow, and optimize your savings
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <ProjectSelector />
@@ -98,19 +101,6 @@ function DashboardContent() {
               Sign Out
             </Button>
           </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-foreground mb-2">
-            Welcome back!
-          </h2>
-          <p className="text-muted-foreground">
-            Manage your budget, track cashflow, and optimize your savings
-          </p>
         </div>
 
         {/* Stats Grid */}
@@ -218,7 +208,7 @@ function DashboardContent() {
             </CardContent>
           </Card>
         )}
-      </main>
+      </div>
     </div>
   );
 }

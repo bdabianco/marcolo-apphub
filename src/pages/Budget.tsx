@@ -9,12 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ArrowLeft, Plus, Trash2, CalendarIcon } from 'lucide-react';
+import { Plus, Trash2, CalendarIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import marcoloLogo from '@/assets/marcolo-logo.png';
+import { AppHeader } from '@/components/AppHeader';
 
 interface Income {
   id: string;
@@ -199,17 +199,7 @@ function BudgetContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
-      <header className="border-b bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto flex h-16 items-center gap-3 px-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <img src={marcoloLogo} alt="Marcolo" className="h-8 w-8" />
-          <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Budget Planning
-          </h1>
-        </div>
-      </header>
+      <AppHeader />
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <Card className="mb-6">

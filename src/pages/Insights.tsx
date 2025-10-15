@@ -3,9 +3,9 @@ import { useAuth, ProtectedRoute } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowLeft, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import marcoloLogo from '@/assets/marcolo-logo.png';
+import { AppHeader } from '@/components/AppHeader';
 
 interface Metrics {
   totalAnnualIncome: number;
@@ -94,17 +94,7 @@ function InsightsContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
-      <header className="border-b bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto flex h-16 items-center gap-3 px-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <img src={marcoloLogo} alt="Marcolo" className="h-8 w-8" />
-          <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Financial Insights
-          </h1>
-        </div>
-      </header>
+      <AppHeader />
 
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="mb-6">
