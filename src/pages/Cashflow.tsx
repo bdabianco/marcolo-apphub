@@ -35,8 +35,10 @@ function CashflowContent() {
   // Mortgage states
   const [primaryMortgageBalance, setPrimaryMortgageBalance] = useState('');
   const [primaryMortgageInterest, setPrimaryMortgageInterest] = useState('');
+  const [primaryMortgagePayment, setPrimaryMortgagePayment] = useState('');
   const [secondaryMortgageBalance, setSecondaryMortgageBalance] = useState('');
   const [secondaryMortgageInterest, setSecondaryMortgageInterest] = useState('');
+  const [secondaryMortgagePayment, setSecondaryMortgagePayment] = useState('');
 
   // Format currency with commas
   const formatCurrency = (amount: number) => {
@@ -89,8 +91,10 @@ function CashflowContent() {
           : data.mortgage;
         setPrimaryMortgageBalance(mortgageData.primary?.balance?.toString() || '');
         setPrimaryMortgageInterest(mortgageData.primary?.interestRate?.toString() || '');
+        setPrimaryMortgagePayment(mortgageData.primary?.monthlyPayment?.toString() || '');
         setSecondaryMortgageBalance(mortgageData.secondary?.balance?.toString() || '');
         setSecondaryMortgageInterest(mortgageData.secondary?.interestRate?.toString() || '');
+        setSecondaryMortgagePayment(mortgageData.secondary?.monthlyPayment?.toString() || '');
       }
     } catch (error: any) {
       console.error('Error loading cashflow data:', error);
@@ -103,8 +107,10 @@ function CashflowContent() {
   // Calculate mortgage totals
   const primaryMortgageBalanceNum = parseFloat(primaryMortgageBalance) || 0;
   const primaryMortgageInterestNum = parseFloat(primaryMortgageInterest) || 0;
+  const primaryMortgagePaymentNum = parseFloat(primaryMortgagePayment) || 0;
   const secondaryMortgageBalanceNum = parseFloat(secondaryMortgageBalance) || 0;
   const secondaryMortgageInterestNum = parseFloat(secondaryMortgageInterest) || 0;
+  const secondaryMortgagePaymentNum = parseFloat(secondaryMortgagePayment) || 0;
   
   const primaryAnnualInterest = (primaryMortgageBalanceNum * primaryMortgageInterestNum) / 100;
   const secondaryAnnualInterest = (secondaryMortgageBalanceNum * secondaryMortgageInterestNum) / 100;
@@ -113,6 +119,9 @@ function CashflowContent() {
   }, 0);
   const totalAnnualInterest = primaryAnnualInterest + secondaryAnnualInterest + otherDebtsAnnualInterest;
   const totalMonthlyInterest = totalAnnualInterest / 12;
+  
+  // Total monthly payment includes mortgages and other debts
+  const totalMonthlyPayment = monthlyPayment + primaryMortgagePaymentNum + secondaryMortgagePaymentNum;
 
   const addDebt = () => {
     if (newDebtName && newDebtBalance && newDebtPayment) {
@@ -164,10 +173,12 @@ function CashflowContent() {
         primary: {
           balance: primaryMortgageBalanceNum,
           interestRate: primaryMortgageInterestNum,
+          monthlyPayment: primaryMortgagePaymentNum,
         },
         secondary: {
           balance: secondaryMortgageBalanceNum,
           interestRate: secondaryMortgageInterestNum,
+          monthlyPayment: secondaryMortgagePaymentNum,
         },
       };
 
@@ -180,7 +191,7 @@ function CashflowContent() {
             debts: JSON.stringify(debts),
             mortgage: JSON.stringify(mortgageData),
             total_debt: totalDebt,
-            monthly_debt_payment: monthlyPayment,
+            monthly_debt_payment: totalMonthlyPayment,
             available_cashflow: 0,
           })
           .eq('budget_plan_id', currentProject.id)
@@ -202,7 +213,7 @@ function CashflowContent() {
             debts: JSON.stringify(debts),
             mortgage: JSON.stringify(mortgageData),
             total_debt: totalDebt,
-            monthly_debt_payment: monthlyPayment,
+            monthly_debt_payment: totalMonthlyPayment,
             available_cashflow: 0,
           })
           .select();
@@ -248,7 +259,7 @@ function CashflowContent() {
                   {/* Primary Mortgage */}
                   <div className="bg-muted p-4 rounded space-y-2">
                     <div className="font-medium">Primary Mortgage</div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                       <div>
                         <Label>Total Balance</Label>
                         <Input
@@ -267,13 +278,22 @@ function CashflowContent() {
                           onChange={(e) => setPrimaryMortgageInterest(e.target.value)}
                         />
                       </div>
+                      <div>
+                        <Label>Monthly Payment</Label>
+                        <Input
+                          type="number"
+                          placeholder="Monthly payment"
+                          value={primaryMortgagePayment}
+                          onChange={(e) => setPrimaryMortgagePayment(e.target.value)}
+                        />
+                      </div>
                     </div>
                   </div>
 
                   {/* Secondary Mortgage */}
                   <div className="bg-muted p-4 rounded space-y-2">
                     <div className="font-medium">Secondary Mortgage</div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                       <div>
                         <Label>Total Balance</Label>
                         <Input
@@ -290,6 +310,15 @@ function CashflowContent() {
                           placeholder="Interest rate"
                           value={secondaryMortgageInterest}
                           onChange={(e) => setSecondaryMortgageInterest(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label>Monthly Payment</Label>
+                        <Input
+                          type="number"
+                          placeholder="Monthly payment"
+                          value={secondaryMortgagePayment}
+                          onChange={(e) => setSecondaryMortgagePayment(e.target.value)}
                         />
                       </div>
                     </div>
@@ -419,9 +448,9 @@ function CashflowContent() {
                       <div className="font-bold">Total</div>
                       <div className="text-right font-bold">${formatCurrency(monthlyNetIncome * 12)}</div>
                       <div className="text-right font-bold">${formatCurrency(monthlyExpenses * 12)}</div>
-                      <div className="text-right font-bold">${formatCurrency(monthlyPayment * 12)}</div>
+                      <div className="text-right font-bold">${formatCurrency(totalMonthlyPayment * 12)}</div>
                       <div className="text-right font-bold">${formatCurrency(totalAnnualInterest)}</div>
-                      <div className="text-right font-bold">${formatCurrency((monthlyNetIncome - monthlyExpenses - monthlyPayment - totalMonthlyInterest) * 12)}</div>
+                      <div className="text-right font-bold">${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment - totalMonthlyInterest) * 12)}</div>
                       <div className="text-right font-bold text-muted-foreground">-</div>
                     </div>
                   </AccordionTrigger>
@@ -441,7 +470,7 @@ function CashflowContent() {
                       {/* Monthly Rows */}
                       {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => {
                         const expenses = monthlyExpenses;
-                        const monthlyDebt = monthlyPayment;
+                        const monthlyDebt = totalMonthlyPayment;
                         const monthlyInterest = totalMonthlyInterest;
                         const surplus = monthlyNetIncome - expenses - monthlyDebt - monthlyInterest;
                         
