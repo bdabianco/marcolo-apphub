@@ -30,6 +30,7 @@ function CashflowContent() {
   const [newDebtPayment, setNewDebtPayment] = useState('');
   const [newDebtInterest, setNewDebtInterest] = useState('');
   const [monthlyExpenses, setMonthlyExpenses] = useState(0);
+  const [monthlyNetIncome, setMonthlyNetIncome] = useState(0);
   
   // Mortgage states
   const [primaryMortgageBalance, setPrimaryMortgageBalance] = useState('');
@@ -51,12 +52,13 @@ function CashflowContent() {
       // Load budget plan data for expenses
       const { data: budgetData } = await supabase
         .from('budget_plans')
-        .select('total_expenses')
+        .select('total_expenses, net_income')
         .eq('id', currentProject.id)
         .single();
 
       if (budgetData) {
         setMonthlyExpenses(Number(budgetData.total_expenses) || 0);
+        setMonthlyNetIncome(Number(budgetData.net_income) || 0);
       }
 
       // Load cashflow records
@@ -386,8 +388,9 @@ function CashflowContent() {
                 {/* Total Row - Shown by Default */}
                 <AccordionItem value="total">
                   <AccordionTrigger className="text-lg font-semibold hover:no-underline">
-                    <div className="grid grid-cols-6 gap-4 w-full pr-4 text-sm">
+                    <div className="grid grid-cols-7 gap-4 w-full pr-4 text-sm">
                       <div className="font-bold">Total</div>
+                      <div className="text-right font-bold">${(monthlyNetIncome * 12).toFixed(2)}</div>
                       <div className="text-right font-bold">${(monthlyExpenses * 12).toFixed(2)}</div>
                       <div className="text-right font-bold">${(monthlyPayment * 12).toFixed(2)}</div>
                       <div className="text-right font-bold">${totalAnnualInterest.toFixed(2)}</div>
@@ -398,8 +401,9 @@ function CashflowContent() {
                   <AccordionContent>
                     <div className="space-y-2">
                       {/* Header Row */}
-                      <div className="grid grid-cols-6 gap-4 text-sm font-semibold border-b pb-2">
+                      <div className="grid grid-cols-7 gap-4 text-sm font-semibold border-b pb-2">
                         <div>Month</div>
+                        <div className="text-right">Net Income</div>
                         <div className="text-right">Expenses</div>
                         <div className="text-right">Debt</div>
                         <div className="text-right">Interest</div>
@@ -415,8 +419,9 @@ function CashflowContent() {
                         const subTotal = expenses + monthlyDebt + monthlyInterest;
                         
                         return (
-                          <div key={month} className="grid grid-cols-6 gap-4 text-sm py-2 hover:bg-muted/50 rounded px-2">
+                          <div key={month} className="grid grid-cols-7 gap-4 text-sm py-2 hover:bg-muted/50 rounded px-2">
                             <div>{month}</div>
+                            <div className="text-right">${monthlyNetIncome.toFixed(2)}</div>
                             <div className="text-right">${expenses.toFixed(2)}</div>
                             <div className="text-right">${monthlyDebt.toFixed(2)}</div>
                             <div className="text-right">${monthlyInterest.toFixed(2)}</div>
