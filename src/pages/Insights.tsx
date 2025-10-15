@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AppHeader } from '@/components/AppHeader';
+import { formatCurrency } from '@/lib/utils';
 
 interface Metrics {
   totalAnnualIncome: number;
@@ -112,7 +113,7 @@ function InsightsContent() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary">
-                ${metrics.totalAnnualIncome.toFixed(2)}
+                ${formatCurrency(metrics.totalAnnualIncome)}
               </div>
             </CardContent>
           </Card>
@@ -123,7 +124,7 @@ function InsightsContent() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                ${metrics.totalAnnualExpenses.toFixed(2)}
+                ${formatCurrency(metrics.totalAnnualExpenses)}
               </div>
             </CardContent>
           </Card>
@@ -134,7 +135,7 @@ function InsightsContent() {
             </CardHeader>
             <CardContent>
               <div className={`text-2xl font-bold ${metrics.annualSurplus >= 0 ? 'text-primary' : 'text-destructive'}`}>
-                ${metrics.annualSurplus.toFixed(2)}
+                ${formatCurrency(metrics.annualSurplus)}
               </div>
             </CardContent>
           </Card>
@@ -212,19 +213,19 @@ function InsightsContent() {
               <div className="text-center">
                 <div className="text-sm text-muted-foreground mb-1">Total Assets</div>
                 <div className="text-xl font-bold text-primary">
-                  ${metrics.totalAssets.toFixed(2)}
+                  ${formatCurrency(metrics.totalAssets)}
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-sm text-muted-foreground mb-1">Total Debts</div>
                 <div className="text-xl font-bold text-destructive">
-                  ${metrics.totalDebts.toFixed(2)}
+                  ${formatCurrency(metrics.totalDebts)}
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-sm text-muted-foreground mb-1">Net Worth</div>
                 <div className={`text-xl font-bold ${metrics.netWorth >= 0 ? 'text-primary' : 'text-destructive'}`}>
-                  ${metrics.netWorth.toFixed(2)}
+                  ${formatCurrency(metrics.netWorth)}
                 </div>
               </div>
             </div>
