@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AppHeader } from '@/components/AppHeader';
@@ -259,20 +259,29 @@ function SavingsContent() {
     }
 
     try {
-      await supabase.from('assets').insert({
+      console.log('Saving property:', { user_id: user.id, propertyCity, propertyValue, rate: ONTARIO_CITY_RATES[propertyCity] });
+      
+      const { data, error } = await supabase.from('assets').insert({
         user_id: user.id,
         asset_type: 'property',
         name: propertyCity,
         current_value: Number(propertyValue),
         appreciation_rate: ONTARIO_CITY_RATES[propertyCity],
-      });
+      }).select();
 
+      if (error) {
+        console.error('Property save error:', error);
+        throw error;
+      }
+
+      console.log('Property saved successfully:', data);
       toast.success('Property added successfully!');
       setPropertyCity('');
       setPropertyValue('');
       setIsAddPropertyOpen(false);
       loadAssets();
     } catch (error: any) {
+      console.error('Failed to add property:', error);
       toast.error(error.message || 'Failed to add property');
     }
   };
@@ -305,20 +314,35 @@ function SavingsContent() {
     };
 
     try {
-      await supabase.from('assets').insert({
+      console.log('Saving investment:', { 
+        user_id: user.id, 
+        type: investmentType, 
+        name: investmentNames[investmentType],
+        value: investmentValue,
+        rate: MARKET_INVESTMENT_RATE 
+      });
+
+      const { data, error } = await supabase.from('assets').insert({
         user_id: user.id,
         asset_type: investmentType,
         name: investmentNames[investmentType],
         current_value: Number(investmentValue),
         appreciation_rate: MARKET_INVESTMENT_RATE,
-      });
+      }).select();
 
+      if (error) {
+        console.error('Investment save error:', error);
+        throw error;
+      }
+
+      console.log('Investment saved successfully:', data);
       toast.success('Investment added successfully!');
       setInvestmentType('');
       setInvestmentValue('');
       setIsAddInvestmentOpen(false);
       loadAssets();
     } catch (error: any) {
+      console.error('Failed to add investment:', error);
       toast.error(error.message || 'Failed to add investment');
     }
   };
@@ -336,14 +360,27 @@ function SavingsContent() {
     }
 
     try {
-      await supabase.from('assets').insert({
+      console.log('Saving other asset:', { 
+        user_id: user.id, 
+        name: otherAssetName, 
+        value: otherAssetValue,
+        rate: Number(otherAssetRate) / 100 
+      });
+
+      const { data, error } = await supabase.from('assets').insert({
         user_id: user.id,
         asset_type: 'other_investment',
         name: otherAssetName,
         current_value: Number(otherAssetValue),
         appreciation_rate: Number(otherAssetRate) / 100,
-      });
+      }).select();
 
+      if (error) {
+        console.error('Other asset save error:', error);
+        throw error;
+      }
+
+      console.log('Other asset saved successfully:', data);
       toast.success('Asset added successfully!');
       setOtherAssetName('');
       setOtherAssetValue('');
@@ -351,6 +388,7 @@ function SavingsContent() {
       setIsAddOtherOpen(false);
       loadAssets();
     } catch (error: any) {
+      console.error('Failed to add asset:', error);
       toast.error(error.message || 'Failed to add asset');
     }
   };
@@ -802,6 +840,7 @@ function SavingsContent() {
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Add Property</DialogTitle>
+                    <DialogDescription>Add a property to track its appreciation over time</DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 pt-4">
                     <div>
@@ -899,6 +938,7 @@ function SavingsContent() {
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Add Standard Investment</DialogTitle>
+                    <DialogDescription>Add a TFSA, RRSP, or Group Retirement Plan</DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 pt-4">
                     <div>
@@ -999,6 +1039,7 @@ function SavingsContent() {
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Add Other Investment</DialogTitle>
+                    <DialogDescription>Add a custom investment with your own growth rate</DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 pt-4">
                     <div>
