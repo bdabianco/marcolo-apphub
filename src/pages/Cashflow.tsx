@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth, ProtectedRoute } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AppHeader } from '@/components/AppHeader';
+import { useProject } from '@/contexts/ProjectContext';
 
 interface Debt {
   id: string;
@@ -21,11 +22,42 @@ interface Debt {
 function CashflowContent() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { currentProject } = useProject();
   const [debts, setDebts] = useState<Debt[]>([]);
   const [newDebtName, setNewDebtName] = useState('');
   const [newDebtBalance, setNewDebtBalance] = useState('');
   const [newDebtPayment, setNewDebtPayment] = useState('');
   const [newDebtInterest, setNewDebtInterest] = useState('');
+
+  // Load existing cashflow data
+  useEffect(() => {
+    if (currentProject) {
+      loadCashflowData();
+    }
+  }, [currentProject]);
+
+  const loadCashflowData = async () => {
+    if (!currentProject) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('cashflow_records')
+        .select('*')
+        .eq('budget_plan_id', currentProject.id)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (data && data.debts) {
+        const parsedDebts = typeof data.debts === 'string'
+          ? JSON.parse(data.debts)
+          : data.debts;
+        setDebts(parsedDebts || []);
+      }
+    } catch (error: any) {
+      console.error('Error loading cashflow data:', error);
+    }
+  };
 
   const totalDebt = debts.reduce((sum, debt) => sum + debt.balance, 0);
   const monthlyPayment = debts.reduce((sum, debt) => sum + debt.monthlyPayment, 0);
@@ -54,18 +86,47 @@ function CashflowContent() {
   };
 
   const saveCashflow = async () => {
-    if (!user) return;
+    if (!user || !currentProject) {
+      toast.error('Please select a project first');
+      return;
+    }
 
     try {
-      const { error } = await supabase.from('cashflow_records').insert({
-        user_id: user.id,
-        debts: JSON.stringify(debts),
-        total_debt: totalDebt,
-        monthly_debt_payment: monthlyPayment,
-        available_cashflow: 0, // Will be calculated based on budget
-      });
+      // Check if a cashflow record already exists for this project
+      const { data: existingRecord } = await supabase
+        .from('cashflow_records')
+        .select('id')
+        .eq('budget_plan_id', currentProject.id)
+        .maybeSingle();
 
-      if (error) throw error;
+      if (existingRecord) {
+        // Update existing record
+        const { error } = await supabase
+          .from('cashflow_records')
+          .update({
+            debts: JSON.stringify(debts),
+            total_debt: totalDebt,
+            monthly_debt_payment: monthlyPayment,
+            available_cashflow: 0,
+          })
+          .eq('budget_plan_id', currentProject.id);
+
+        if (error) throw error;
+      } else {
+        // Create new record
+        const { error } = await supabase
+          .from('cashflow_records')
+          .insert({
+            user_id: user.id,
+            budget_plan_id: currentProject.id,
+            debts: JSON.stringify(debts),
+            total_debt: totalDebt,
+            monthly_debt_payment: monthlyPayment,
+            available_cashflow: 0,
+          });
+
+        if (error) throw error;
+      }
 
       toast.success('Cashflow data saved successfully!');
       navigate('/dashboard');
