@@ -5,10 +5,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import marcoloLogo from '@/assets/marcolo-logo.png';
+
+interface Income {
+  id: string;
+  name: string;
+  amount: number;
+  type: 'gross' | 'net';
+  schedule: 'monthly' | 'quarterly' | 'annual';
+}
 
 interface Expense {
   id: string;
@@ -19,26 +28,72 @@ interface Expense {
 function BudgetContent() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [projectName, setProjectName] = useState('My Budget');
-  const [grossIncome, setGrossIncome] = useState('0');
+  const [incomes, setIncomes] = useState<Income[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [newIncomeName, setNewIncomeName] = useState('');
+  const [newIncomeAmount, setNewIncomeAmount] = useState('');
+  const [newIncomeType, setNewIncomeType] = useState<'gross' | 'net'>('net');
+  const [newIncomeSchedule, setNewIncomeSchedule] = useState<'monthly' | 'quarterly' | 'annual'>('monthly');
   const [newExpenseName, setNewExpenseName] = useState('');
   const [newExpenseAmount, setNewExpenseAmount] = useState('');
 
-  // Canadian tax calculations (simplified)
-  const calculateTaxes = (income: number) => {
-    const federalTax = income * 0.15; // Simplified 15% federal
-    const provincialTax = income * 0.10; // Simplified 10% provincial
-    const cpp = Math.min(income * 0.0595, 3867.50); // 2024 max
-    const ei = Math.min(income * 0.0163, 1049.12); // 2024 max
+  // Convert all income to monthly amounts
+  const convertToMonthly = (amount: number, schedule: 'monthly' | 'quarterly' | 'annual') => {
+    switch (schedule) {
+      case 'monthly': return amount;
+      case 'quarterly': return amount / 3;
+      case 'annual': return amount / 12;
+    }
+  };
+
+  // Canadian tax calculations (simplified) - only for gross income
+  const calculateTaxes = (annualIncome: number) => {
+    const federalTax = annualIncome * 0.15;
+    const provincialTax = annualIncome * 0.10;
+    const cpp = Math.min(annualIncome * 0.0595, 3867.50);
+    const ei = Math.min(annualIncome * 0.0163, 1049.12);
     return { federalTax, provincialTax, cpp, ei };
   };
 
-  const income = parseFloat(grossIncome) || 0;
-  const taxes = calculateTaxes(income);
-  const netIncome = income - taxes.federalTax - taxes.provincialTax - taxes.cpp - taxes.ei;
+  // Calculate total monthly income
+  const monthlyGrossIncome = incomes
+    .filter(inc => inc.type === 'gross')
+    .reduce((sum, inc) => sum + convertToMonthly(inc.amount, inc.schedule), 0);
+  
+  const monthlyNetIncome = incomes
+    .filter(inc => inc.type === 'net')
+    .reduce((sum, inc) => sum + convertToMonthly(inc.amount, inc.schedule), 0);
+
+  const annualGrossIncome = monthlyGrossIncome * 12;
+  const taxes = calculateTaxes(annualGrossIncome);
+  const annualNetFromGross = annualGrossIncome - taxes.federalTax - taxes.provincialTax - taxes.cpp - taxes.ei;
+  const totalMonthlyNetIncome = (annualNetFromGross / 12) + monthlyNetIncome;
+  
   const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-  const surplus = netIncome - totalExpenses;
+  const surplus = totalMonthlyNetIncome - totalExpenses;
+
+  const addIncome = () => {
+    if (newIncomeName && newIncomeAmount) {
+      setIncomes([
+        ...incomes,
+        {
+          id: Date.now().toString(),
+          name: newIncomeName,
+          amount: parseFloat(newIncomeAmount) || 0,
+          type: newIncomeType,
+          schedule: newIncomeSchedule,
+        },
+      ]);
+      setNewIncomeName('');
+      setNewIncomeAmount('');
+      setNewIncomeType('net');
+      setNewIncomeSchedule('monthly');
+    }
+  };
+
+  const removeIncome = (id: string) => {
+    setIncomes(incomes.filter((inc) => inc.id !== id));
+  };
 
   const addExpense = () => {
     if (newExpenseName && newExpenseAmount) {
@@ -65,16 +120,17 @@ function BudgetContent() {
     try {
       const { error } = await supabase.from('budget_plans').insert({
         user_id: user.id,
-        project_name: projectName,
-        gross_income: income,
+        project_name: 'Budget Plan',
+        gross_income: annualGrossIncome,
         federal_tax: taxes.federalTax,
         provincial_tax: taxes.provincialTax,
         cpp: taxes.cpp,
         ei: taxes.ei,
-        net_income: netIncome,
+        net_income: totalMonthlyNetIncome * 12,
+        income_categories: JSON.stringify(incomes),
         expenses: JSON.stringify(expenses),
-        total_expenses: totalExpenses,
-        surplus: surplus,
+        total_expenses: totalExpenses * 12,
+        surplus: surplus * 12,
       });
 
       if (error) throw error;
@@ -103,55 +159,104 @@ function BudgetContent() {
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Budget Information</CardTitle>
+            <CardTitle>Income</CardTitle>
+            <CardDescription>Add your income sources (gross or net)</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="projectName">Project Name</Label>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
               <Input
-                id="projectName"
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                placeholder="e.g., 2024 Family Budget"
+                placeholder="Income source"
+                value={newIncomeName}
+                onChange={(e) => setNewIncomeName(e.target.value)}
               />
-            </div>
-            <div>
-              <Label htmlFor="grossIncome">Gross Annual Income ($)</Label>
               <Input
-                id="grossIncome"
                 type="number"
-                value={grossIncome}
-                onChange={(e) => setGrossIncome(e.target.value)}
-                placeholder="0.00"
+                placeholder="Amount"
+                value={newIncomeAmount}
+                onChange={(e) => setNewIncomeAmount(e.target.value)}
               />
+              <Select value={newIncomeType} onValueChange={(val: 'gross' | 'net') => setNewIncomeType(val)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="net">Net</SelectItem>
+                  <SelectItem value="gross">Gross</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={newIncomeSchedule} onValueChange={(val: 'monthly' | 'quarterly' | 'annual') => setNewIncomeSchedule(val)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="quarterly">Quarterly</SelectItem>
+                  <SelectItem value="annual">Annual</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button onClick={addIncome}>
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              {incomes.map((income) => (
+                <div key={income.id} className="flex items-center justify-between bg-muted p-3 rounded">
+                  <div className="flex flex-col">
+                    <span>{income.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {income.type.toUpperCase()} • {income.schedule}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">${income.amount.toFixed(2)}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeIncome(income.id)}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
 
+        {monthlyGrossIncome > 0 && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Tax Deductions (Canadian - Gross Income Only)</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Federal Tax:</span>
+                <span className="font-medium">${taxes.federalTax.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Provincial Tax:</span>
+                <span className="font-medium">${taxes.provincialTax.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">CPP:</span>
+                <span className="font-medium">${taxes.cpp.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">EI:</span>
+                <span className="font-medium">${taxes.ei.toFixed(2)}</span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Tax Deductions (Canadian)</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Federal Tax:</span>
-              <span className="font-medium">${taxes.federalTax.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Provincial Tax:</span>
-              <span className="font-medium">${taxes.provincialTax.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">CPP:</span>
-              <span className="font-medium">${taxes.cpp.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">EI:</span>
-              <span className="font-medium">${taxes.ei.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between border-t pt-2 mt-2">
-              <span className="font-semibold">Net Income:</span>
-              <span className="font-bold text-primary">${netIncome.toFixed(2)}</span>
+          <CardContent className="pt-6">
+            <div className="flex justify-between items-center">
+              <span className="text-lg font-semibold">Total Monthly Net Income:</span>
+              <span className="text-2xl font-bold text-primary">
+                ${totalMonthlyNetIncome.toFixed(2)}
+              </span>
             </div>
           </CardContent>
         </Card>
