@@ -32,7 +32,7 @@ interface ExpenseAdjustment {
   id: string;
   expenseId: string;
   expenseName: string;
-  newAmount: number;
+  newAmount: number | '';
 }
 
 interface DebtConsolidation {
@@ -672,7 +672,7 @@ function CashflowContent() {
                             placeholder="Adjusted amount"
                             value={adj.newAmount}
                             onChange={(e) => setExpenseAdjustments(expenseAdjustments.map(a =>
-                              a.id === adj.id ? { ...a, newAmount: parseFloat(e.target.value) || 0 } : a
+                              a.id === adj.id ? { ...a, newAmount: e.target.value ? parseFloat(e.target.value) : '' } : a
                             ))}
                           />
                         </div>
@@ -684,7 +684,7 @@ function CashflowContent() {
                     <Button
                       onClick={() => setExpenseAdjustments([
                         ...expenseAdjustments,
-                        { id: Date.now().toString(), expenseId: '', expenseName: '', newAmount: 0 }
+                        { id: Date.now().toString(), expenseId: '', expenseName: '', newAmount: '' }
                       ])}
                       className="w-full"
                     >
@@ -824,8 +824,8 @@ function CashflowContent() {
             // Expense adjustments
             expenseAdjustments.forEach(adj => {
               const originalExpense = expenses.find(e => e.id === adj.expenseId);
-              if (originalExpense) {
-                adjustment += (originalExpense.amount - adj.newAmount);
+              if (originalExpense && adj.newAmount !== '') {
+                adjustment += (originalExpense.amount - (typeof adj.newAmount === 'number' ? adj.newAmount : parseFloat(adj.newAmount) || 0));
               }
             });
             
