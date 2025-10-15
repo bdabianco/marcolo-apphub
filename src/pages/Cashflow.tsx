@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Plus, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -197,65 +198,68 @@ function CashflowContent() {
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Mortgage Section */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Mortgages</h3>
-              
-              {/* Primary Mortgage */}
-              <div className="bg-muted p-4 rounded space-y-2">
-                <div className="font-medium">Primary Mortgage</div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Total Balance</Label>
-                    <Input
-                      type="number"
-                      placeholder="Total balance"
-                      value={primaryMortgageBalance}
-                      onChange={(e) => setPrimaryMortgageBalance(e.target.value)}
-                    />
+            <Accordion type="multiple" defaultValue={['mortgages', 'other-debts']} className="w-full">
+              {/* Mortgage Section */}
+              <AccordionItem value="mortgages">
+                <AccordionTrigger className="text-lg font-semibold">Mortgages</AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-4">
+                  {/* Primary Mortgage */}
+                  <div className="bg-muted p-4 rounded space-y-2">
+                    <div className="font-medium">Primary Mortgage</div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Total Balance</Label>
+                        <Input
+                          type="number"
+                          placeholder="Total balance"
+                          value={primaryMortgageBalance}
+                          onChange={(e) => setPrimaryMortgageBalance(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label>Interest Rate (%)</Label>
+                        <Input
+                          type="number"
+                          placeholder="Interest rate"
+                          value={primaryMortgageInterest}
+                          onChange={(e) => setPrimaryMortgageInterest(e.target.value)}
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <Label>Interest Rate (%)</Label>
-                    <Input
-                      type="number"
-                      placeholder="Interest rate"
-                      value={primaryMortgageInterest}
-                      onChange={(e) => setPrimaryMortgageInterest(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
 
-              {/* Secondary Mortgage */}
-              <div className="bg-muted p-4 rounded space-y-2">
-                <div className="font-medium">Secondary Mortgage</div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Total Balance</Label>
-                    <Input
-                      type="number"
-                      placeholder="Total balance"
-                      value={secondaryMortgageBalance}
-                      onChange={(e) => setSecondaryMortgageBalance(e.target.value)}
-                    />
+                  {/* Secondary Mortgage */}
+                  <div className="bg-muted p-4 rounded space-y-2">
+                    <div className="font-medium">Secondary Mortgage</div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Total Balance</Label>
+                        <Input
+                          type="number"
+                          placeholder="Total balance"
+                          value={secondaryMortgageBalance}
+                          onChange={(e) => setSecondaryMortgageBalance(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label>Interest Rate (%)</Label>
+                        <Input
+                          type="number"
+                          placeholder="Interest rate"
+                          value={secondaryMortgageInterest}
+                          onChange={(e) => setSecondaryMortgageInterest(e.target.value)}
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <Label>Interest Rate (%)</Label>
-                    <Input
-                      type="number"
-                      placeholder="Interest rate"
-                      value={secondaryMortgageInterest}
-                      onChange={(e) => setSecondaryMortgageInterest(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+                </AccordionContent>
+              </AccordionItem>
 
-            {/* Other Debts Section */}
-            <div className="space-y-4 border-t pt-4">
-              <h3 className="font-semibold text-lg">Other Debts</h3>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+              {/* Other Debts Section */}
+              <AccordionItem value="other-debts">
+                <AccordionTrigger className="text-lg font-semibold">Other Debts</AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
               <Input
                 placeholder="Debt name (e.g., Car Loan)"
                 value={newDebtName}
@@ -281,55 +285,57 @@ function CashflowContent() {
                   onChange={(e) => setNewDebtPayment(e.target.value)}
                 />
                 <Button onClick={addDebt}>
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              {debts.map((debt) => (
-                <div key={debt.id} className="bg-muted p-4 rounded space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{debt.name}</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeDebt(debt.id)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
+                      <Plus className="h-4 w-4" />
                     </Button>
                   </div>
-                  <div className="grid grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <span className="text-muted-foreground">Balance:</span>
-                      <span className="ml-2 font-medium">${debt.balance.toFixed(2)}</span>
+                </div>
+
+                <div className="space-y-2">
+                  {debts.map((debt) => (
+                    <div key={debt.id} className="bg-muted p-4 rounded space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">{debt.name}</span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeDebt(debt.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Balance:</span>
+                          <span className="ml-2 font-medium">${debt.balance.toFixed(2)}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Interest:</span>
+                          <span className="ml-2 font-medium">{debt.interestRate.toFixed(2)}%</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Monthly:</span>
+                          <span className="ml-2 font-medium">${debt.monthlyPayment.toFixed(2)}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-muted-foreground">Interest:</span>
-                      <span className="ml-2 font-medium">{debt.interestRate.toFixed(2)}%</span>
+                  ))}
+                </div>
+
+                {debts.length > 0 && (
+                  <div className="border-t pt-4 space-y-2">
+                    <div className="flex justify-between">
+                      <span className="font-semibold">Total Debt:</span>
+                      <span className="font-bold text-destructive">${totalDebt.toFixed(2)}</span>
                     </div>
-                    <div>
-                      <span className="text-muted-foreground">Monthly:</span>
-                      <span className="ml-2 font-medium">${debt.monthlyPayment.toFixed(2)}</span>
+                    <div className="flex justify-between">
+                      <span className="font-semibold">Monthly Debt Payment:</span>
+                      <span className="font-bold">${monthlyPayment.toFixed(2)}</span>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            {debts.length > 0 && (
-              <div className="border-t pt-4 space-y-2">
-                <div className="flex justify-between">
-                  <span className="font-semibold">Total Debt:</span>
-                  <span className="font-bold text-destructive">${totalDebt.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-semibold">Monthly Debt Payment:</span>
-                  <span className="font-bold">${monthlyPayment.toFixed(2)}</span>
-                </div>
-              </div>
-            )}
-            </div>
+                )}
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </CardContent>
         </Card>
 
