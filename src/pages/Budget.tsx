@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
@@ -368,118 +369,165 @@ function BudgetContent() {
             <CardDescription>Add your monthly expenses with optional start date and duration</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-              <Input
-                placeholder="Expense name"
-                value={newExpenseName}
-                onChange={(e) => setNewExpenseName(e.target.value)}
-              />
-              <Input
-                type="number"
-                placeholder="Amount"
-                value={newExpenseAmount}
-                onChange={(e) => setNewExpenseAmount(e.target.value)}
-              />
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "justify-start text-left font-normal",
-                      !newExpenseStartDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {newExpenseStartDate ? format(newExpenseStartDate, "MM/dd/yyyy") : "Start date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={newExpenseStartDate}
-                    onSelect={setNewExpenseStartDate}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
-              <Input
-                type="number"
-                placeholder="Duration (months)"
-                value={newExpenseDuration}
-                onChange={(e) => setNewExpenseDuration(e.target.value)}
-                min="1"
-                max="12"
-              />
-              <Button onClick={addExpense}>
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {/* Subscriptions Special Entry */}
-            <Dialog open={subscriptionsDialogOpen} onOpenChange={setSubscriptionsDialogOpen}>
-              <DialogTrigger asChild>
-                <div className="flex items-center justify-between bg-primary/10 p-3 rounded cursor-pointer hover:bg-primary/20 transition-colors border-2 border-primary/30">
-                  <div className="flex flex-col">
-                    <span className="font-semibold">Subscriptions</span>
-                    <span className="text-xs text-muted-foreground">
-                      {subscriptions.length} subscription{subscriptions.length !== 1 ? 's' : ''} • Click to manage
-                    </span>
+            <Accordion type="multiple" defaultValue={['expenses']} className="w-full">
+              <AccordionItem value="expenses">
+                <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                  <div className="flex justify-between w-full pr-4">
+                    <span>Expense Details</span>
+                    <span className="font-bold">${totalExpenses.toFixed(2)}</span>
                   </div>
-                  <span className="font-medium">${(totalAnnualSubscriptions / 12).toFixed(2)}/mo</span>
-                </div>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>Manage Subscriptions</DialogTitle>
-                  <DialogDescription>
-                    Add and manage your recurring subscriptions. Total is calculated annually.
-                  </DialogDescription>
-                </DialogHeader>
-                
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
                     <Input
-                      placeholder="Subscription name"
-                      value={newSubscriptionName}
-                      onChange={(e) => setNewSubscriptionName(e.target.value)}
+                      placeholder="Expense name"
+                      value={newExpenseName}
+                      onChange={(e) => setNewExpenseName(e.target.value)}
                     />
                     <Input
                       type="number"
                       placeholder="Amount"
-                      value={newSubscriptionAmount}
-                      onChange={(e) => setNewSubscriptionAmount(e.target.value)}
+                      value={newExpenseAmount}
+                      onChange={(e) => setNewExpenseAmount(e.target.value)}
                     />
-                    <Select value={newSubscriptionBillingCycle} onValueChange={(val: 'monthly' | 'quarterly' | 'annual') => setNewSubscriptionBillingCycle(val)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="monthly">Monthly</SelectItem>
-                        <SelectItem value="quarterly">Quarterly</SelectItem>
-                        <SelectItem value="annual">Annual</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button onClick={addSubscription}>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "justify-start text-left font-normal",
+                            !newExpenseStartDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {newExpenseStartDate ? format(newExpenseStartDate, "MM/dd/yyyy") : "Start date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={newExpenseStartDate}
+                          onSelect={setNewExpenseStartDate}
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <Input
+                      type="number"
+                      placeholder="Duration (months)"
+                      value={newExpenseDuration}
+                      onChange={(e) => setNewExpenseDuration(e.target.value)}
+                      min="1"
+                      max="12"
+                    />
+                    <Button onClick={addExpense}>
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
 
-                  <div className="space-y-2 max-h-60 overflow-y-auto">
-                    {subscriptions.map((sub) => (
-                      <div key={sub.id} className="flex items-center justify-between bg-muted p-3 rounded">
+                  {/* Subscriptions Special Entry */}
+                  <Dialog open={subscriptionsDialogOpen} onOpenChange={setSubscriptionsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <div className="flex items-center justify-between bg-primary/10 p-3 rounded cursor-pointer hover:bg-primary/20 transition-colors border-2 border-primary/30">
                         <div className="flex flex-col">
-                          <span>{sub.name}</span>
-                          <span className="text-xs text-muted-foreground capitalize">
-                            {sub.billingCycle}
+                          <span className="font-semibold">Subscriptions</span>
+                          <span className="text-xs text-muted-foreground">
+                            {subscriptions.length} subscription{subscriptions.length !== 1 ? 's' : ''} • Click to manage
                           </span>
                         </div>
+                        <span className="font-medium">${(totalAnnualSubscriptions / 12).toFixed(2)}/mo</span>
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle>Manage Subscriptions</DialogTitle>
+                        <DialogDescription>
+                          Add and manage your recurring subscriptions. Total is calculated annually.
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                          <Input
+                            placeholder="Subscription name"
+                            value={newSubscriptionName}
+                            onChange={(e) => setNewSubscriptionName(e.target.value)}
+                          />
+                          <Input
+                            type="number"
+                            placeholder="Amount"
+                            value={newSubscriptionAmount}
+                            onChange={(e) => setNewSubscriptionAmount(e.target.value)}
+                          />
+                          <Select value={newSubscriptionBillingCycle} onValueChange={(val: 'monthly' | 'quarterly' | 'annual') => setNewSubscriptionBillingCycle(val)}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="monthly">Monthly</SelectItem>
+                              <SelectItem value="quarterly">Quarterly</SelectItem>
+                              <SelectItem value="annual">Annual</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Button onClick={addSubscription}>
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+
+                        <div className="space-y-2 max-h-60 overflow-y-auto">
+                          {subscriptions.map((sub) => (
+                            <div key={sub.id} className="flex items-center justify-between bg-muted p-3 rounded">
+                              <div className="flex flex-col">
+                                <span>{sub.name}</span>
+                                <span className="text-xs text-muted-foreground capitalize">
+                                  {sub.billingCycle}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">${sub.amount.toFixed(2)}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => removeSubscription(sub.id)}
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="flex justify-between border-t pt-3">
+                          <span className="font-semibold">Total Annual Cost:</span>
+                          <span className="font-bold text-primary">${totalAnnualSubscriptions.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Monthly Equivalent:</span>
+                          <span className="text-sm font-medium">${(totalAnnualSubscriptions / 12).toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  <div className="space-y-2">
+                    {expenses.map((expense) => (
+                      <div key={expense.id} className="flex items-center justify-between bg-muted p-3 rounded">
+                        <div className="flex flex-col">
+                          <span>{expense.name}</span>
+                          {(expense.startDate || expense.duration) && (
+                            <span className="text-xs text-muted-foreground">
+                              {expense.startDate && format(expense.startDate, "MM/dd/yyyy")}
+                              {expense.duration && ` • ${expense.duration} months`}
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">${sub.amount.toFixed(2)}</span>
+                          <span className="font-medium">${expense.amount.toFixed(2)}</span>
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => removeSubscription(sub.id)}
+                            onClick={() => removeExpense(expense.id)}
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
@@ -487,49 +535,9 @@ function BudgetContent() {
                       </div>
                     ))}
                   </div>
-
-                  <div className="flex justify-between border-t pt-3">
-                    <span className="font-semibold">Total Annual Cost:</span>
-                    <span className="font-bold text-primary">${totalAnnualSubscriptions.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Monthly Equivalent:</span>
-                    <span className="text-sm font-medium">${(totalAnnualSubscriptions / 12).toFixed(2)}</span>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-
-            <div className="space-y-2">
-              {expenses.map((expense) => (
-                <div key={expense.id} className="flex items-center justify-between bg-muted p-3 rounded">
-                  <div className="flex flex-col">
-                    <span>{expense.name}</span>
-                    {(expense.startDate || expense.duration) && (
-                      <span className="text-xs text-muted-foreground">
-                        {expense.startDate && format(expense.startDate, "MM/dd/yyyy")}
-                        {expense.duration && ` • ${expense.duration} months`}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">${expense.amount.toFixed(2)}</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeExpense(expense.id)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex justify-between border-t pt-3">
-              <span className="font-semibold">Total Expenses:</span>
-              <span className="font-bold">${totalExpenses.toFixed(2)}</span>
-            </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </CardContent>
         </Card>
 
