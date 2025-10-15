@@ -20,6 +20,14 @@ interface Debt {
   interestRate: number;
 }
 
+interface Expense {
+  id: string;
+  name: string;
+  amount: number;
+  startDate?: string;
+  duration?: number;
+}
+
 function CashflowContent() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -30,6 +38,8 @@ function CashflowContent() {
   const [newDebtPayment, setNewDebtPayment] = useState('');
   const [newDebtInterest, setNewDebtInterest] = useState('');
   const [monthlyExpenses, setMonthlyExpenses] = useState(0);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [monthlyNetIncome, setMonthlyNetIncome] = useState(0);
   
   // Mortgage states
@@ -43,6 +53,45 @@ function CashflowContent() {
   // Format currency with commas
   const formatCurrency = (amount: number) => {
     return amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
+
+  // Calculate expenses for a specific month (0-indexed)
+  const calculateMonthlyExpense = (monthIndex: number) => {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = monthIndex; // 0-11
+    
+    let totalExpense = 0;
+    
+    // Add regular expenses (those without startDate or duration, or within their active period)
+    expenses.forEach(expense => {
+      if (!expense.startDate || !expense.duration) {
+        // No start date/duration means it's a recurring monthly expense
+        totalExpense += expense.amount;
+      } else {
+        const startDate = new Date(expense.startDate);
+        const startMonth = startDate.getMonth();
+        const startYear = startDate.getFullYear();
+        
+        // Calculate months since start (assuming current year for simplicity)
+        const monthsSinceStart = (currentYear - startYear) * 12 + (currentMonth - startMonth);
+        
+        // Check if current month is within the duration
+        if (monthsSinceStart >= 0 && monthsSinceStart < expense.duration) {
+          totalExpense += expense.amount;
+        }
+      }
+    });
+    
+    // Add subscription costs (monthly equivalent)
+    const totalAnnualSubscriptions = subscriptions.reduce((sum, sub) => {
+      const annualAmount = sub.billingCycle === 'monthly' ? sub.amount * 12 :
+                          sub.billingCycle === 'quarterly' ? sub.amount * 4 :
+                          sub.amount;
+      return sum + annualAmount;
+    }, 0);
+    totalExpense += totalAnnualSubscriptions / 12;
+    
+    return totalExpense;
   };
 
   // Load existing cashflow data
@@ -59,7 +108,7 @@ function CashflowContent() {
       // Load budget plan data for expenses
       const { data: budgetData } = await supabase
         .from('budget_plans')
-        .select('total_expenses, net_income')
+        .select('total_expenses, net_income, expenses, subscriptions')
         .eq('id', currentProject.id)
         .single();
 
@@ -67,6 +116,22 @@ function CashflowContent() {
         // Convert annual values to monthly
         setMonthlyExpenses(Number(budgetData.total_expenses) / 12 || 0);
         setMonthlyNetIncome(Number(budgetData.net_income) / 12 || 0);
+        
+        // Load individual expenses
+        if (budgetData.expenses) {
+          const parsedExpenses = typeof budgetData.expenses === 'string'
+            ? JSON.parse(budgetData.expenses)
+            : budgetData.expenses;
+          setExpenses(parsedExpenses || []);
+        }
+        
+        // Load subscriptions
+        if (budgetData.subscriptions) {
+          const parsedSubscriptions = typeof budgetData.subscriptions === 'string'
+            ? JSON.parse(budgetData.subscriptions)
+            : budgetData.subscriptions;
+          setSubscriptions(parsedSubscriptions || []);
+        }
       }
 
       // Load cashflow records
@@ -487,7 +552,7 @@ function CashflowContent() {
                       
                       {/* Monthly Rows */}
                       {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => {
-                        const expenses = monthlyExpenses;
+                        const expenses = calculateMonthlyExpense(index);
                         const monthlyDebtPrincipal = totalMonthlyPayment - totalMonthlyInterest;
                         const monthlyInterest = totalMonthlyInterest;
                         const surplus = monthlyNetIncome - expenses - totalMonthlyPayment;
