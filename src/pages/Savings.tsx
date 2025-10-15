@@ -283,29 +283,49 @@ function SavingsContent() {
                   <div className="text-xl font-bold">${formatCurrency(remaining)}</div>
                 </div>
                 {monthly > 0 && monthsToGoal > 0 && (
-                  <>
-                    <div>
-                      <div className="text-sm text-muted-foreground">Months to Goal</div>
-                      <div className="text-xl font-bold">{monthsToGoal}</div>
-                    </div>
-                    <div className="col-span-2">
-                      <div className="text-sm text-muted-foreground">Projected Amount</div>
-                      <div className="text-xl font-bold">${formatCurrency(current + (monthly * monthsToGoal))}</div>
-                    </div>
-                    <div className="col-span-2">
-                      <div className="text-sm text-muted-foreground">Variance at Target Date</div>
-                      <div className={`text-xl font-bold ${(current + (monthly * monthsToGoal)) >= target ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                        ${formatCurrency((current + (monthly * monthsToGoal)) - target)}
-                      </div>
-                      {(current + (monthly * monthsToGoal)) >= target ? (
-                        <p className="text-xs text-green-600 dark:text-green-400 mt-1">On track to exceed goal</p>
-                      ) : (
-                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">Below target, increase contribution</p>
-                      )}
-                    </div>
-                  </>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Months to Goal</div>
+                    <div className="text-xl font-bold">{monthsToGoal}</div>
+                  </div>
                 )}
               </div>
+
+              {targetDate && monthly > 0 && (
+                <div className="pt-3 border-t space-y-2">
+                  {(() => {
+                    const today = new Date();
+                    const targetDateObj = new Date(targetDate);
+                    const monthsUntilTarget = Math.max(0, Math.round((targetDateObj.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30)));
+                    const projectedAmount = current + (monthly * monthsUntilTarget);
+                    const variance = projectedAmount - target;
+
+                    return (
+                      <>
+                        <div className="text-sm font-medium">Projection by Target Date</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <div className="text-xs text-muted-foreground">Months Until Target</div>
+                            <div className="text-lg font-semibold">{monthsUntilTarget}</div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-muted-foreground">Projected Amount</div>
+                            <div className="text-lg font-semibold">${formatCurrency(projectedAmount)}</div>
+                          </div>
+                          <div className="col-span-2">
+                            <div className="text-xs text-muted-foreground">Variance at Target Date</div>
+                            <div className={`text-xl font-bold ${variance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                              {variance >= 0 ? '+' : ''}${formatCurrency(variance)}
+                            </div>
+                            <p className={`text-xs mt-1 ${variance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                              {variance >= 0 ? 'On track to exceed goal by target date' : 'Will be short of goal by target date'}
+                            </p>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
@@ -330,11 +350,22 @@ function SavingsContent() {
               {existingGoals.map((goal) => {
                 const progress = goal.target_amount > 0 ? (Number(goal.current_amount) / Number(goal.target_amount)) * 100 : 0;
                 const remaining = Number(goal.target_amount) - Number(goal.current_amount);
-                const monthsRemaining = Number(goal.monthly_contribution) > 0 
+                const monthsToReach = Number(goal.monthly_contribution) > 0 
                   ? Math.ceil(remaining / Number(goal.monthly_contribution)) 
                   : 0;
-                const projectedAmount = Number(goal.current_amount) + (Number(goal.monthly_contribution) * monthsRemaining);
-                const variance = projectedAmount - Number(goal.target_amount);
+
+                // Calculate variance based on target date
+                let monthsUntilTarget = 0;
+                let projectedAmount = Number(goal.current_amount);
+                let variance = 0;
+                
+                if (goal.target_date && Number(goal.monthly_contribution) > 0) {
+                  const today = new Date();
+                  const targetDateObj = new Date(goal.target_date);
+                  monthsUntilTarget = Math.max(0, Math.round((targetDateObj.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30)));
+                  projectedAmount = Number(goal.current_amount) + (Number(goal.monthly_contribution) * monthsUntilTarget);
+                  variance = projectedAmount - Number(goal.target_amount);
+                }
 
                 return (
                   <div key={goal.id} className="bg-gradient-to-r from-muted/50 to-background p-4 rounded-lg border shadow-sm">
@@ -376,24 +407,28 @@ function SavingsContent() {
                         <div className="font-semibold">${formatCurrency(Number(goal.monthly_contribution))}</div>
                       </div>
                       <div>
-                        <div className="text-muted-foreground">Months Left</div>
-                        <div className="font-semibold">{monthsRemaining > 0 ? monthsRemaining : 'N/A'}</div>
+                        <div className="text-muted-foreground">Months to Reach</div>
+                        <div className="font-semibold">{monthsToReach > 0 ? monthsToReach : 'N/A'}</div>
                       </div>
                     </div>
 
-                    {monthsRemaining > 0 && (
+                    {goal.target_date && Number(goal.monthly_contribution) > 0 && (
                       <div className="pt-3 border-t grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <div className="text-muted-foreground">Months Until Target</div>
+                          <div className="font-semibold">{monthsUntilTarget}</div>
+                        </div>
                         <div>
                           <div className="text-muted-foreground">Projected Amount</div>
                           <div className="font-semibold">${formatCurrency(projectedAmount)}</div>
                         </div>
-                        <div>
-                          <div className="text-muted-foreground">Variance</div>
-                          <div className={`font-semibold ${variance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        <div className="col-span-2">
+                          <div className="text-muted-foreground">Variance at Target Date</div>
+                          <div className={`text-lg font-bold ${variance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                             {variance >= 0 ? '+' : ''}${formatCurrency(variance)}
                           </div>
                           <p className={`text-xs mt-1 ${variance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                            {variance >= 0 ? 'On track' : 'Below target'}
+                            {variance >= 0 ? 'On track to exceed goal' : 'Will be short of goal'}
                           </p>
                         </div>
                       </div>
