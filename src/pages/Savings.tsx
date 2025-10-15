@@ -5,11 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AppHeader } from '@/components/AppHeader';
 import { useProject } from '@/contexts/ProjectContext';
 import { formatCurrency } from '@/lib/utils';
+import { Pencil } from 'lucide-react';
 
 function SavingsContent() {
   const { user } = useAuth();
@@ -22,6 +24,8 @@ function SavingsContent() {
   const [targetDate, setTargetDate] = useState('');
   const [availableSurplus, setAvailableSurplus] = useState(0);
   const [existingGoals, setExistingGoals] = useState<any[]>([]);
+  const [editingGoal, setEditingGoal] = useState<any>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   useEffect(() => {
     loadCashflowSurplus();
@@ -159,6 +163,43 @@ function SavingsContent() {
       console.error('Failed to create savings goal:', error);
       toast.error(error.message || 'Failed to create savings goal');
     }
+  };
+
+  const updateSavingsGoal = async () => {
+    if (!editingGoal || !user || !currentProject) return;
+
+    try {
+      const { error } = await supabase
+        .from('savings_goals')
+        .update({
+          goal_name: editingGoal.goal_name,
+          target_amount: Number(editingGoal.target_amount),
+          current_amount: Number(editingGoal.current_amount),
+          monthly_contribution: Number(editingGoal.monthly_contribution),
+          target_date: editingGoal.target_date || null,
+        })
+        .eq('id', editingGoal.id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast.success('Savings goal updated successfully!');
+      setIsEditDialogOpen(false);
+      setEditingGoal(null);
+      loadExistingGoals();
+      loadCashflowSurplus();
+    } catch (error: any) {
+      console.error('Failed to update savings goal:', error);
+      toast.error(error.message || 'Failed to update savings goal');
+    }
+  };
+
+  const handleEditGoal = (goal: any) => {
+    setEditingGoal({
+      ...goal,
+      target_date: goal.target_date ? new Date(goal.target_date).toISOString().split('T')[0] : '',
+    });
+    setIsEditDialogOpen(true);
   };
 
   return (
@@ -370,7 +411,7 @@ function SavingsContent() {
                 return (
                   <div key={goal.id} className="bg-gradient-to-r from-muted/50 to-background p-4 rounded-lg border shadow-sm">
                     <div className="flex justify-between items-start mb-3">
-                      <div>
+                      <div className="flex-1">
                         <h3 className="font-semibold text-lg">{goal.goal_name}</h3>
                         {goal.target_date && (
                           <p className="text-sm text-muted-foreground">
@@ -378,9 +419,19 @@ function SavingsContent() {
                           </p>
                         )}
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm text-muted-foreground">Progress</div>
-                        <div className="text-lg font-bold text-primary">{progress.toFixed(1)}%</div>
+                      <div className="flex items-center gap-3">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEditGoal(goal)}
+                          className="h-8 w-8"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <div className="text-right">
+                          <div className="text-sm text-muted-foreground">Progress</div>
+                          <div className="text-lg font-bold text-primary">{progress.toFixed(1)}%</div>
+                        </div>
                       </div>
                     </div>
 
@@ -439,6 +490,78 @@ function SavingsContent() {
             </CardContent>
           </Card>
         )}
+
+        {/* Edit Goal Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Edit Savings Goal</DialogTitle>
+            </DialogHeader>
+            {editingGoal && (
+              <div className="space-y-4 pt-4">
+                <div>
+                  <Label htmlFor="edit-goalName">Goal Name</Label>
+                  <Input
+                    id="edit-goalName"
+                    value={editingGoal.goal_name}
+                    onChange={(e) => setEditingGoal({ ...editingGoal, goal_name: e.target.value })}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="edit-targetAmount">Target Amount ($)</Label>
+                    <Input
+                      id="edit-targetAmount"
+                      type="number"
+                      value={editingGoal.target_amount}
+                      onChange={(e) => setEditingGoal({ ...editingGoal, target_amount: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-currentAmount">Current Amount ($)</Label>
+                    <Input
+                      id="edit-currentAmount"
+                      type="number"
+                      value={editingGoal.current_amount}
+                      onChange={(e) => setEditingGoal({ ...editingGoal, current_amount: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="edit-monthlyContribution">Monthly Contribution ($)</Label>
+                    <Input
+                      id="edit-monthlyContribution"
+                      type="number"
+                      value={editingGoal.monthly_contribution}
+                      onChange={(e) => setEditingGoal({ ...editingGoal, monthly_contribution: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-targetDate">Target Date</Label>
+                    <Input
+                      id="edit-targetDate"
+                      type="date"
+                      value={editingGoal.target_date}
+                      onChange={(e) => setEditingGoal({ ...editingGoal, target_date: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <Button onClick={updateSavingsGoal} className="flex-1">
+                    Save Changes
+                  </Button>
+                  <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} className="flex-1">
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
