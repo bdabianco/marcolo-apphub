@@ -265,101 +265,105 @@ function BudgetContent() {
             <CardDescription>Add your income sources (gross or net)</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-              <Input
-                placeholder="Income source"
-                value={newIncomeName}
-                onChange={(e) => setNewIncomeName(e.target.value)}
-              />
-              <Input
-                type="number"
-                placeholder="Amount"
-                value={newIncomeAmount}
-                onChange={(e) => setNewIncomeAmount(e.target.value)}
-              />
-              <Select value={newIncomeType} onValueChange={(val: 'gross' | 'net') => setNewIncomeType(val)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="net">Net</SelectItem>
-                  <SelectItem value="gross">Gross</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={newIncomeSchedule} onValueChange={(val: 'monthly' | 'quarterly' | 'annual') => setNewIncomeSchedule(val)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                  <SelectItem value="quarterly">Quarterly</SelectItem>
-                  <SelectItem value="annual">Annual</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button onClick={addIncome}>
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <div className="space-y-2">
-              {incomes.map((income) => (
-                <div key={income.id} className="flex items-center justify-between bg-muted p-3 rounded">
-                  <div className="flex flex-col">
-                    <span>{income.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {income.type.toUpperCase()} • {income.schedule}
-                    </span>
+            <Accordion type="multiple" defaultValue={['income']} className="w-full">
+              <AccordionItem value="income">
+                <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                  <div className="flex justify-between w-full pr-4">
+                    <span>Income Details</span>
+                    <span className="font-bold text-primary">${totalMonthlyNetIncome.toFixed(2)}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">${income.amount.toFixed(2)}</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeIncome(income.id)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
+                    <Input
+                      placeholder="Income source"
+                      value={newIncomeName}
+                      onChange={(e) => setNewIncomeName(e.target.value)}
+                    />
+                    <Input
+                      type="number"
+                      placeholder="Amount"
+                      value={newIncomeAmount}
+                      onChange={(e) => setNewIncomeAmount(e.target.value)}
+                    />
+                    <Select value={newIncomeType} onValueChange={(val: 'gross' | 'net') => setNewIncomeType(val)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="net">Net</SelectItem>
+                        <SelectItem value="gross">Gross</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select value={newIncomeSchedule} onValueChange={(val: 'monthly' | 'quarterly' | 'annual') => setNewIncomeSchedule(val)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                        <SelectItem value="quarterly">Quarterly</SelectItem>
+                        <SelectItem value="annual">Annual</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button onClick={addIncome}>
+                      <Plus className="h-4 w-4" />
                     </Button>
                   </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
 
-        {monthlyGrossIncome > 0 && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Tax Deductions (Canadian - Gross Income Only)</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Federal Tax:</span>
-                <span className="font-medium">${taxes.federalTax.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Provincial Tax:</span>
-                <span className="font-medium">${taxes.provincialTax.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">CPP:</span>
-                <span className="font-medium">${taxes.cpp.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">EI:</span>
-                <span className="font-medium">${taxes.ei.toFixed(2)}</span>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                  <div className="space-y-2">
+                    {incomes.map((income) => (
+                      <div key={income.id} className="flex items-center justify-between bg-muted p-3 rounded">
+                        <div className="flex flex-col">
+                          <span>{income.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {income.type.toUpperCase()} • {income.schedule}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">${income.amount.toFixed(2)}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeIncome(income.id)}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex justify-between items-center">
-              <span className="text-lg font-semibold">Total Monthly Net Income:</span>
-              <span className="text-2xl font-bold text-primary">
-                ${totalMonthlyNetIncome.toFixed(2)}
-              </span>
-            </div>
+                  {monthlyGrossIncome > 0 && (
+                    <div className="border-t pt-4 space-y-2">
+                      <h4 className="font-semibold text-sm">Tax Deductions (Canadian - Gross Income Only)</h4>
+                      <div className="bg-muted p-3 rounded space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Federal Tax:</span>
+                          <span className="font-medium">${taxes.federalTax.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Provincial Tax:</span>
+                          <span className="font-medium">${taxes.provincialTax.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">CPP:</span>
+                          <span className="font-medium">${taxes.cpp.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">EI:</span>
+                          <span className="font-medium">${taxes.ei.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between border-t pt-3">
+                    <span className="font-semibold">Total Monthly Net Income:</span>
+                    <span className="font-bold text-primary">${totalMonthlyNetIncome.toFixed(2)}</span>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </CardContent>
         </Card>
 
