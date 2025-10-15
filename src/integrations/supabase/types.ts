@@ -14,18 +14,64 @@ export type Database = {
   }
   public: {
     Tables: {
+      assets: {
+        Row: {
+          appreciation_rate: number | null
+          asset_type: string
+          created_at: string
+          current_value: number
+          id: string
+          name: string
+          notes: string | null
+          purchase_date: string | null
+          purchase_price: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          appreciation_rate?: number | null
+          asset_type: string
+          created_at?: string
+          current_value?: number
+          id?: string
+          name: string
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          appreciation_rate?: number | null
+          asset_type?: string
+          created_at?: string
+          current_value?: number
+          id?: string
+          name?: string
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       budget_plans: {
         Row: {
           cpp: number
           created_at: string
+          deductions: Json | null
           ei: number
+          expense_categories: Json | null
           expenses: Json
           federal_tax: number
           gross_income: number
           id: string
+          income_categories: Json | null
           net_income: number
           project_name: string
           provincial_tax: number
+          subscriptions: Json | null
           surplus: number
           total_expenses: number
           updated_at: string
@@ -34,14 +80,18 @@ export type Database = {
         Insert: {
           cpp?: number
           created_at?: string
+          deductions?: Json | null
           ei?: number
+          expense_categories?: Json | null
           expenses?: Json
           federal_tax?: number
           gross_income?: number
           id?: string
+          income_categories?: Json | null
           net_income?: number
           project_name?: string
           provincial_tax?: number
+          subscriptions?: Json | null
           surplus?: number
           total_expenses?: number
           updated_at?: string
@@ -50,14 +100,18 @@ export type Database = {
         Update: {
           cpp?: number
           created_at?: string
+          deductions?: Json | null
           ei?: number
+          expense_categories?: Json | null
           expenses?: Json
           federal_tax?: number
           gross_income?: number
           id?: string
+          income_categories?: Json | null
           net_income?: number
           project_name?: string
           provincial_tax?: number
+          subscriptions?: Json | null
           surplus?: number
           total_expenses?: number
           updated_at?: string
@@ -67,34 +121,43 @@ export type Database = {
       }
       cashflow_records: {
         Row: {
+          adjustments: Json | null
           available_cashflow: number
           budget_plan_id: string | null
           created_at: string
           debts: Json
           id: string
+          monthly_data: Json | null
           monthly_debt_payment: number
+          mortgage: Json | null
           total_debt: number
           updated_at: string
           user_id: string
         }
         Insert: {
+          adjustments?: Json | null
           available_cashflow?: number
           budget_plan_id?: string | null
           created_at?: string
           debts?: Json
           id?: string
+          monthly_data?: Json | null
           monthly_debt_payment?: number
+          mortgage?: Json | null
           total_debt?: number
           updated_at?: string
           user_id: string
         }
         Update: {
+          adjustments?: Json | null
           available_cashflow?: number
           budget_plan_id?: string | null
           created_at?: string
           debts?: Json
           id?: string
+          monthly_data?: Json | null
           monthly_debt_payment?: number
+          mortgage?: Json | null
           total_debt?: number
           updated_at?: string
           user_id?: string
@@ -138,9 +201,12 @@ export type Database = {
           budget_plan_id: string | null
           created_at: string
           current_amount: number
+          description: string | null
           goal_name: string
           id: string
+          is_active: boolean | null
           monthly_contribution: number
+          priority: string | null
           target_amount: number
           target_date: string | null
           updated_at: string
@@ -150,9 +216,12 @@ export type Database = {
           budget_plan_id?: string | null
           created_at?: string
           current_amount?: number
+          description?: string | null
           goal_name: string
           id?: string
+          is_active?: boolean | null
           monthly_contribution?: number
+          priority?: string | null
           target_amount?: number
           target_date?: string | null
           updated_at?: string
@@ -162,9 +231,12 @@ export type Database = {
           budget_plan_id?: string | null
           created_at?: string
           current_amount?: number
+          description?: string | null
           goal_name?: string
           id?: string
+          is_active?: boolean | null
           monthly_contribution?: number
+          priority?: string | null
           target_amount?: number
           target_date?: string | null
           updated_at?: string
@@ -180,15 +252,39 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: {
+        Args: { user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "user" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -315,6 +411,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["user", "admin"],
+    },
   },
 } as const
