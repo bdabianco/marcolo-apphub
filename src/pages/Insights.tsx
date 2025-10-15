@@ -64,16 +64,11 @@ function InsightsContent() {
       .select('*')
       .eq('user_id', user.id);
 
-    // Get cashflow records (filter by current project if available)
-    const cashflowQuery = supabase
+    // Get cashflow records - show all user's cashflow data
+    const { data: cashflows } = await supabase
       .from('cashflow_records')
       .select('*')
       .eq('user_id', user.id);
-    
-    if (currentProject) {
-      cashflowQuery.eq('budget_plan_id', currentProject.id);
-    }
-    const { data: cashflows } = await cashflowQuery;
 
     // Get savings goals (filter by current project if available)
     const savingsQuery = supabase
