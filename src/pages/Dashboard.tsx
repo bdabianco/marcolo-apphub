@@ -81,22 +81,40 @@ function DashboardContent() {
     navigate('/auth');
   };
 
+  const cashflowBalance = stats.totalIncome - stats.totalExpenses;
+  const isDeficit = cashflowBalance < 0;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
+    <div className="min-h-screen bg-[image:var(--gradient-subtle)]">
       <AppHeader />
       
       <div className="container mx-auto px-4 py-8">
+        {/* Hero Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <div>
-            <h2 className="text-3xl font-bold text-foreground">
-              Welcome back!
-            </h2>
-            <p className="text-muted-foreground mt-1">
-              Manage your budget, track cashflow, and optimize your savings
-            </p>
+          <div className="relative">
+            <div className="absolute -inset-1 bg-[image:var(--gradient-primary)] opacity-20 blur-xl rounded-lg" />
+            <div className="relative">
+              <h1 className="text-4xl font-bold bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">
+                Welcome back!
+              </h1>
+              <p className="text-muted-foreground mt-2">
+                Manage your budget, track cashflow, and optimize your savings
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <ProjectSelector />
+            {isAdmin && (
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => navigate('/admin')}
+                className="h-9 w-9"
+                title="Admin Panel"
+              >
+                <Shield className="h-4 w-4 text-primary" />
+              </Button>
+            )}
             <Button variant="outline" onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" />
               Sign Out
@@ -104,20 +122,10 @@ function DashboardContent() {
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card className="hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Budget Plans</CardTitle>
-              <FileText className="h-4 w-4 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.budgetPlans}</div>
-              <p className="text-xs text-muted-foreground">Active plans</p>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-md transition-shadow">
+        {/* Stats Grid - 3 columns */}
+        <div className="grid gap-6 md:grid-cols-3 mb-8">
+          <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+            <div className="absolute inset-0 bg-[image:var(--gradient-primary)] opacity-0 group-hover:opacity-5 transition-opacity" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Net Income</CardTitle>
               <DollarSign className="h-4 w-4 text-primary" />
@@ -128,7 +136,8 @@ function DashboardContent() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-md transition-shadow">
+          <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+            <div className="absolute inset-0 bg-[image:var(--gradient-primary)] opacity-0 group-hover:opacity-5 transition-opacity" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Expenses</CardTitle>
               <TrendingUp className="h-4 w-4 text-secondary" />
@@ -139,7 +148,8 @@ function DashboardContent() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-md transition-shadow">
+          <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+            <div className="absolute inset-0 bg-[image:var(--gradient-primary)] opacity-0 group-hover:opacity-5 transition-opacity" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Savings Goals</CardTitle>
               <PiggyBank className="h-4 w-4 text-accent" />
@@ -152,63 +162,62 @@ function DashboardContent() {
         </div>
 
         {/* Quick Actions */}
-        <Card>
+        <Card className="relative overflow-hidden border-2">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-[image:var(--gradient-primary)]" />
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Get started with your financial planning</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              Quick Actions
+              {isDeficit && (
+                <span className="text-xs font-normal px-2 py-1 rounded-full bg-destructive/10 text-destructive border border-destructive/20">
+                  Deficit Alert
+                </span>
+              )}
+            </CardTitle>
+            <CardDescription>
+              {isDeficit 
+                ? `You have a monthly deficit of $${formatCurrency(Math.abs(cashflowBalance))}. Start with cashflow tracking.`
+                : 'Get started with your financial planning'
+              }
+            </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-4">
             <Button 
               onClick={() => navigate('/budget')}
-              className="h-24 flex-col gap-2"
+              className="h-28 flex-col gap-3 relative group overflow-hidden"
             >
-              <FileText className="h-6 w-6" />
-              <span>Create Budget Plan</span>
+              <div className="absolute inset-0 bg-primary-foreground/0 group-hover:bg-primary-foreground/10 transition-colors" />
+              <FileText className="h-7 w-7 relative z-10" />
+              <span className="relative z-10 text-sm">Budget Plan</span>
             </Button>
             <Button 
               onClick={() => navigate('/cashflow')}
-              variant="secondary"
-              className="h-24 flex-col gap-2"
+              variant={isDeficit ? "destructive" : "secondary"}
+              className="h-28 flex-col gap-3 relative group overflow-hidden"
             >
-              <TrendingUp className="h-6 w-6" />
-              <span>Track Cashflow</span>
+              <div className="absolute inset-0 bg-secondary-foreground/0 group-hover:bg-secondary-foreground/10 transition-colors" />
+              <TrendingUp className="h-7 w-7 relative z-10" />
+              <span className="relative z-10 text-sm">
+                {isDeficit ? 'Fix Cashflow ⚠' : 'Track Cashflow'}
+              </span>
             </Button>
             <Button 
               onClick={() => navigate('/savings')}
               variant="outline"
-              className="h-24 flex-col gap-2"
+              className="h-28 flex-col gap-3 hover:border-accent hover:bg-accent/5"
             >
-              <PiggyBank className="h-6 w-6" />
-              <span>Set Savings Goals</span>
+              <PiggyBank className="h-7 w-7" />
+              <span className="text-sm">Savings Goals</span>
             </Button>
             <Button 
               onClick={() => navigate('/insights')}
               variant="outline"
-              className="h-24 flex-col gap-2"
+              className="h-28 flex-col gap-3 hover:border-primary hover:bg-primary/5"
             >
-              <LineChart className="h-6 w-6" />
-              <span>View Insights</span>
+              <LineChart className="h-7 w-7" />
+              <span className="text-sm">AI Insights</span>
             </Button>
           </CardContent>
         </Card>
-
-        {/* Admin Panel */}
-        {isAdmin && (
-          <Card className="border-primary">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-primary" />
-                Admin Panel
-              </CardTitle>
-              <CardDescription>Manage users and view system-wide statistics</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={() => navigate('/admin')} className="w-full">
-                Manage Users
-              </Button>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );
