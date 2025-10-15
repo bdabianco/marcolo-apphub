@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { AppHeader } from '@/components/AppHeader';
 import { useProject } from '@/contexts/ProjectContext';
 import { formatCurrency } from '@/lib/utils';
-import { Pencil, ChevronDown } from 'lucide-react';
+import { Pencil, ChevronDown, PiggyBank } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 function SavingsContent() {
@@ -210,8 +210,13 @@ function SavingsContent() {
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-foreground">Savings Goals</h2>
-          <p className="text-muted-foreground mt-1">Set and track your savings targets</p>
+          <div className="flex items-center gap-3">
+            <PiggyBank className="h-8 w-8 text-primary" />
+            <div>
+              <h2 className="text-3xl font-bold text-foreground">Savings Goals</h2>
+              <p className="text-muted-foreground mt-1">Set and track your savings targets</p>
+            </div>
+          </div>
         </div>
 
         {/* Available Surplus Card */}
