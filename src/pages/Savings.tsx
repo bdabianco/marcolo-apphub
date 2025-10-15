@@ -21,10 +21,29 @@ function SavingsContent() {
   const [monthlyContribution, setMonthlyContribution] = useState('');
   const [targetDate, setTargetDate] = useState('');
   const [availableSurplus, setAvailableSurplus] = useState(0);
+  const [existingGoals, setExistingGoals] = useState<any[]>([]);
 
   useEffect(() => {
     loadCashflowSurplus();
+    loadExistingGoals();
   }, [currentProject]);
+
+  const loadExistingGoals = async () => {
+    if (!currentProject || !user) return;
+
+    try {
+      const { data } = await supabase
+        .from('savings_goals')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('budget_plan_id', currentProject.id)
+        .order('created_at', { ascending: false });
+
+      setExistingGoals(data || []);
+    } catch (error) {
+      console.error('Error loading savings goals:', error);
+    }
+  };
 
   const loadCashflowSurplus = async () => {
     if (!currentProject || !user) return;
@@ -113,7 +132,16 @@ function SavingsContent() {
 
       console.log('Savings goal created successfully:', data);
       toast.success('Savings goal created successfully!');
-      navigate('/dashboard');
+      
+      // Clear form
+      setGoalName('');
+      setTargetAmount('');
+      setCurrentAmount('0');
+      setMonthlyContribution('');
+      setTargetDate('');
+      
+      // Reload goals
+      loadExistingGoals();
     } catch (error: any) {
       console.error('Failed to create savings goal:', error);
       toast.error(error.message || 'Failed to create savings goal');
@@ -254,12 +282,78 @@ function SavingsContent() {
 
         <Button 
           onClick={saveSavingsGoal} 
-          className="w-full" 
+          className="w-full mb-6" 
           size="lg"
           disabled={availableSurplus <= 0}
         >
           Create Savings Goal
         </Button>
+
+        {/* Existing Savings Goals */}
+        {existingGoals.length > 0 && (
+          <Card className="border-2 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-accent/5 via-accent/3 to-transparent">
+              <CardTitle>Your Savings Goals</CardTitle>
+              <CardDescription>Track and manage your savings progress</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-6">
+              {existingGoals.map((goal) => {
+                const progress = goal.target_amount > 0 ? (Number(goal.current_amount) / Number(goal.target_amount)) * 100 : 0;
+                const remaining = Number(goal.target_amount) - Number(goal.current_amount);
+                const monthsRemaining = Number(goal.monthly_contribution) > 0 
+                  ? Math.ceil(remaining / Number(goal.monthly_contribution)) 
+                  : 0;
+
+                return (
+                  <div key={goal.id} className="bg-gradient-to-r from-muted/50 to-background p-4 rounded-lg border shadow-sm">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="font-semibold text-lg">{goal.goal_name}</h3>
+                        {goal.target_date && (
+                          <p className="text-sm text-muted-foreground">
+                            Target: {new Date(goal.target_date).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-muted-foreground">Progress</div>
+                        <div className="text-lg font-bold text-primary">{progress.toFixed(1)}%</div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 mb-3">
+                      <div className="h-3 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-primary to-secondary transition-all"
+                          style={{ width: `${Math.min(progress, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                      <div>
+                        <div className="text-muted-foreground">Current</div>
+                        <div className="font-semibold">${formatCurrency(Number(goal.current_amount))}</div>
+                      </div>
+                      <div>
+                        <div className="text-muted-foreground">Target</div>
+                        <div className="font-semibold">${formatCurrency(Number(goal.target_amount))}</div>
+                      </div>
+                      <div>
+                        <div className="text-muted-foreground">Monthly</div>
+                        <div className="font-semibold">${formatCurrency(Number(goal.monthly_contribution))}</div>
+                      </div>
+                      <div>
+                        <div className="text-muted-foreground">Months Left</div>
+                        <div className="font-semibold">{monthsRemaining > 0 ? monthsRemaining : 'N/A'}</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        )}
       </main>
     </div>
   );
