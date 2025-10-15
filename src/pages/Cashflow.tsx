@@ -292,6 +292,25 @@ function CashflowContent() {
     }
   };
 
+  const clearIncomeAdjustment = () => {
+    setIncomeAdjDesc('');
+    setIncomeAdjAmount('');
+    setIncomeAdjType('net');
+  };
+
+  const clearExpenseAdjustments = () => {
+    setExpenseAdjustments([]);
+  };
+
+  const clearDebtConsolidation = () => {
+    setConsolidateDebt1('');
+    setConsolidateDebt2('');
+    setConsolidatedName('');
+    setConsolidatedBalance('');
+    setConsolidatedRate('');
+    setConsolidatedPayment('');
+  };
+
   const removeDebt = (id: string) => {
     setDebts(debts.filter((debt) => debt.id !== id));
   };
@@ -611,6 +630,11 @@ function CashflowContent() {
                 <AccordionTrigger className="text-lg font-semibold">Income Adjustment</AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
                   <div className="bg-muted p-4 rounded space-y-3">
+                    <div className="flex justify-end mb-2">
+                      <Button variant="outline" size="sm" onClick={clearIncomeAdjustment}>
+                        Clear
+                      </Button>
+                    </div>
                     <div className="grid grid-cols-3 gap-4">
                       <div>
                         <Label>Description</Label>
@@ -649,6 +673,13 @@ function CashflowContent() {
               <AccordionItem value="expense-adj">
                 <AccordionTrigger className="text-lg font-semibold">Expense Adjustments (up to 5)</AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
+                  {expenseAdjustments.length > 0 && (
+                    <div className="flex justify-end mb-2">
+                      <Button variant="outline" size="sm" onClick={clearExpenseAdjustments}>
+                        Clear All
+                      </Button>
+                    </div>
+                  )}
                   {expenseAdjustments.map((adj, index) => (
                     <div key={adj.id} className="bg-muted p-4 rounded">
                       <div className="flex items-center justify-between mb-2">
@@ -717,6 +748,11 @@ function CashflowContent() {
                 <AccordionTrigger className="text-lg font-semibold">Debt Consolidation</AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
                   <div className="bg-muted p-4 rounded space-y-3">
+                    <div className="flex justify-end mb-2">
+                      <Button variant="outline" size="sm" onClick={clearDebtConsolidation}>
+                        Clear
+                      </Button>
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label>First Debt to Consolidate</Label>
