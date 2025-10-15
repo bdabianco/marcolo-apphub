@@ -78,7 +78,7 @@ export function FinancialAdvisorChat({ metrics }: FinancialAdvisorChatProps) {
           AI Advisor
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[400px] sm:w-[540px]">
+      <SheetContent side="right" className="w-[400px] sm:w-[540px]">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <MessageCircle className="h-5 w-5 text-primary" />
