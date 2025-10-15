@@ -783,12 +783,14 @@ function SavingsContent() {
             <CardTitle className="flex items-center gap-2">
               <Home className="h-5 w-5" />
               Properties (Max 2)
-              <TooltipProvider>
+              <TooltipProvider delayDuration={300}>
                 <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-4 w-4 text-muted-foreground" />
+                  <TooltipTrigger asChild>
+                    <button type="button" className="inline-flex">
+                      <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                    </button>
                   </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
+                  <TooltipContent side="right" className="max-w-xs z-50 bg-popover border">
                     <p className="text-sm">Properties use 10-year average compounded appreciation rates specific to each Ontario city.</p>
                   </TooltipContent>
                 </Tooltip>
@@ -881,12 +883,14 @@ function SavingsContent() {
             <CardTitle className="flex items-center gap-2">
               <Briefcase className="h-5 w-5" />
               Standard Investments (Max 3)
-              <TooltipProvider>
+              <TooltipProvider delayDuration={300}>
                 <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-4 w-4 text-muted-foreground" />
+                  <TooltipTrigger asChild>
+                    <button type="button" className="inline-flex">
+                      <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                    </button>
                   </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
+                  <TooltipContent side="right" className="max-w-xs z-50 bg-popover border">
                     <p className="text-sm">Uses combined 10-year average of S&P 500, TSX, and Dow Jones ({(MARKET_INVESTMENT_RATE * 100).toFixed(1)}% annually).</p>
                   </TooltipContent>
                 </Tooltip>
@@ -982,12 +986,14 @@ function SavingsContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               Other Investments (Max 2)
-              <TooltipProvider>
+              <TooltipProvider delayDuration={300}>
                 <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-4 w-4 text-muted-foreground" />
+                  <TooltipTrigger asChild>
+                    <button type="button" className="inline-flex">
+                      <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                    </button>
                   </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
+                  <TooltipContent side="right" className="max-w-xs z-50 bg-popover border">
                     <p className="text-sm">Define your own custom growth rates for specialized assets.</p>
                   </TooltipContent>
                 </Tooltip>
