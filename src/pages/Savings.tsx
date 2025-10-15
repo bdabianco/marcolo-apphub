@@ -434,11 +434,16 @@ function SavingsContent() {
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex-1">
                         <h3 className="font-semibold text-lg">{goal.goal_name}</h3>
-                        {goal.target_date && (
-                          <p className="text-sm text-muted-foreground">
-                            Target: {new Date(goal.target_date).toLocaleDateString()}
+                        <div className="flex flex-col gap-0.5">
+                          {goal.target_date && (
+                            <p className="text-sm text-muted-foreground">
+                              Target: {new Date(goal.target_date).toLocaleDateString()}
+                            </p>
+                          )}
+                          <p className="text-xs text-muted-foreground">
+                            Last updated: {new Date(goal.updated_at).toLocaleDateString()} at {new Date(goal.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
-                        )}
+                        </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Button
