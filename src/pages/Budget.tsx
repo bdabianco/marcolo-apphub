@@ -271,7 +271,7 @@ function BudgetContent() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-[10px]">
             <Accordion type="multiple" defaultValue={['income']} className="w-full">
               <AccordionItem value="income" className="border rounded-lg px-4">
                 <AccordionTrigger className="text-lg font-semibold hover:no-underline">
@@ -386,7 +386,7 @@ function BudgetContent() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-[10px]">
             <Accordion type="multiple" defaultValue={['expenses']} className="w-full">
               <AccordionItem value="expenses" className="border rounded-lg px-4">
                 <AccordionTrigger className="text-lg font-semibold hover:no-underline">
@@ -571,7 +571,7 @@ function BudgetContent() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-[10px]">
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950/30 dark:to-emerald-900/20 p-4 rounded-lg border-2 border-green-200 dark:border-green-800 shadow-md hover:shadow-lg transition-all duration-300">
                 <div className="flex items-center gap-2 mb-2">

@@ -459,7 +459,7 @@ function CashflowContent() {
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 pt-[10px]">
             <Accordion type="multiple" defaultValue={['mortgages', 'other-debts']} className="w-full">
               {/* Mortgage Section */}
               <AccordionItem value="mortgages" className="border rounded-lg px-4 mb-3">
@@ -713,7 +713,7 @@ function CashflowContent() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+          <CardContent className="pt-[10px]">
                 <Accordion type="multiple" defaultValue={['total']}>
                   {/* Total Row - Shown by Default */}
                 <AccordionItem value="total">
@@ -819,7 +819,7 @@ function CashflowContent() {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-[10px]">
             <Accordion type="multiple" className="w-full">
               {/* Income Adjustment */}
               <AccordionItem value="income-adj" className="border rounded-lg px-4 mb-3">
