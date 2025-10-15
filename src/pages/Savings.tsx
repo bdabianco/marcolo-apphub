@@ -11,8 +11,12 @@ import { toast } from 'sonner';
 import { AppHeader } from '@/components/AppHeader';
 import { useProject } from '@/contexts/ProjectContext';
 import { formatCurrency } from '@/lib/utils';
-import { Pencil, ChevronDown, PiggyBank } from 'lucide-react';
+import { Pencil, ChevronDown, PiggyBank, TrendingUp, Home, Briefcase, Info } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ONTARIO_CITIES, ONTARIO_CITY_RATES, MARKET_INVESTMENT_RATE, calculateFutureValue } from '@/lib/investmentCalculations';
 
 function SavingsContent() {
   const { user } = useAuth();
@@ -28,10 +32,32 @@ function SavingsContent() {
   const [editingGoal, setEditingGoal] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isGoalsOpen, setIsGoalsOpen] = useState(true);
+  
+  // Assets state
+  const [assets, setAssets] = useState<any[]>([]);
+  const [isAssetsOpen, setIsAssetsOpen] = useState(true);
+  const [futureYears, setFutureYears] = useState<number>(5);
+  
+  // Property form
+  const [isAddPropertyOpen, setIsAddPropertyOpen] = useState(false);
+  const [propertyCity, setPropertyCity] = useState('');
+  const [propertyValue, setPropertyValue] = useState('');
+  
+  // Investment form
+  const [isAddInvestmentOpen, setIsAddInvestmentOpen] = useState(false);
+  const [investmentType, setInvestmentType] = useState('');
+  const [investmentValue, setInvestmentValue] = useState('');
+  
+  // Other asset form
+  const [isAddOtherOpen, setIsAddOtherOpen] = useState(false);
+  const [otherAssetName, setOtherAssetName] = useState('');
+  const [otherAssetValue, setOtherAssetValue] = useState('');
+  const [otherAssetRate, setOtherAssetRate] = useState('');
 
   useEffect(() => {
     loadCashflowSurplus();
     loadExistingGoals();
+    loadAssets();
   }, [currentProject]);
 
   const loadExistingGoals = async () => {
@@ -203,6 +229,151 @@ function SavingsContent() {
     });
     setIsEditDialogOpen(true);
   };
+
+  const loadAssets = async () => {
+    if (!user) return;
+
+    try {
+      const { data } = await supabase
+        .from('assets')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      setAssets(data || []);
+    } catch (error) {
+      console.error('Error loading assets:', error);
+    }
+  };
+
+  const saveProperty = async () => {
+    if (!user || !propertyCity || !propertyValue) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
+    const propertiesCount = assets.filter(a => a.asset_type === 'property').length;
+    if (propertiesCount >= 2) {
+      toast.error('Maximum 2 properties allowed');
+      return;
+    }
+
+    try {
+      await supabase.from('assets').insert({
+        user_id: user.id,
+        asset_type: 'property',
+        name: propertyCity,
+        current_value: Number(propertyValue),
+        appreciation_rate: ONTARIO_CITY_RATES[propertyCity],
+      });
+
+      toast.success('Property added successfully!');
+      setPropertyCity('');
+      setPropertyValue('');
+      setIsAddPropertyOpen(false);
+      loadAssets();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to add property');
+    }
+  };
+
+  const saveInvestment = async () => {
+    if (!user || !investmentType || !investmentValue) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
+    const investmentsCount = assets.filter(a => 
+      ['tfsa', 'rrsp', 'group_retirement'].includes(a.asset_type)
+    ).length;
+    
+    if (investmentsCount >= 3) {
+      toast.error('Maximum 3 standard investments allowed');
+      return;
+    }
+
+    const typeExists = assets.some(a => a.asset_type === investmentType);
+    if (typeExists) {
+      toast.error('This investment type already exists');
+      return;
+    }
+
+    const investmentNames: Record<string, string> = {
+      tfsa: 'TFSA',
+      rrsp: 'RRSP',
+      group_retirement: 'Group Retirement Plan',
+    };
+
+    try {
+      await supabase.from('assets').insert({
+        user_id: user.id,
+        asset_type: investmentType,
+        name: investmentNames[investmentType],
+        current_value: Number(investmentValue),
+        appreciation_rate: MARKET_INVESTMENT_RATE,
+      });
+
+      toast.success('Investment added successfully!');
+      setInvestmentType('');
+      setInvestmentValue('');
+      setIsAddInvestmentOpen(false);
+      loadAssets();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to add investment');
+    }
+  };
+
+  const saveOtherAsset = async () => {
+    if (!user || !otherAssetName || !otherAssetValue || !otherAssetRate) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
+    const otherAssetsCount = assets.filter(a => a.asset_type === 'other_investment').length;
+    if (otherAssetsCount >= 2) {
+      toast.error('Maximum 2 other investments allowed');
+      return;
+    }
+
+    try {
+      await supabase.from('assets').insert({
+        user_id: user.id,
+        asset_type: 'other_investment',
+        name: otherAssetName,
+        current_value: Number(otherAssetValue),
+        appreciation_rate: Number(otherAssetRate) / 100,
+      });
+
+      toast.success('Asset added successfully!');
+      setOtherAssetName('');
+      setOtherAssetValue('');
+      setOtherAssetRate('');
+      setIsAddOtherOpen(false);
+      loadAssets();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to add asset');
+    }
+  };
+
+  const deleteAsset = async (id: string) => {
+    try {
+      await supabase.from('assets').delete().eq('id', id).eq('user_id', user?.id);
+      toast.success('Asset deleted successfully!');
+      loadAssets();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to delete asset');
+    }
+  };
+
+  const properties = assets.filter(a => a.asset_type === 'property');
+  const investments = assets.filter(a => ['tfsa', 'rrsp', 'group_retirement'].includes(a.asset_type));
+  const otherAssets = assets.filter(a => a.asset_type === 'other_investment');
+  
+  const totalCurrentValue = assets.reduce((sum, a) => sum + Number(a.current_value || 0), 0);
+  const totalFutureValue = assets.reduce((sum, a) => {
+    const rate = Number(a.appreciation_rate || 0);
+    return sum + calculateFutureValue(Number(a.current_value || 0), rate, futureYears);
+  }, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
@@ -518,6 +689,352 @@ function SavingsContent() {
             </Card>
           </Collapsible>
         )}
+
+        {/* Investments & Assets Section */}
+        <div className="mt-12 mb-8">
+          <div className="flex items-center gap-3">
+            <TrendingUp className="h-8 w-8 text-primary" />
+            <div>
+              <h2 className="text-3xl font-bold text-foreground">Investments & Assets</h2>
+              <p className="text-muted-foreground mt-1">Track your properties, investments, and other assets</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Assets Summary Card */}
+        <Card className="mb-6 border-2 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
+            <CardTitle className="flex items-center justify-between">
+              <span>Portfolio Overview</span>
+              <Tabs value={futureYears.toString()} onValueChange={(v) => setFutureYears(Number(v))}>
+                <TabsList>
+                  <TabsTrigger value="5">5Y</TabsTrigger>
+                  <TabsTrigger value="10">10Y</TabsTrigger>
+                  <TabsTrigger value="15">15Y</TabsTrigger>
+                  <TabsTrigger value="20">20Y</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Current Total Value</p>
+                <div className="text-3xl font-bold text-primary">
+                  ${formatCurrency(totalCurrentValue)}
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">
+                  Projected Value ({futureYears} years)
+                </p>
+                <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                  ${formatCurrency(totalFutureValue)}
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Growth: +${formatCurrency(totalFutureValue - totalCurrentValue)}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Properties Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Home className="h-5 w-5" />
+              Properties (Max 2)
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="text-sm">Properties use 10-year average compounded appreciation rates specific to each Ontario city.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </CardTitle>
+            <CardDescription>Track real estate investments</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {properties.map((property) => {
+              const futureValue = calculateFutureValue(
+                Number(property.current_value),
+                Number(property.appreciation_rate),
+                futureYears
+              );
+              return (
+                <div key={property.id} className="p-4 bg-muted/50 rounded-lg border">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h4 className="font-semibold">{property.name}</h4>
+                      <p className="text-xs text-muted-foreground">
+                        Rate: {(Number(property.appreciation_rate) * 100).toFixed(1)}% annually
+                      </p>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => deleteAsset(property.id)}>
+                      Delete
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Current Value</p>
+                      <p className="text-lg font-bold">${formatCurrency(Number(property.current_value))}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">{futureYears}Y Projection</p>
+                      <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                        ${formatCurrency(futureValue)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            
+            {properties.length < 2 && (
+              <Dialog open={isAddPropertyOpen} onOpenChange={setIsAddPropertyOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full">Add Property</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add Property</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 pt-4">
+                    <div>
+                      <Label>City</Label>
+                      <Select value={propertyCity} onValueChange={setPropertyCity}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select city" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ONTARIO_CITIES.map(city => (
+                            <SelectItem key={city} value={city}>
+                              {city} ({(ONTARIO_CITY_RATES[city] * 100).toFixed(1)}% avg)
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Current Value ($)</Label>
+                      <Input
+                        type="number"
+                        value={propertyValue}
+                        onChange={(e) => setPropertyValue(e.target.value)}
+                        placeholder="0.00"
+                      />
+                    </div>
+                    <Button onClick={saveProperty} className="w-full">Add Property</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Standard Investments Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Briefcase className="h-5 w-5" />
+              Standard Investments (Max 3)
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="text-sm">Uses combined 10-year average of S&P 500, TSX, and Dow Jones ({(MARKET_INVESTMENT_RATE * 100).toFixed(1)}% annually).</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </CardTitle>
+            <CardDescription>TFSA, RRSP, and Group Retirement Plans</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {investments.map((investment) => {
+              const futureValue = calculateFutureValue(
+                Number(investment.current_value),
+                MARKET_INVESTMENT_RATE,
+                futureYears
+              );
+              return (
+                <div key={investment.id} className="p-4 bg-muted/50 rounded-lg border">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h4 className="font-semibold">{investment.name}</h4>
+                      <p className="text-xs text-muted-foreground">
+                        Market rate: {(MARKET_INVESTMENT_RATE * 100).toFixed(1)}% annually
+                      </p>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => deleteAsset(investment.id)}>
+                      Delete
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Current Value</p>
+                      <p className="text-lg font-bold">${formatCurrency(Number(investment.current_value))}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">{futureYears}Y Projection</p>
+                      <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                        ${formatCurrency(futureValue)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            
+            {investments.length < 3 && (
+              <Dialog open={isAddInvestmentOpen} onOpenChange={setIsAddInvestmentOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full">Add Investment</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add Standard Investment</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 pt-4">
+                    <div>
+                      <Label>Investment Type</Label>
+                      <Select value={investmentType} onValueChange={setInvestmentType}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {!investments.some(i => i.asset_type === 'tfsa') && (
+                            <SelectItem value="tfsa">TFSA</SelectItem>
+                          )}
+                          {!investments.some(i => i.asset_type === 'rrsp') && (
+                            <SelectItem value="rrsp">RRSP</SelectItem>
+                          )}
+                          {!investments.some(i => i.asset_type === 'group_retirement') && (
+                            <SelectItem value="group_retirement">Group Retirement Plan</SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Current Value ($)</Label>
+                      <Input
+                        type="number"
+                        value={investmentValue}
+                        onChange={(e) => setInvestmentValue(e.target.value)}
+                        placeholder="0.00"
+                      />
+                    </div>
+                    <Button onClick={saveInvestment} className="w-full">Add Investment</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Other Assets Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              Other Investments (Max 2)
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="text-sm">Define your own custom growth rates for specialized assets.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </CardTitle>
+            <CardDescription>Custom assets with user-defined growth rates</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {otherAssets.map((asset) => {
+              const futureValue = calculateFutureValue(
+                Number(asset.current_value),
+                Number(asset.appreciation_rate),
+                futureYears
+              );
+              return (
+                <div key={asset.id} className="p-4 bg-muted/50 rounded-lg border">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h4 className="font-semibold">{asset.name}</h4>
+                      <p className="text-xs text-muted-foreground">
+                        Custom rate: {(Number(asset.appreciation_rate) * 100).toFixed(1)}% annually
+                      </p>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => deleteAsset(asset.id)}>
+                      Delete
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Current Value</p>
+                      <p className="text-lg font-bold">${formatCurrency(Number(asset.current_value))}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">{futureYears}Y Projection</p>
+                      <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                        ${formatCurrency(futureValue)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            
+            {otherAssets.length < 2 && (
+              <Dialog open={isAddOtherOpen} onOpenChange={setIsAddOtherOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full">Add Other Investment</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add Other Investment</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 pt-4">
+                    <div>
+                      <Label>Asset Name</Label>
+                      <Input
+                        value={otherAssetName}
+                        onChange={(e) => setOtherAssetName(e.target.value)}
+                        placeholder="e.g., Cryptocurrency, Art Collection"
+                      />
+                    </div>
+                    <div>
+                      <Label>Current Value ($)</Label>
+                      <Input
+                        type="number"
+                        value={otherAssetValue}
+                        onChange={(e) => setOtherAssetValue(e.target.value)}
+                        placeholder="0.00"
+                      />
+                    </div>
+                    <div>
+                      <Label>Expected Annual Growth Rate (%)</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={otherAssetRate}
+                        onChange={(e) => setOtherAssetRate(e.target.value)}
+                        placeholder="e.g., 5.0"
+                      />
+                    </div>
+                    <Button onClick={saveOtherAsset} className="w-full">Add Asset</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Edit Goal Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
