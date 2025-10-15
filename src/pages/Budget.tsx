@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth, ProtectedRoute } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -6,9 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ArrowLeft, Plus, Trash2, CalendarIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import marcoloLogo from '@/assets/marcolo-logo.png';
 
 interface Income {
@@ -23,6 +27,8 @@ interface Expense {
   id: string;
   name: string;
   amount: number;
+  startDate?: Date;
+  duration?: number; // number of months
 }
 
 function BudgetContent() {
@@ -36,6 +42,8 @@ function BudgetContent() {
   const [newIncomeSchedule, setNewIncomeSchedule] = useState<'monthly' | 'quarterly' | 'annual'>('monthly');
   const [newExpenseName, setNewExpenseName] = useState('');
   const [newExpenseAmount, setNewExpenseAmount] = useState('');
+  const [newExpenseStartDate, setNewExpenseStartDate] = useState<Date>();
+  const [newExpenseDuration, setNewExpenseDuration] = useState('');
 
   // Convert all income to monthly amounts
   const convertToMonthly = (amount: number, schedule: 'monthly' | 'quarterly' | 'annual') => {
@@ -103,10 +111,14 @@ function BudgetContent() {
           id: Date.now().toString(),
           name: newExpenseName,
           amount: parseFloat(newExpenseAmount) || 0,
+          startDate: newExpenseStartDate,
+          duration: newExpenseDuration ? parseFloat(newExpenseDuration) : undefined,
         },
       ]);
       setNewExpenseName('');
       setNewExpenseAmount('');
+      setNewExpenseStartDate(undefined);
+      setNewExpenseDuration('');
     }
   };
 
@@ -264,10 +276,10 @@ function BudgetContent() {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Expenses</CardTitle>
-            <CardDescription>Add your monthly expenses</CardDescription>
+            <CardDescription>Add your monthly expenses with optional start date and duration</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
               <Input
                 placeholder="Expense name"
                 value={newExpenseName}
@@ -278,7 +290,37 @@ function BudgetContent() {
                 placeholder="Amount"
                 value={newExpenseAmount}
                 onChange={(e) => setNewExpenseAmount(e.target.value)}
-                className="w-32"
+              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !newExpenseStartDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {newExpenseStartDate ? format(newExpenseStartDate, "MM/dd/yyyy") : "Start date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={newExpenseStartDate}
+                    onSelect={setNewExpenseStartDate}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+              <Input
+                type="number"
+                placeholder="Duration (months)"
+                value={newExpenseDuration}
+                onChange={(e) => setNewExpenseDuration(e.target.value)}
+                min="1"
+                max="12"
               />
               <Button onClick={addExpense}>
                 <Plus className="h-4 w-4" />
@@ -288,7 +330,15 @@ function BudgetContent() {
             <div className="space-y-2">
               {expenses.map((expense) => (
                 <div key={expense.id} className="flex items-center justify-between bg-muted p-3 rounded">
-                  <span>{expense.name}</span>
+                  <div className="flex flex-col">
+                    <span>{expense.name}</span>
+                    {(expense.startDate || expense.duration) && (
+                      <span className="text-xs text-muted-foreground">
+                        {expense.startDate && format(expense.startDate, "MM/dd/yyyy")}
+                        {expense.duration && ` • ${expense.duration} months`}
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2">
                     <span className="font-medium">${expense.amount.toFixed(2)}</span>
                     <Button
