@@ -560,6 +560,7 @@ function CashflowContent() {
                 placeholder="Debt name (e.g., Car Loan)"
                 value={newDebtName}
                 onChange={(e) => setNewDebtName(e.target.value)}
+                className="px-3"
               />
               <Input
                 type="number"
