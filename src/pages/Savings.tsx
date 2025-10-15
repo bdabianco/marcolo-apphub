@@ -269,11 +269,28 @@ function SavingsContent() {
                   <div className="text-sm text-muted-foreground">Remaining</div>
                   <div className="text-xl font-bold">${formatCurrency(remaining)}</div>
                 </div>
-                {monthly > 0 && (
-                  <div>
-                    <div className="text-sm text-muted-foreground">Months to Goal</div>
-                    <div className="text-xl font-bold">{monthsToGoal}</div>
-                  </div>
+                {monthly > 0 && monthsToGoal > 0 && (
+                  <>
+                    <div>
+                      <div className="text-sm text-muted-foreground">Months to Goal</div>
+                      <div className="text-xl font-bold">{monthsToGoal}</div>
+                    </div>
+                    <div className="col-span-2">
+                      <div className="text-sm text-muted-foreground">Projected Amount</div>
+                      <div className="text-xl font-bold">${formatCurrency(current + (monthly * monthsToGoal))}</div>
+                    </div>
+                    <div className="col-span-2">
+                      <div className="text-sm text-muted-foreground">Variance at Target Date</div>
+                      <div className={`text-xl font-bold ${(current + (monthly * monthsToGoal)) >= target ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        ${formatCurrency((current + (monthly * monthsToGoal)) - target)}
+                      </div>
+                      {(current + (monthly * monthsToGoal)) >= target ? (
+                        <p className="text-xs text-green-600 dark:text-green-400 mt-1">On track to exceed goal</p>
+                      ) : (
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">Below target, increase contribution</p>
+                      )}
+                    </div>
+                  </>
                 )}
               </div>
             </CardContent>
@@ -303,6 +320,8 @@ function SavingsContent() {
                 const monthsRemaining = Number(goal.monthly_contribution) > 0 
                   ? Math.ceil(remaining / Number(goal.monthly_contribution)) 
                   : 0;
+                const projectedAmount = Number(goal.current_amount) + (Number(goal.monthly_contribution) * monthsRemaining);
+                const variance = projectedAmount - Number(goal.target_amount);
 
                 return (
                   <div key={goal.id} className="bg-gradient-to-r from-muted/50 to-background p-4 rounded-lg border shadow-sm">
@@ -330,7 +349,7 @@ function SavingsContent() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mb-3">
                       <div>
                         <div className="text-muted-foreground">Current</div>
                         <div className="font-semibold">${formatCurrency(Number(goal.current_amount))}</div>
@@ -348,6 +367,24 @@ function SavingsContent() {
                         <div className="font-semibold">{monthsRemaining > 0 ? monthsRemaining : 'N/A'}</div>
                       </div>
                     </div>
+
+                    {monthsRemaining > 0 && (
+                      <div className="pt-3 border-t grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <div className="text-muted-foreground">Projected Amount</div>
+                          <div className="font-semibold">${formatCurrency(projectedAmount)}</div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground">Variance</div>
+                          <div className={`font-semibold ${variance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                            {variance >= 0 ? '+' : ''}${formatCurrency(variance)}
+                          </div>
+                          <p className={`text-xs mt-1 ${variance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                            {variance >= 0 ? 'On track' : 'Below target'}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
