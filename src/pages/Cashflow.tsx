@@ -138,13 +138,22 @@ function CashflowContent() {
       return;
     }
 
+    console.log('Saving cashflow data...', { debts, primaryMortgageBalanceNum, secondaryMortgageBalanceNum });
+
     try {
       // Check if a cashflow record already exists for this project
-      const { data: existingRecord } = await supabase
+      const { data: existingRecord, error: checkError } = await supabase
         .from('cashflow_records')
         .select('id')
         .eq('budget_plan_id', currentProject.id)
         .maybeSingle();
+
+      if (checkError) {
+        console.error('Error checking for existing record:', checkError);
+        throw checkError;
+      }
+
+      console.log('Existing record:', existingRecord);
 
       const mortgageData = {
         primary: {
@@ -159,7 +168,8 @@ function CashflowContent() {
 
       if (existingRecord) {
         // Update existing record
-        const { error } = await supabase
+        console.log('Updating existing record...');
+        const { data, error } = await supabase
           .from('cashflow_records')
           .update({
             debts: JSON.stringify(debts),
@@ -168,12 +178,18 @@ function CashflowContent() {
             monthly_debt_payment: monthlyPayment,
             available_cashflow: 0,
           })
-          .eq('budget_plan_id', currentProject.id);
+          .eq('budget_plan_id', currentProject.id)
+          .select();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Update error:', error);
+          throw error;
+        }
+        console.log('Update successful:', data);
       } else {
         // Create new record
-        const { error } = await supabase
+        console.log('Creating new record...');
+        const { data, error } = await supabase
           .from('cashflow_records')
           .insert({
             user_id: user.id,
@@ -183,14 +199,20 @@ function CashflowContent() {
             total_debt: totalDebt,
             monthly_debt_payment: monthlyPayment,
             available_cashflow: 0,
-          });
+          })
+          .select();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Insert error:', error);
+          throw error;
+        }
+        console.log('Insert successful:', data);
       }
 
       toast.success('Cashflow data saved successfully!');
       navigate('/dashboard');
     } catch (error: any) {
+      console.error('Save cashflow error:', error);
       toast.error(error.message || 'Failed to save cashflow data');
     }
   };
