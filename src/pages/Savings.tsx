@@ -32,6 +32,7 @@ function SavingsContent() {
   const [editingGoal, setEditingGoal] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isGoalsOpen, setIsGoalsOpen] = useState(true);
+  const [isCreateGoalOpen, setIsCreateGoalOpen] = useState(false);
   
   // Assets state
   const [assets, setAssets] = useState<any[]>([]);
@@ -446,79 +447,91 @@ function SavingsContent() {
           </CardContent>
         </Card>
 
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Create Savings Goal</CardTitle>
-            <CardDescription>Set a target and track your progress</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="goalName">Goal Name</Label>
-              <Input
-                id="goalName"
-                value={goalName}
-                onChange={(e) => setGoalName(e.target.value)}
-                placeholder="e.g., Emergency Fund, Vacation, New Car"
-              />
-            </div>
+        {/* Create Savings Goal - Collapsible */}
+        <Collapsible open={isCreateGoalOpen} onOpenChange={setIsCreateGoalOpen}>
+          <Card className="mb-6 border-2 shadow-lg">
+            <CollapsibleTrigger className="w-full">
+              <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent cursor-pointer hover:bg-primary/10 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="text-left">
+                    <CardTitle>Create Savings Goal</CardTitle>
+                    <CardDescription>Set a target and track your progress</CardDescription>
+                  </div>
+                  <ChevronDown className={`h-5 w-5 transition-transform ${isCreateGoalOpen ? 'rotate-180' : ''}`} />
+                </div>
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent className="space-y-4 pt-6">
+                <div>
+                  <Label htmlFor="goalName">Goal Name</Label>
+                  <Input
+                    id="goalName"
+                    value={goalName}
+                    onChange={(e) => setGoalName(e.target.value)}
+                    placeholder="e.g., Emergency Fund, Vacation, New Car"
+                  />
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="targetAmount">Target Amount ($)</Label>
-                <Input
-                  id="targetAmount"
-                  type="number"
-                  value={targetAmount}
-                  onChange={(e) => setTargetAmount(e.target.value)}
-                  placeholder="0.00"
-                />
-              </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="targetAmount">Target Amount ($)</Label>
+                    <Input
+                      id="targetAmount"
+                      type="number"
+                      value={targetAmount}
+                      onChange={(e) => setTargetAmount(e.target.value)}
+                      placeholder="0.00"
+                    />
+                  </div>
 
-              <div>
-                <Label htmlFor="currentAmount">Current Amount ($)</Label>
-                <Input
-                  id="currentAmount"
-                  type="number"
-                  value={currentAmount}
-                  onChange={(e) => setCurrentAmount(e.target.value)}
-                  placeholder="0.00"
-                />
-              </div>
-            </div>
+                  <div>
+                    <Label htmlFor="currentAmount">Current Amount ($)</Label>
+                    <Input
+                      id="currentAmount"
+                      type="number"
+                      value={currentAmount}
+                      onChange={(e) => setCurrentAmount(e.target.value)}
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="monthlyContribution">
-                  Monthly Contribution ($)
-                  {availableSurplus > 0 && (
-                    <span className="text-xs text-muted-foreground ml-2">
-                      (Max: ${formatCurrency(availableSurplus)})
-                    </span>
-                  )}
-                </Label>
-                <Input
-                  id="monthlyContribution"
-                  type="number"
-                  value={monthlyContribution}
-                  onChange={(e) => setMonthlyContribution(e.target.value)}
-                  placeholder="0.00"
-                  max={availableSurplus}
-                  disabled={availableSurplus <= 0}
-                />
-              </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="monthlyContribution">
+                      Monthly Contribution ($)
+                      {availableSurplus > 0 && (
+                        <span className="text-xs text-muted-foreground ml-2">
+                          (Max: ${formatCurrency(availableSurplus)})
+                        </span>
+                      )}
+                    </Label>
+                    <Input
+                      id="monthlyContribution"
+                      type="number"
+                      value={monthlyContribution}
+                      onChange={(e) => setMonthlyContribution(e.target.value)}
+                      placeholder="0.00"
+                      max={availableSurplus}
+                      disabled={availableSurplus <= 0}
+                    />
+                  </div>
 
-              <div>
-                <Label htmlFor="targetDate">Target Date (Optional)</Label>
-                <Input
-                  id="targetDate"
-                  type="date"
-                  value={targetDate}
-                  onChange={(e) => setTargetDate(e.target.value)}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                  <div>
+                    <Label htmlFor="targetDate">Target Date (Optional)</Label>
+                    <Input
+                      id="targetDate"
+                      type="date"
+                      value={targetDate}
+                      onChange={(e) => setTargetDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
 
         {target > 0 && (
           <Card className="mb-6">
