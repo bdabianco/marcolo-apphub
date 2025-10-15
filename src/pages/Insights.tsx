@@ -117,17 +117,32 @@ function InsightsContent() {
 
     // Extract debt breakdown from cashflows
     const allDebts: any[] = [];
+    let totalMortgageBalance = 0;
+    let totalMortgagePayment = 0;
+    
     cashflows?.forEach(cf => {
       // Add mortgage if exists
       if (cf.mortgage && typeof cf.mortgage === 'object') {
         const mortgage = cf.mortgage as any;
-        if (mortgage.balance > 0) {
+        if (mortgage.primary?.balance > 0) {
           allDebts.push({
-            name: 'Mortgage',
-            balance: Number(mortgage.balance || 0),
-            monthlyPayment: Number(mortgage.monthlyPayment || 0),
-            interestRate: Number(mortgage.interestRate || 0),
+            name: 'Mortgage (Primary)',
+            balance: Number(mortgage.primary.balance || 0),
+            monthlyPayment: Number(mortgage.primary.monthlyPayment || 0),
+            interestRate: Number(mortgage.primary.interestRate || 0),
           });
+          totalMortgageBalance += Number(mortgage.primary.balance || 0);
+          totalMortgagePayment += Number(mortgage.primary.monthlyPayment || 0);
+        }
+        if (mortgage.secondary?.balance > 0) {
+          allDebts.push({
+            name: 'Mortgage (Secondary)',
+            balance: Number(mortgage.secondary.balance || 0),
+            monthlyPayment: Number(mortgage.secondary.monthlyPayment || 0),
+            interestRate: Number(mortgage.secondary.interestRate || 0),
+          });
+          totalMortgageBalance += Number(mortgage.secondary.balance || 0);
+          totalMortgagePayment += Number(mortgage.secondary.monthlyPayment || 0);
         }
       }
       
@@ -148,8 +163,14 @@ function InsightsContent() {
     
     setDebtBreakdown(allDebts);
     
-    const totalDebts = cashflows?.reduce((sum, c) => sum + Number(c.total_debt || 0), 0) || 0;
-    const monthlyDebtPayment = cashflows?.reduce((sum, c) => sum + Number(c.monthly_debt_payment || 0), 0) || 0;
+    // Calculate total debts including mortgage
+    const otherDebts = cashflows?.reduce((sum, c) => sum + Number(c.total_debt || 0), 0) || 0;
+    const totalDebts = otherDebts + totalMortgageBalance;
+    
+    // Calculate total monthly debt payment including mortgage
+    const otherDebtPayments = cashflows?.reduce((sum, c) => sum + Number(c.monthly_debt_payment || 0), 0) || 0;
+    const monthlyDebtPayment = otherDebtPayments + totalMortgagePayment;
+    
     const totalAssets = assets?.reduce((sum, a) => sum + Number(a.current_value || 0), 0) || 0;
     
     // Savings goals metrics
