@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Home, DollarSign, TrendingUp, Wallet, ChevronRight, Sparkles, Calculator, PiggyBank } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AppHeader } from '@/components/AppHeader';
@@ -445,14 +445,20 @@ function CashflowContent() {
       <AppHeader />
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <Card className="mb-6">
-          <CardHeader>
+        <Card className="mb-6 border-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
             <div className="flex items-start justify-between">
-              <div>
-                <CardTitle>Debt Tracking</CardTitle>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Wallet className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-2xl">Debt Tracking</CardTitle>
+                </div>
                 <CardDescription>Manage your debts and monthly payments</CardDescription>
               </div>
-              <Button onClick={saveCashflow}>
+              <Button onClick={saveCashflow} className="shadow-md hover:shadow-lg transition-all duration-300">
+                <DollarSign className="h-4 w-4 mr-2" />
                 Save Cashflow Data
               </Button>
             </div>
@@ -460,12 +466,20 @@ function CashflowContent() {
           <CardContent className="space-y-6">
             <Accordion type="multiple" defaultValue={['mortgages', 'other-debts']} className="w-full">
               {/* Mortgage Section */}
-              <AccordionItem value="mortgages">
-                <AccordionTrigger className="text-lg font-semibold">Mortgages</AccordionTrigger>
+              <AccordionItem value="mortgages" className="border rounded-lg px-4 mb-3">
+                <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <Home className="h-5 w-5 text-primary" />
+                    <span>Mortgages</span>
+                  </div>
+                </AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
                   {/* Primary Mortgage */}
-                  <div className="bg-muted p-4 rounded space-y-2">
-                    <div className="font-medium">Primary Mortgage</div>
+                  <div className="bg-gradient-to-br from-muted via-muted/50 to-background p-4 rounded-lg border shadow-sm space-y-2">
+                    <div className="font-medium flex items-center gap-2">
+                      <ChevronRight className="h-4 w-4 text-primary" />
+                      Primary Mortgage
+                    </div>
                     <div className="grid grid-cols-3 gap-4">
                       <div>
                         <Label>Total Balance</Label>
@@ -498,8 +512,11 @@ function CashflowContent() {
                   </div>
 
                   {/* Secondary Mortgage */}
-                  <div className="bg-muted p-4 rounded space-y-2">
-                    <div className="font-medium">Secondary Mortgage</div>
+                  <div className="bg-gradient-to-br from-muted via-muted/50 to-background p-4 rounded-lg border shadow-sm space-y-2">
+                    <div className="font-medium flex items-center gap-2">
+                      <ChevronRight className="h-4 w-4 text-primary" />
+                      Secondary Mortgage
+                    </div>
                     <div className="grid grid-cols-3 gap-4">
                       <div>
                         <Label>Total Balance</Label>
@@ -534,8 +551,13 @@ function CashflowContent() {
               </AccordionItem>
 
               {/* Other Debts Section */}
-              <AccordionItem value="other-debts">
-                <AccordionTrigger className="text-lg font-semibold">Other Debts</AccordionTrigger>
+              <AccordionItem value="other-debts" className="border rounded-lg px-4 mb-3">
+                <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-primary" />
+                    <span>Other Debts</span>
+                  </div>
+                </AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
               <Input
@@ -562,7 +584,7 @@ function CashflowContent() {
                   value={newDebtPayment}
                   onChange={(e) => setNewDebtPayment(e.target.value)}
                 />
-                <Button onClick={addDebt}>
+                <Button onClick={addDebt} className="hover:scale-105 transition-transform">
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
@@ -570,7 +592,7 @@ function CashflowContent() {
 
                 <div className="space-y-2">
                   {debts.map((debt) => (
-                    <div key={debt.id} className="bg-muted p-4 rounded space-y-2">
+                    <div key={debt.id} className="bg-gradient-to-r from-muted/80 to-muted/40 p-4 rounded-lg border shadow-sm hover:shadow-md transition-all duration-200 space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="font-medium">{debt.name}</span>
                         <Button
@@ -617,15 +639,20 @@ function CashflowContent() {
 
             {/* Interest Summary Section - moved under Debt Tracking */}
             {(primaryMortgageBalanceNum > 0 || secondaryMortgageBalanceNum > 0 || debts.length > 0) && (
-              <div className="mt-6 pt-6 border-t">
-                <h3 className="text-lg font-semibold mb-4">Interest Summary</h3>
+              <div className="mt-6 pt-6 border-t-2 border-dashed">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Calculator className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold">Interest Summary</h3>
+                </div>
                 <div className="text-sm text-muted-foreground mb-4">Total interest calculations for all debts</div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-muted p-4 rounded">
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 p-4 rounded-lg border-2 border-blue-200 dark:border-blue-800 shadow-md hover:shadow-lg transition-all duration-300">
                     <div className="text-sm text-muted-foreground mb-1">Monthly Interest</div>
                     <div className="text-2xl font-bold">${formatCurrency(totalMonthlyInterest)}</div>
                   </div>
-                  <div className="bg-muted p-4 rounded">
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/30 dark:to-purple-900/20 p-4 rounded-lg border-2 border-purple-200 dark:border-purple-800 shadow-md hover:shadow-lg transition-all duration-300">
                     <div className="text-sm text-muted-foreground mb-1">Annual Interest</div>
                     <div className="text-2xl font-bold">${formatCurrency(totalAnnualInterest)}</div>
                   </div>
@@ -636,20 +663,32 @@ function CashflowContent() {
         </Card>
 
         {/* Adjustments Section */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Adjustments</CardTitle>
-            <CardDescription>Create "what if" scenarios without affecting your budget</CardDescription>
+        <Card className="mb-6 border-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="bg-gradient-to-r from-accent/5 via-accent/3 to-transparent">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-accent/10 rounded-lg">
+                <Sparkles className="h-6 w-6 text-accent-foreground" />
+              </div>
+              <div>
+                <CardTitle>Adjustments</CardTitle>
+                <CardDescription>Create "what if" scenarios without affecting your budget</CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <Accordion type="multiple" className="w-full">
               {/* Income Adjustment */}
-              <AccordionItem value="income-adj">
-                <AccordionTrigger className="text-lg font-semibold">Income Adjustment</AccordionTrigger>
+              <AccordionItem value="income-adj" className="border rounded-lg px-4 mb-3">
+                <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="h-5 w-5 text-green-600" />
+                    <span>Income Adjustment</span>
+                  </div>
+                </AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
-                  <div className="bg-muted p-4 rounded space-y-3">
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/10 p-4 rounded-lg border shadow-sm space-y-3">
                     <div className="flex justify-end mb-2">
-                      <Button variant="outline" size="sm" onClick={clearIncomeAdjustment}>
+                      <Button variant="outline" size="sm" onClick={clearIncomeAdjustment} className="hover:scale-105 transition-transform">
                         Clear
                       </Button>
                     </div>
@@ -688,18 +727,23 @@ function CashflowContent() {
               </AccordionItem>
 
               {/* Expense Adjustments */}
-              <AccordionItem value="expense-adj">
-                <AccordionTrigger className="text-lg font-semibold">Expense Adjustments (up to 5)</AccordionTrigger>
+              <AccordionItem value="expense-adj" className="border rounded-lg px-4 mb-3">
+                <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-orange-600" />
+                    <span>Expense Adjustments (up to 5)</span>
+                  </div>
+                </AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
                   {expenseAdjustments.length > 0 && (
                     <div className="flex justify-end mb-2">
-                      <Button variant="outline" size="sm" onClick={clearExpenseAdjustments}>
+                      <Button variant="outline" size="sm" onClick={clearExpenseAdjustments} className="hover:scale-105 transition-transform">
                         Clear All
                       </Button>
                     </div>
                   )}
                   {expenseAdjustments.map((adj, index) => (
-                    <div key={adj.id} className="bg-muted p-4 rounded">
+                    <div key={adj.id} className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/10 p-4 rounded-lg border shadow-sm">
                       <div className="flex items-center justify-between mb-2">
                         <span className="font-medium">Adjustment {index + 1}</span>
                         <Button
@@ -752,7 +796,7 @@ function CashflowContent() {
                         ...expenseAdjustments,
                         { id: Date.now().toString(), expenseId: '', expenseName: '', newAmount: '' }
                       ])}
-                      className="w-full"
+                      className="w-full hover:scale-105 transition-transform"
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       Add Expense Adjustment
@@ -762,12 +806,17 @@ function CashflowContent() {
               </AccordionItem>
 
               {/* Debt Consolidation */}
-              <AccordionItem value="debt-consolidation">
-                <AccordionTrigger className="text-lg font-semibold">Debt Consolidation</AccordionTrigger>
+              <AccordionItem value="debt-consolidation" className="border rounded-lg px-4 mb-3">
+                <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <PiggyBank className="h-5 w-5 text-blue-600" />
+                    <span>Debt Consolidation</span>
+                  </div>
+                </AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
-                  <div className="bg-muted p-4 rounded space-y-3">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/10 p-4 rounded-lg border shadow-sm space-y-3">
                     <div className="flex justify-end mb-2">
-                      <Button variant="outline" size="sm" onClick={clearDebtConsolidation}>
+                      <Button variant="outline" size="sm" onClick={clearDebtConsolidation} className="hover:scale-105 transition-transform">
                         Clear
                       </Button>
                     </div>
