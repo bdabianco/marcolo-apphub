@@ -29,6 +29,7 @@ function CashflowContent() {
   const [newDebtBalance, setNewDebtBalance] = useState('');
   const [newDebtPayment, setNewDebtPayment] = useState('');
   const [newDebtInterest, setNewDebtInterest] = useState('');
+  const [monthlyExpenses, setMonthlyExpenses] = useState(0);
   
   // Mortgage states
   const [primaryMortgageBalance, setPrimaryMortgageBalance] = useState('');
@@ -47,6 +48,18 @@ function CashflowContent() {
     if (!currentProject) return;
 
     try {
+      // Load budget plan data for expenses
+      const { data: budgetData } = await supabase
+        .from('budget_plans')
+        .select('total_expenses')
+        .eq('id', currentProject.id)
+        .single();
+
+      if (budgetData) {
+        setMonthlyExpenses(Number(budgetData.total_expenses) || 0);
+      }
+
+      // Load cashflow records
       const { data, error } = await supabase
         .from('cashflow_records')
         .select('*')
@@ -357,6 +370,65 @@ function CashflowContent() {
                   <div className="text-2xl font-bold">${totalAnnualInterest.toFixed(2)}</div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Cashflow Table */}
+        {currentProject && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Cashflow Projection</CardTitle>
+              <CardDescription>Monthly breakdown of income and expenses</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Accordion type="multiple" defaultValue={['total']}>
+                {/* Total Row - Shown by Default */}
+                <AccordionItem value="total">
+                  <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                    <div className="grid grid-cols-6 gap-4 w-full pr-4 text-sm">
+                      <div className="font-bold">Total</div>
+                      <div className="text-right font-bold">${(monthlyExpenses * 12).toFixed(2)}</div>
+                      <div className="text-right font-bold">${(monthlyPayment * 12).toFixed(2)}</div>
+                      <div className="text-right font-bold">${totalAnnualInterest.toFixed(2)}</div>
+                      <div className="text-right font-bold">${((monthlyExpenses + monthlyPayment + totalMonthlyInterest) * 12).toFixed(2)}</div>
+                      <div className="text-right font-bold text-muted-foreground">-</div>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-2">
+                      {/* Header Row */}
+                      <div className="grid grid-cols-6 gap-4 text-sm font-semibold border-b pb-2">
+                        <div>Month</div>
+                        <div className="text-right">Expenses</div>
+                        <div className="text-right">Debt</div>
+                        <div className="text-right">Interest</div>
+                        <div className="text-right">Sub Total</div>
+                        <div className="text-right">Adjustment</div>
+                      </div>
+                      
+                      {/* Monthly Rows */}
+                      {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => {
+                        const expenses = monthlyExpenses;
+                        const monthlyDebt = monthlyPayment;
+                        const monthlyInterest = totalMonthlyInterest;
+                        const subTotal = expenses + monthlyDebt + monthlyInterest;
+                        
+                        return (
+                          <div key={month} className="grid grid-cols-6 gap-4 text-sm py-2 hover:bg-muted/50 rounded px-2">
+                            <div>{month}</div>
+                            <div className="text-right">${expenses.toFixed(2)}</div>
+                            <div className="text-right">${monthlyDebt.toFixed(2)}</div>
+                            <div className="text-right">${monthlyInterest.toFixed(2)}</div>
+                            <div className="text-right font-medium">${subTotal.toFixed(2)}</div>
+                            <div className="text-right text-muted-foreground">$0.00</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </CardContent>
           </Card>
         )}
