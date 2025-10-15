@@ -188,6 +188,7 @@ function CashflowContent() {
         const parsedDebts = typeof data.debts === 'string'
           ? JSON.parse(data.debts)
           : data.debts;
+        console.log('Loaded debts from database:', parsedDebts);
         setDebts(parsedDebts || []);
       }
 
@@ -297,7 +298,12 @@ function CashflowContent() {
       return;
     }
 
-    console.log('Saving cashflow data...', { debts, primaryMortgageBalanceNum, secondaryMortgageBalanceNum });
+    console.log('Saving cashflow data...', { 
+      debtsCount: debts.length,
+      debts, 
+      primaryMortgageBalanceNum, 
+      secondaryMortgageBalanceNum 
+    });
 
     try {
       // Check if a cashflow record already exists for this project
@@ -354,10 +360,12 @@ function CashflowContent() {
       if (existingRecord) {
         // Update existing record
         console.log('Updating existing record...');
+        const debtsToSave = JSON.stringify(debts);
+        console.log('Debts being saved:', debtsToSave);
         const { data, error } = await supabase
           .from('cashflow_records')
           .update({
-            debts: JSON.stringify(debts),
+            debts: debtsToSave,
             mortgage: JSON.stringify(mortgageData),
             adjustments: JSON.stringify(adjustmentsData),
             total_debt: totalDebt,
@@ -375,12 +383,14 @@ function CashflowContent() {
       } else {
         // Create new record
         console.log('Creating new record...');
+        const debtsToSave = JSON.stringify(debts);
+        console.log('Debts being saved:', debtsToSave);
         const { data, error } = await supabase
           .from('cashflow_records')
           .insert({
             user_id: user.id,
             budget_plan_id: currentProject.id,
-            debts: JSON.stringify(debts),
+            debts: debtsToSave,
             mortgage: JSON.stringify(mortgageData),
             adjustments: JSON.stringify(adjustmentsData),
             total_debt: totalDebt,
