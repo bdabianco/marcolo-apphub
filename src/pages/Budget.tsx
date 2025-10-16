@@ -256,15 +256,21 @@ function BudgetContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
+    <div className="min-h-screen bg-[image:var(--gradient-sky)] relative overflow-hidden">
+      {/* Organic Background */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-10 right-1/4 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+      </div>
+      
       <AppHeader />
 
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <Card className="mb-6 border-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
-          <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/10">
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-green-500/10 rounded-lg">
-                <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
+      <main className="container mx-auto px-4 py-8 max-w-4xl relative z-10">
+        <Card className="mb-6 border-2 border-primary/20 rounded-[2rem] [box-shadow:var(--shadow-leaf)] hover:[box-shadow:var(--shadow-canopy)] transition-all duration-500">
+          <CardHeader className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-t-[2rem]">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-primary/10 rounded-2xl">
+                <DollarSign className="h-7 w-7 text-primary" />
               </div>
               <div>
                 <CardTitle>Income</CardTitle>
@@ -375,11 +381,11 @@ function BudgetContent() {
           </CardContent>
         </Card>
 
-        <Card className="mb-6 border-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
-          <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/10">
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-orange-500/10 rounded-lg">
-                <TrendingDown className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+        <Card className="mb-6 border-2 border-secondary/20 rounded-[2rem] [box-shadow:var(--shadow-leaf)] hover:[box-shadow:var(--shadow-canopy)] transition-all duration-500">
+          <CardHeader className="bg-gradient-to-br from-secondary/10 via-secondary/5 to-transparent rounded-t-[2rem]">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-secondary/10 rounded-2xl">
+                <TrendingDown className="h-7 w-7 text-secondary" />
               </div>
               <div>
                 <CardTitle>Expenses</CardTitle>

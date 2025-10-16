@@ -306,18 +306,26 @@ function InsightsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
+    <div className="min-h-screen bg-[image:var(--gradient-sky)] relative overflow-hidden">
+      {/* Organic Background */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+      </div>
+      
       <AppHeader />
 
-      <main className="container mx-auto px-4 py-8 max-w-6xl">
+      <main className="container mx-auto px-4 py-8 max-w-6xl relative z-10">
         {/* Section Header */}
-        <div className="mb-8">
+        <div className="mb-10">
           <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <Lightbulb className="h-8 w-8 text-primary" />
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-secondary/10 rounded-2xl">
+                <Lightbulb className="h-9 w-9 text-secondary" />
+              </div>
               <div>
-                <h2 className="text-3xl font-bold text-foreground">Financial Insights</h2>
-                <p className="text-muted-foreground mt-1">
+                <h2 className="text-4xl font-bold bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">Financial Insights</h2>
+                <p className="text-muted-foreground mt-1 text-lg">
                   {currentProject ? `Analysis for ${currentProject.project_name}` : 'Comprehensive analysis across all your budget plans'}
                 </p>
               </div>
@@ -342,9 +350,9 @@ function InsightsContent() {
             </CardContent>
           </Card>
 
-          <Card className="border-2">
-            <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
-              <CardTitle className="text-sm font-medium">Annual Expenses</CardTitle>
+          <Card className="border-2 border-secondary/20 rounded-[2rem] hover:[box-shadow:var(--shadow-leaf)] transition-all duration-500">
+            <CardHeader className="pb-3 bg-gradient-to-br from-secondary/10 to-transparent rounded-t-[2rem]">
+              <CardTitle className="text-sm font-semibold">Annual Expenses</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -353,9 +361,9 @@ function InsightsContent() {
             </CardContent>
           </Card>
 
-          <Card className="border-2">
-            <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
-              <CardTitle className="text-sm font-medium">Annual Surplus</CardTitle>
+          <Card className="border-2 border-accent/20 rounded-[2rem] hover:[box-shadow:var(--shadow-leaf)] transition-all duration-500">
+            <CardHeader className="pb-3 bg-gradient-to-br from-accent/10 to-transparent rounded-t-[2rem]">
+              <CardTitle className="text-sm font-semibold">Annual Surplus</CardTitle>
             </CardHeader>
             <CardContent>
               <div className={`text-2xl font-bold ${metrics.annualSurplus >= 0 ? 'text-primary' : 'text-destructive'}`}>
@@ -364,9 +372,9 @@ function InsightsContent() {
             </CardContent>
           </Card>
 
-          <Card className="border-2">
-            <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
-              <CardTitle className="text-sm font-medium">Savings Rate</CardTitle>
+          <Card className="border-2 border-primary/20 rounded-[2rem] hover:[box-shadow:var(--shadow-leaf)] transition-all duration-500">
+            <CardHeader className="pb-3 bg-gradient-to-br from-primary/10 to-transparent rounded-t-[2rem]">
+              <CardTitle className="text-sm font-semibold">Savings Rate</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary">

@@ -437,17 +437,23 @@ function CashflowContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
+    <div className="min-h-screen bg-[image:var(--gradient-sky)] relative overflow-hidden">
+      {/* Organic Background */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-20 left-1/3 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-1/3 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
+      </div>
+      
       <AppHeader />
 
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <Card className="mb-6 border-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
-          <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
+      <main className="container mx-auto px-4 py-8 max-w-4xl relative z-10">
+        <Card className="mb-6 border-2 border-primary/20 rounded-[2rem] [box-shadow:var(--shadow-leaf)] hover:[box-shadow:var(--shadow-canopy)] transition-all duration-500">
+          <CardHeader className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-t-[2rem]">
             <div className="flex items-start justify-between">
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Wallet className="h-6 w-6 text-primary" />
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-primary/10 rounded-2xl">
+                    <Wallet className="h-7 w-7 text-primary" />
                   </div>
                   <CardTitle className="text-2xl">Debt Tracking</CardTitle>
                 </div>

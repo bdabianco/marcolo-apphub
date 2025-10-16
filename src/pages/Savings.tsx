@@ -415,23 +415,31 @@ function SavingsContent() {
   }, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
+    <div className="min-h-screen bg-[image:var(--gradient-sky)] relative overflow-hidden">
+      {/* Organic Background */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
+      </div>
+      
       <AppHeader />
 
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <main className="container mx-auto px-4 py-8 max-w-4xl relative z-10">
         <div className="mb-8">
-          <div className="flex items-center gap-3">
-            <PiggyBank className="h-8 w-8 text-primary" />
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-accent/10 rounded-2xl">
+              <PiggyBank className="h-9 w-9 text-accent" />
+            </div>
             <div>
-              <h2 className="text-3xl font-bold text-foreground">Savings Goals</h2>
-              <p className="text-muted-foreground mt-1">Set and track your savings targets</p>
+              <h2 className="text-4xl font-bold bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">Savings Goals</h2>
+              <p className="text-muted-foreground mt-1 text-lg">Set and track your savings targets</p>
             </div>
           </div>
         </div>
 
         {/* Available Surplus Card */}
-        <Card className="mb-6 border-2 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
+        <Card className="mb-6 border-2 border-accent/20 rounded-[2rem] [box-shadow:var(--shadow-leaf)]">
+          <CardHeader className="bg-gradient-to-br from-accent/10 via-accent/5 to-transparent rounded-t-[2rem]">
             <CardTitle>Available Surplus</CardTitle>
             <CardDescription>
               {availableSurplus > 0 
