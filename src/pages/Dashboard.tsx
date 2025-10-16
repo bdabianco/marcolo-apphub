@@ -378,8 +378,8 @@ function DashboardContent() {
                 <TooltipTrigger asChild>
                   <Button 
                     onClick={() => navigate('/savings')}
-                    variant="outline"
-                    className="h-32 flex-col gap-2 hover:border-accent hover:bg-accent/5 relative"
+                    variant="default"
+                    className="h-32 flex-col gap-2 relative bg-accent/10 hover:bg-accent/20 border border-accent/30"
                   >
                     <div className="absolute top-2 right-2">
                       <Badge variant={completionStatus.savings.complete ? "default" : "secondary"} className="text-xs">
@@ -406,8 +406,8 @@ function DashboardContent() {
                 <TooltipTrigger asChild>
                   <Button 
                     onClick={() => navigate('/savings')}
-                    variant="outline"
-                    className="h-32 flex-col gap-2 hover:border-secondary hover:bg-secondary/5 relative"
+                    variant="default"
+                    className="h-32 flex-col gap-2 relative bg-secondary/10 hover:bg-secondary/20 border border-secondary/30"
                   >
                     <div className="absolute top-2 right-2">
                       <Badge variant={completionStatus.assets.complete ? "default" : "secondary"} className="text-xs">
@@ -435,8 +435,8 @@ function DashboardContent() {
                 <TooltipTrigger asChild>
                   <Button 
                     onClick={() => navigate('/insights')}
-                    variant="outline"
-                    className="h-32 flex-col gap-2 hover:border-primary hover:bg-primary/5 relative"
+                    variant="default"
+                    className="h-32 flex-col gap-2 relative bg-primary/10 hover:bg-primary/20 border border-primary/30"
                   >
                     <div className="absolute top-2 right-2">
                       <Badge variant={completionStatus.insights.complete ? "default" : "secondary"} className="text-xs">
