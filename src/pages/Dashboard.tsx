@@ -8,7 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ProtectedRoute } from '@/lib/auth';
-import { DollarSign, TrendingUp, PiggyBank, FileText, LogOut, LineChart, Shield, CheckCircle2, Circle, Clock } from 'lucide-react';
+import { DollarSign, TrendingUp, PiggyBank, FileText, LogOut, LineChart, Shield, CheckCircle2, Circle, Clock, Wallet } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ProjectSelector } from '@/components/ProjectSelector';
@@ -34,6 +34,7 @@ function DashboardContent() {
     budget: { complete: false, progress: 0, label: 'Not Started' },
     cashflow: { complete: false, progress: 0, label: 'Not Started' },
     savings: { complete: false, progress: 0, label: 'Not Started' },
+    assets: { complete: false, progress: 0, label: 'Not Started' },
     insights: { complete: false, progress: 0, label: 'Not Started' },
   });
 
@@ -117,6 +118,7 @@ function DashboardContent() {
     const budgetComplete = budget && incomeCount > 0 && expenseCount > 0;
     const cashflowComplete = cashflow && debtCount > 0;
     const savingsComplete = savings && savings.length > 0;
+    const assetsComplete = assets && assets.length > 0;
     const insightsComplete = budgetComplete && cashflowComplete;
 
     setCompletionStatus({
@@ -134,6 +136,11 @@ function DashboardContent() {
         complete: savingsComplete || false,
         progress: savingsComplete ? 100 : 0,
         label: savingsComplete ? 'Complete' : 'Not Started'
+      },
+      assets: {
+        complete: assetsComplete || false,
+        progress: assetsComplete ? 100 : 0,
+        label: assetsComplete ? 'Complete' : 'Not Started'
       },
       insights: {
         complete: insightsComplete || false,
@@ -279,7 +286,7 @@ function DashboardContent() {
               <div className="text-right">
                 <div className="text-2xl font-bold text-primary">
                   {Math.round(
-                    (Object.values(completionStatus).filter(s => s.complete).length / 4) * 100
+                    (Object.values(completionStatus).filter(s => s.complete).length / 5) * 100
                   )}%
                 </div>
                 <div className="text-xs text-muted-foreground">Setup Complete</div>
@@ -289,13 +296,13 @@ function DashboardContent() {
             {/* Overall Progress Bar */}
             <Progress 
               value={Math.round(
-                (Object.values(completionStatus).filter(s => s.complete).length / 4) * 100
+                (Object.values(completionStatus).filter(s => s.complete).length / 5) * 100
               )} 
               className="h-2 mt-3"
             />
           </CardHeader>
           
-          <CardContent className="grid gap-4 md:grid-cols-4">
+          <CardContent className="grid gap-4 md:grid-cols-5">
             {/* Budget Plan */}
             <TooltipProvider>
               <Tooltip>
@@ -320,6 +327,34 @@ function DashboardContent() {
                 <TooltipContent side="bottom" className="max-w-xs">
                   <p className="font-semibold mb-1">Create Your Budget</p>
                   <p className="text-xs">Set up income sources and track monthly expenses with automatic tax calculations.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            {/* Investments & Assets */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    onClick={() => navigate('/savings')}
+                    variant="outline"
+                    className="h-32 flex-col gap-2 hover:border-secondary hover:bg-secondary/5 relative"
+                  >
+                    <div className="absolute top-2 right-2">
+                      <Badge variant={completionStatus.assets.complete ? "default" : "secondary"} className="text-xs">
+                        {completionStatus.assets.label}
+                      </Badge>
+                    </div>
+                    <Wallet className="h-7 w-7" />
+                    <span className="text-sm font-semibold">Assets</span>
+                    <div className="text-xs text-muted-foreground">
+                      {stats.assetCount} tracked
+                    </div>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs">
+                  <p className="font-semibold mb-1">Track Investments & Assets</p>
+                  <p className="text-xs">Monitor properties, retirement accounts (TFSA, RRSP), and other investments with growth projections.</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
