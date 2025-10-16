@@ -212,9 +212,14 @@ function InsightsContent() {
     console.log('Total debts (with mortgage):', totalDebts);
     
     // Calculate total monthly debt payment including mortgage
-    const otherDebtPayments = cashflows?.reduce((sum, c) => sum + Number(c.monthly_debt_payment || 0), 0) || 0;
+    // Sum actual debt payments from the debts array instead of using stored monthly_debt_payment
+    // to avoid double-counting mortgage
+    const otherDebtPayments = allDebts
+      .filter(d => !d.name.includes('Mortgage'))
+      .reduce((sum, d) => sum + d.monthlyPayment, 0);
     const monthlyDebtPayment = otherDebtPayments + totalMortgagePayment;
     
+    console.log('Other debt payments (excluding mortgage):', otherDebtPayments);
     console.log('Monthly debt payment (with mortgage):', monthlyDebtPayment);
     
     const totalAssets = assets?.reduce((sum, a) => sum + Number(a.current_value || 0), 0) || 0;
