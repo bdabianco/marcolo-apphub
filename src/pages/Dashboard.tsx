@@ -329,7 +329,7 @@ function DashboardContent() {
                     className="h-36 flex-col gap-3 relative group overflow-hidden rounded-[1.5rem] border-2 border-primary/30 bg-gradient-to-br from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-[0_4px_24px_hsl(var(--primary)/0.25)] hover:shadow-[0_8px_32px_hsl(var(--primary)/0.35)] transition-all duration-500"
                   >
                     <div className="absolute top-3 right-3 z-20">
-                      <Badge variant={completionStatus.budget.complete ? "default" : "secondary"} className="text-xs bg-card/90 backdrop-blur-sm">
+                      <Badge variant={completionStatus.budget.complete ? "default" : "secondary"} className="text-xs bg-primary-foreground/90 text-primary backdrop-blur-sm">
                         {completionStatus.budget.label}
                       </Badge>
                     </div>
@@ -361,7 +361,7 @@ function DashboardContent() {
                     } transition-all duration-500`}
                   >
                     <div className="absolute top-3 right-3 z-20">
-                      <Badge variant={completionStatus.cashflow.complete ? "default" : "secondary"} className="text-xs bg-card/90 backdrop-blur-sm">
+                      <Badge variant={completionStatus.cashflow.complete ? "default" : "secondary"} className="text-xs bg-secondary-foreground/90 text-secondary backdrop-blur-sm">
                         {completionStatus.cashflow.label}
                       </Badge>
                     </div>
@@ -391,7 +391,7 @@ function DashboardContent() {
                     className="h-36 flex-col gap-3 relative group overflow-hidden rounded-[1.5rem] border-2 border-accent/30 bg-gradient-to-br from-accent/90 to-accent hover:from-accent hover:to-accent/90 shadow-[0_4px_24px_hsl(var(--accent)/0.25)] hover:shadow-[0_8px_32px_hsl(var(--accent)/0.35)] transition-all duration-500"
                   >
                     <div className="absolute top-3 right-3 z-20">
-                      <Badge variant={completionStatus.savings.complete ? "default" : "secondary"} className="text-xs bg-card/90 backdrop-blur-sm">
+                      <Badge variant={completionStatus.savings.complete ? "default" : "secondary"} className="text-xs bg-accent-foreground/90 text-accent backdrop-blur-sm">
                         {completionStatus.savings.label}
                       </Badge>
                     </div>
