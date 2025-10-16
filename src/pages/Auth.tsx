@@ -66,7 +66,7 @@ export default function Auth() {
             {isLogin ? (
               <>
                 Sign in to access your{' '}
-                <span className="font-semibold text-primary">"Mycashflow"</span>{' '}
+                <span className="font-semibold text-primary">Mycashflow</span>{' '}
                 dashboard
               </>
             ) : (
