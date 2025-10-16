@@ -415,9 +415,9 @@ function InsightsContent() {
               </div>
               {/* Visual indicator with color zones properly scaled */}
               <div className="space-y-1">
-                <div className="relative h-4 rounded-full overflow-hidden border border-border bg-muted">
+                <div className="relative h-4 rounded-full overflow-hidden border border-border bg-muted w-full">
                   {/* Background gradient zones - scaled to 0-100% */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-yellow-500/20 via-orange-500/20 to-destructive/20" 
+                  <div className="absolute inset-0 w-full h-full" 
                        style={{ 
                          background: `linear-gradient(to right, 
                            hsl(var(--primary) / 0.25) 0%, 
@@ -429,18 +429,19 @@ function InsightsContent() {
                            hsl(var(--destructive) / 0.25) 43%,
                            hsl(var(--destructive) / 0.25) 100%)`
                        }}
-                  />
-                  
+                   />
+                   
                   {/* Threshold markers */}
-                  <div className="absolute top-0 bottom-0 left-[28%] w-0.5 bg-foreground/20" />
-                  <div className="absolute top-0 bottom-0 left-[36%] w-0.5 bg-foreground/20" />
-                  <div className="absolute top-0 bottom-0 left-[43%] w-0.5 bg-foreground/20" />
+                  <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/20" style={{ left: '28%' }} />
+                  <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/20" style={{ left: '36%' }} />
+                  <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/20" style={{ left: '43%' }} />
                   
                   {/* User's position marker - centered dot at exact percentage */}
                   <div
-                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-foreground rounded-full border-2 border-background shadow-lg z-10 transition-all duration-300"
+                    className="absolute top-1/2 w-4 h-4 bg-foreground rounded-full border-2 border-background shadow-lg z-10 transition-all duration-300"
                     style={{ 
-                      left: `calc(${Math.min(Math.max(metrics.debtToIncomeRatio, 0), 100)}% - 8px)`
+                      left: `${Math.min(Math.max(metrics.debtToIncomeRatio, 0), 100)}%`,
+                      transform: 'translate(-50%, -50%)'
                     }}
                   />
                 </div>
@@ -495,9 +496,9 @@ function InsightsContent() {
               </div>
               {/* Visual indicator with color zones properly scaled */}
               <div className="space-y-1">
-                <div className="relative h-4 rounded-full overflow-hidden border border-border bg-muted">
+                <div className="relative h-4 rounded-full overflow-hidden border border-border bg-muted w-full">
                   {/* Background gradient zones - scaled to 0-100% */}
-                  <div className="absolute inset-0" 
+                  <div className="absolute inset-0 w-full h-full" 
                        style={{ 
                          background: `linear-gradient(to right, 
                            hsl(var(--destructive) / 0.25) 0%, 
@@ -512,15 +513,16 @@ function InsightsContent() {
                   />
                   
                   {/* Threshold markers */}
-                  <div className="absolute top-0 bottom-0 left-[10%] w-0.5 bg-foreground/20" />
-                  <div className="absolute top-0 bottom-0 left-[15%] w-0.5 bg-foreground/20" />
-                  <div className="absolute top-0 bottom-0 left-[20%] w-0.5 bg-foreground/20" />
+                  <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/20" style={{ left: '10%' }} />
+                  <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/20" style={{ left: '15%' }} />
+                  <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/20" style={{ left: '20%' }} />
                   
                   {/* User's position marker - centered dot at exact percentage */}
                   <div
-                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-foreground rounded-full border-2 border-background shadow-lg z-10 transition-all duration-300"
+                    className="absolute top-1/2 w-4 h-4 bg-foreground rounded-full border-2 border-background shadow-lg z-10 transition-all duration-300"
                     style={{ 
-                      left: `calc(${Math.min(Math.max(metrics.savingsRate, 0), 100)}% - 8px)`
+                      left: `${Math.min(Math.max(metrics.savingsRate, 0), 100)}%`,
+                      transform: 'translate(-50%, -50%)'
                     }}
                   />
                 </div>
