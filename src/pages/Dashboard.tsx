@@ -299,13 +299,14 @@ function DashboardContent() {
                 value={Math.round(
                   (Object.values(completionStatus).filter(s => s.complete).length / 5) * 100
                 )} 
-                className="h-2"
+                className="h-3 rounded-full overflow-hidden"
               />
               <div 
-                className="absolute inset-0 h-2 rounded-full bg-gradient-to-r from-primary via-secondary to-accent opacity-20 pointer-events-none"
+                className="absolute inset-0 h-3 rounded-full bg-gradient-to-r from-primary via-purple-500 via-secondary via-pink-500 to-accent opacity-30 pointer-events-none shadow-[0_0_20px_rgba(var(--primary),0.3)]"
                 style={{ 
                   width: `${Math.round((Object.values(completionStatus).filter(s => s.complete).length / 5) * 100)}%`,
-                  transition: 'width 0.3s ease'
+                  transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                  background: 'linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 33%, hsl(var(--accent)) 66%, hsl(var(--primary)) 100%)'
                 }}
               />
             </div>
