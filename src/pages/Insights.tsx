@@ -399,21 +399,28 @@ function InsightsContent() {
                   {metrics.debtToIncomeRatio.toFixed(1)}%
                 </span>
               </div>
-              {/* Gradient bar showing health ranges: green (0-28), yellow (28-36), orange (36-43), red (43+) */}
-              <div className="relative h-3 bg-muted rounded-full overflow-hidden">
-                {/* Background gradient showing ranges */}
-                <div className="absolute inset-0 bg-gradient-to-r from-primary via-yellow-500 via-orange-500 to-destructive opacity-20" />
+              {/* Gradient bar showing health ranges with proper color zones */}
+              <div className="relative h-3 rounded-full overflow-hidden border border-border">
+                {/* Color zones based on DTI thresholds: <28% (green), 28-36% (yellow), 36-43% (orange), >43% (red) */}
+                <div className="absolute inset-0 flex">
+                  <div className="h-full bg-primary/30" style={{ width: '28%' }} />
+                  <div className="h-full bg-yellow-500/30" style={{ width: '8%' }} />
+                  <div className="h-full bg-orange-500/30" style={{ width: '7%' }} />
+                  <div className="h-full bg-destructive/30" style={{ width: '57%' }} />
+                </div>
                 
-                {/* Range markers */}
-                <div className="absolute top-0 left-[28%] w-px h-full bg-border" />
-                <div className="absolute top-0 left-[36%] w-px h-full bg-border" />
-                <div className="absolute top-0 left-[43%] w-px h-full bg-border" />
+                {/* Range markers at key thresholds */}
+                <div className="absolute top-0 left-[28%] w-0.5 h-full bg-border/60" />
+                <div className="absolute top-0 left-[36%] w-0.5 h-full bg-border/60" />
+                <div className="absolute top-0 left-[43%] w-0.5 h-full bg-border/60" />
                 
-                {/* User's position indicator */}
+                {/* User's current position indicator */}
                 <div
-                  className="absolute top-0 h-full w-1 bg-foreground shadow-lg transition-all"
-                  style={{ left: `${Math.min(metrics.debtToIncomeRatio, 100)}%` }}
-                />
+                  className="absolute top-0 h-full w-1 bg-foreground shadow-lg transition-all z-10"
+                  style={{ left: `${Math.min(metrics.debtToIncomeRatio, 100)}%`, transform: 'translateX(-50%)' }}
+                >
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-foreground rounded-full border-2 border-background" />
+                </div>
               </div>
               
               {/* Range labels */}
@@ -461,21 +468,28 @@ function InsightsContent() {
                   {metrics.savingsRate.toFixed(1)}%
                 </span>
               </div>
-              {/* Gradient bar showing health ranges: red (0-10), orange (10-15), yellow (15-20), green (20+) */}
-              <div className="relative h-3 bg-muted rounded-full overflow-hidden">
-                {/* Background gradient showing ranges */}
-                <div className="absolute inset-0 bg-gradient-to-r from-destructive via-orange-500 via-yellow-500 to-primary opacity-20" />
+              {/* Gradient bar showing health ranges with proper color zones */}
+              <div className="relative h-3 rounded-full overflow-hidden border border-border">
+                {/* Color zones based on savings rate thresholds: <10% (red), 10-15% (orange), 15-20% (yellow), >20% (green) */}
+                <div className="absolute inset-0 flex">
+                  <div className="h-full bg-destructive/30" style={{ width: '10%' }} />
+                  <div className="h-full bg-orange-500/30" style={{ width: '5%' }} />
+                  <div className="h-full bg-yellow-500/30" style={{ width: '5%' }} />
+                  <div className="h-full bg-primary/30" style={{ width: '80%' }} />
+                </div>
                 
-                {/* Range markers */}
-                <div className="absolute top-0 left-[10%] w-px h-full bg-border" />
-                <div className="absolute top-0 left-[15%] w-px h-full bg-border" />
-                <div className="absolute top-0 left-[20%] w-px h-full bg-border" />
+                {/* Range markers at key thresholds */}
+                <div className="absolute top-0 left-[10%] w-0.5 h-full bg-border/60" />
+                <div className="absolute top-0 left-[15%] w-0.5 h-full bg-border/60" />
+                <div className="absolute top-0 left-[20%] w-0.5 h-full bg-border/60" />
                 
-                {/* User's position indicator */}
+                {/* User's current position indicator */}
                 <div
-                  className="absolute top-0 h-full w-1 bg-foreground shadow-lg transition-all"
-                  style={{ left: `${Math.min(metrics.savingsRate, 100)}%` }}
-                />
+                  className="absolute top-0 h-full w-1 bg-foreground shadow-lg transition-all z-10"
+                  style={{ left: `${Math.min(metrics.savingsRate, 100)}%`, transform: 'translateX(-50%)' }}
+                >
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-foreground rounded-full border-2 border-background" />
+                </div>
               </div>
               
               {/* Range labels */}
