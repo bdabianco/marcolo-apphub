@@ -399,14 +399,34 @@ function InsightsContent() {
                   {metrics.debtToIncomeRatio.toFixed(1)}%
                 </span>
               </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
+              {/* Gradient bar showing health ranges: green (0-28), yellow (28-36), orange (36-43), red (43+) */}
+              <div className="relative h-3 bg-muted rounded-full overflow-hidden">
+                {/* Background gradient showing ranges */}
+                <div className="absolute inset-0 bg-gradient-to-r from-primary via-yellow-500 via-orange-500 to-destructive opacity-20" />
+                
+                {/* Range markers */}
+                <div className="absolute top-0 left-[28%] w-px h-full bg-border" />
+                <div className="absolute top-0 left-[36%] w-px h-full bg-border" />
+                <div className="absolute top-0 left-[43%] w-px h-full bg-border" />
+                
+                {/* User's position indicator */}
                 <div
-                  className={`h-full ${metrics.debtToIncomeRatio > 43 ? 'bg-destructive' : 'bg-primary'}`}
-                  style={{ width: `${Math.min(metrics.debtToIncomeRatio, 100)}%` }}
+                  className="absolute top-0 h-full w-1 bg-foreground shadow-lg transition-all"
+                  style={{ left: `${Math.min(metrics.debtToIncomeRatio, 100)}%` }}
                 />
               </div>
+              
+              {/* Range labels */}
+              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                <span>0%</span>
+                <span className="text-primary">28%</span>
+                <span className="text-yellow-600">36%</span>
+                <span className="text-orange-600">43%</span>
+                <span className="text-destructive">100%</span>
+              </div>
+              
               {metrics.debtToIncomeRatio > 43 && (
-                <div className="flex items-center gap-2 text-sm text-destructive">
+                <div className="flex items-center gap-2 text-sm text-destructive mt-2">
                   <AlertCircle className="h-4 w-4" />
                   <span>High debt-to-income ratio. Consider debt reduction strategies.</span>
                 </div>
@@ -441,14 +461,34 @@ function InsightsContent() {
                   {metrics.savingsRate.toFixed(1)}%
                 </span>
               </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
+              {/* Gradient bar showing health ranges: red (0-10), orange (10-15), yellow (15-20), green (20+) */}
+              <div className="relative h-3 bg-muted rounded-full overflow-hidden">
+                {/* Background gradient showing ranges */}
+                <div className="absolute inset-0 bg-gradient-to-r from-destructive via-orange-500 via-yellow-500 to-primary opacity-20" />
+                
+                {/* Range markers */}
+                <div className="absolute top-0 left-[10%] w-px h-full bg-border" />
+                <div className="absolute top-0 left-[15%] w-px h-full bg-border" />
+                <div className="absolute top-0 left-[20%] w-px h-full bg-border" />
+                
+                {/* User's position indicator */}
                 <div
-                  className={`h-full ${metrics.savingsRate < 20 ? 'bg-destructive' : 'bg-primary'}`}
-                  style={{ width: `${Math.min(metrics.savingsRate, 100)}%` }}
+                  className="absolute top-0 h-full w-1 bg-foreground shadow-lg transition-all"
+                  style={{ left: `${Math.min(metrics.savingsRate, 100)}%` }}
                 />
               </div>
+              
+              {/* Range labels */}
+              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                <span className="text-destructive">0%</span>
+                <span className="text-orange-600">10%</span>
+                <span className="text-yellow-600">15%</span>
+                <span className="text-primary">20%+</span>
+                <span>100%</span>
+              </div>
+              
               {metrics.savingsRate < 20 && (
-                <div className="flex items-center gap-2 text-sm text-destructive">
+                <div className="flex items-center gap-2 text-sm text-destructive mt-2">
                   <AlertCircle className="h-4 w-4" />
                   <span>Aim for at least 20% savings rate for financial security.</span>
                 </div>
