@@ -184,20 +184,27 @@ function DashboardContent() {
   const isDeficit = cashflowBalance < 0;
 
   return (
-    <div className="min-h-screen bg-[image:var(--gradient-subtle)]">
+    <div className="min-h-screen bg-[image:var(--gradient-sky)] relative overflow-hidden">
+      {/* Organic Background Elements */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-accent/10 rounded-full blur-3xl" />
+      </div>
+      
       <AppHeader />
       
-      <div className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        {/* Hero Section - Organic Flow */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-12">
           <div className="relative">
-            <div className="absolute -inset-1 bg-[image:var(--gradient-primary)] opacity-20 blur-xl rounded-lg" />
+            <div className="absolute -inset-2 bg-[image:var(--gradient-leaf)] opacity-10 blur-2xl rounded-[3rem]" />
             <div className="relative">
-              <h1 className="text-4xl font-bold bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">
+              <h1 className="text-5xl font-bold bg-[image:var(--gradient-primary)] bg-clip-text text-transparent mb-2">
                 Welcome back!
               </h1>
-              <p className="text-muted-foreground mt-2">
-                Manage your budget, track cashflow, and optimize your savings
+              <p className="text-lg text-foreground/70 font-light">
+                Grow your finances naturally
               </p>
             </div>
           </div>
@@ -221,48 +228,54 @@ function DashboardContent() {
           </div>
         </div>
 
-        {/* Stats Grid - 3 columns */}
-        <div className="grid gap-6 md:grid-cols-3 mb-8">
-          <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-            <div className="absolute inset-0 bg-[image:var(--gradient-primary)] opacity-0 group-hover:opacity-5 transition-opacity" />
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Net Income</CardTitle>
-              <DollarSign className="h-4 w-4 text-primary" />
+        {/* Stats Grid - Organic Flowing Layout */}
+        <div className="grid gap-6 md:grid-cols-3 mb-12">
+          <Card className="relative overflow-hidden group hover:[box-shadow:var(--shadow-leaf)] transition-all duration-500 rounded-[2rem] border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[image:var(--gradient-leaf)] opacity-10 rounded-bl-full" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-semibold text-foreground/80">Net Income</CardTitle>
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <DollarSign className="h-6 w-6 text-primary" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${formatCurrency(stats.totalIncome)}</div>
-              <p className="text-xs text-muted-foreground">Total monthly</p>
+              <div className="text-3xl font-bold text-primary">${formatCurrency(stats.totalIncome)}</div>
+              <p className="text-sm text-muted-foreground mt-1">Growing monthly</p>
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-            <div className="absolute inset-0 bg-[image:var(--gradient-primary)] opacity-0 group-hover:opacity-5 transition-opacity" />
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Expenses</CardTitle>
-              <TrendingUp className="h-4 w-4 text-secondary" />
+          <Card className="relative overflow-hidden group hover:[box-shadow:var(--shadow-leaf)] transition-all duration-500 rounded-[2rem] border-2 border-secondary/20 bg-gradient-to-br from-card to-secondary/5">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/10 opacity-20 rounded-bl-full" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-semibold text-foreground/80">Expenses</CardTitle>
+              <div className="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <TrendingUp className="h-6 w-6 text-secondary" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${formatCurrency(stats.totalExpenses)}</div>
-              <p className="text-xs text-muted-foreground">Monthly total</p>
+              <div className="text-3xl font-bold text-secondary">${formatCurrency(stats.totalExpenses)}</div>
+              <p className="text-sm text-muted-foreground mt-1">Tracked flow</p>
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-            <div className="absolute inset-0 bg-[image:var(--gradient-primary)] opacity-0 group-hover:opacity-5 transition-opacity" />
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Savings Goals</CardTitle>
-              <PiggyBank className="h-4 w-4 text-accent" />
+          <Card className="relative overflow-hidden group hover:[box-shadow:var(--shadow-leaf)] transition-all duration-500 rounded-[2rem] border-2 border-accent/20 bg-gradient-to-br from-card to-accent/5">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 opacity-20 rounded-bl-full" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-semibold text-foreground/80">Savings Goals</CardTitle>
+              <div className="h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <PiggyBank className="h-6 w-6 text-accent" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.savingsGoals}</div>
-              <p className="text-xs text-muted-foreground">Active goals</p>
+              <div className="text-3xl font-bold text-accent">{stats.savingsGoals}</div>
+              <p className="text-sm text-muted-foreground mt-1">Nurturing goals</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Quick Actions */}
-        <Card className="relative overflow-hidden border-2">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-[image:var(--gradient-primary)]" />
+        {/* Quick Actions - Tree Branch Layout */}
+        <Card className="relative overflow-hidden border-2 border-primary/20 rounded-[2.5rem] bg-gradient-to-br from-card via-card to-primary/5 [box-shadow:var(--shadow-canopy)]">
+          <div className="absolute top-0 left-0 right-0 h-2 bg-[image:var(--gradient-leaf)] rounded-t-[2.5rem]" />
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -293,159 +306,156 @@ function DashboardContent() {
               </div>
             </div>
             
-            {/* Overall Progress Bar with Gradient */}
-            <div className="relative mt-3">
-              <Progress 
-                value={Math.round(
-                  (Object.values(completionStatus).filter(s => s.complete).length / 5) * 100
-                )} 
-                className="h-3 rounded-full overflow-hidden"
-              />
-              <div 
-                className="absolute inset-0 h-3 rounded-full bg-gradient-to-r from-primary via-purple-500 via-secondary via-pink-500 to-accent opacity-30 pointer-events-none shadow-[0_0_20px_rgba(var(--primary),0.3)]"
-                style={{ 
-                  width: `${Math.round((Object.values(completionStatus).filter(s => s.complete).length / 5) * 100)}%`,
-                  transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-                  background: 'linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 33%, hsl(var(--accent)) 66%, hsl(var(--primary)) 100%)'
-                }}
-              />
+            {/* Organic Growth Progress Bar */}
+            <div className="relative mt-4">
+              <div className="h-4 rounded-full bg-muted overflow-hidden">
+                <div 
+                  className="h-full rounded-full bg-[image:var(--gradient-leaf)] shadow-[0_0_20px_hsl(var(--primary)/0.4)] transition-all duration-1000 ease-out"
+                  style={{ 
+                    width: `${Math.round((Object.values(completionStatus).filter(s => s.complete).length / 5) * 100)}%`
+                  }}
+                />
+              </div>
             </div>
           </CardHeader>
           
-          <CardContent className="grid gap-4 md:grid-cols-5">
-            {/* Budget Plan */}
+          <CardContent className="grid gap-6 md:grid-cols-5 p-8">
+            {/* Budget Plan - Root */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
                     onClick={() => navigate('/budget')}
-                    className="h-32 flex-col gap-2 relative group overflow-hidden"
+                    className="h-36 flex-col gap-3 relative group overflow-hidden rounded-[1.5rem] border-2 border-primary/30 bg-gradient-to-br from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-[0_4px_24px_hsl(var(--primary)/0.25)] hover:shadow-[0_8px_32px_hsl(var(--primary)/0.35)] transition-all duration-500"
                   >
-                    <div className="absolute top-2 right-2">
-                      <Badge variant={completionStatus.budget.complete ? "default" : "secondary"} className="text-xs">
+                    <div className="absolute top-3 right-3 z-20">
+                      <Badge variant={completionStatus.budget.complete ? "default" : "secondary"} className="text-xs bg-card/90 backdrop-blur-sm">
                         {completionStatus.budget.label}
                       </Badge>
                     </div>
-                    <div className="absolute inset-0 bg-primary-foreground/0 group-hover:bg-primary-foreground/10 transition-colors" />
-                    <FileText className="h-7 w-7 relative z-10" />
-                    <span className="relative z-10 text-sm font-semibold">Budget Plan</span>
-                    <div className="relative z-10 text-xs text-primary-foreground/80">
+                    <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-primary-foreground/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500" />
+                    <FileText className="h-8 w-8 relative z-10 text-primary-foreground" />
+                    <span className="relative z-10 text-base font-bold text-primary-foreground">Budget Plan</span>
+                    <div className="relative z-10 text-xs text-primary-foreground/90 font-medium">
                       {stats.incomeCount} income • {stats.expenseCount} expenses
                     </div>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-xs">
+                <TooltipContent side="bottom" className="max-w-xs rounded-2xl">
                   <p className="font-semibold mb-1">Create Your Budget</p>
-                  <p className="text-xs">Set up income sources and track monthly expenses with automatic tax calculations.</p>
+                  <p className="text-xs">Plant your financial roots with income and expense tracking.</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
 
-            {/* Cashflow */}
+            {/* Cashflow - Trunk */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
                     onClick={() => navigate('/cashflow')}
-                    variant={isDeficit ? "destructive" : "secondary"}
-                    className="h-32 flex-col gap-2 relative group overflow-hidden"
+                    className={`h-36 flex-col gap-3 relative group overflow-hidden rounded-[1.5rem] border-2 ${
+                      isDeficit 
+                        ? 'border-destructive/30 bg-gradient-to-br from-destructive to-destructive/80 hover:from-destructive/90 hover:to-destructive shadow-[0_4px_24px_hsl(var(--destructive)/0.25)] hover:shadow-[0_8px_32px_hsl(var(--destructive)/0.35)]' 
+                        : 'border-secondary/30 bg-gradient-to-br from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary shadow-[0_4px_24px_hsl(var(--secondary)/0.25)] hover:shadow-[0_8px_32px_hsl(var(--secondary)/0.35)]'
+                    } transition-all duration-500`}
                   >
-                    <div className="absolute top-2 right-2">
-                      <Badge variant={completionStatus.cashflow.complete ? "default" : "secondary"} className="text-xs">
+                    <div className="absolute top-3 right-3 z-20">
+                      <Badge variant={completionStatus.cashflow.complete ? "default" : "secondary"} className="text-xs bg-card/90 backdrop-blur-sm">
                         {completionStatus.cashflow.label}
                       </Badge>
                     </div>
-                    <div className="absolute inset-0 bg-secondary-foreground/0 group-hover:bg-secondary-foreground/10 transition-colors" />
-                    <TrendingUp className="h-7 w-7 relative z-10" />
-                    <span className="relative z-10 text-sm font-semibold">
+                    <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-secondary-foreground/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500" />
+                    <TrendingUp className="h-8 w-8 relative z-10 text-secondary-foreground" />
+                    <span className="relative z-10 text-base font-bold text-secondary-foreground">
                       {isDeficit ? 'Fix Cashflow ⚠' : 'Track Cashflow'}
                     </span>
-                    <div className="relative z-10 text-xs opacity-80">
+                    <div className="relative z-10 text-xs text-secondary-foreground/90 font-medium">
                       {stats.debtCount} debts • {stats.assetCount} assets
                     </div>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-xs">
+                <TooltipContent side="bottom" className="max-w-xs rounded-2xl">
                   <p className="font-semibold mb-1">Analyze Cashflow</p>
-                  <p className="text-xs">Track debts, mortgages, and available monthly cashflow after all expenses.</p>
+                  <p className="text-xs">Strengthen your trunk with debt and asset management.</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
 
-            {/* Savings Goals */}
+            {/* Savings Goals - Branch */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
                     onClick={() => navigate('/savings')}
-                    variant="default"
-                    className="h-32 flex-col gap-2 relative bg-accent/10 hover:bg-accent/20 border border-accent/30"
+                    className="h-36 flex-col gap-3 relative group overflow-hidden rounded-[1.5rem] border-2 border-accent/30 bg-gradient-to-br from-accent/90 to-accent hover:from-accent hover:to-accent/90 shadow-[0_4px_24px_hsl(var(--accent)/0.25)] hover:shadow-[0_8px_32px_hsl(var(--accent)/0.35)] transition-all duration-500"
                   >
-                    <div className="absolute top-2 right-2">
-                      <Badge variant={completionStatus.savings.complete ? "default" : "secondary"} className="text-xs">
+                    <div className="absolute top-3 right-3 z-20">
+                      <Badge variant={completionStatus.savings.complete ? "default" : "secondary"} className="text-xs bg-card/90 backdrop-blur-sm">
                         {completionStatus.savings.label}
                       </Badge>
                     </div>
-                    <PiggyBank className="h-7 w-7" />
-                    <span className="text-sm font-semibold">Savings Goals</span>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-accent-foreground/10 rounded-bl-full group-hover:scale-150 transition-transform duration-500" />
+                    <PiggyBank className="h-8 w-8 text-accent-foreground relative z-10" />
+                    <span className="text-base font-bold text-accent-foreground relative z-10">Savings Goals</span>
+                    <div className="text-xs text-accent-foreground/80 font-medium relative z-10">
                       {stats.savingsGoals} active goals
                     </div>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-xs">
+                <TooltipContent side="bottom" className="max-w-xs rounded-2xl">
                   <p className="font-semibold mb-1">Set Savings Goals</p>
-                  <p className="text-xs">Define and track savings targets with automated progress monitoring and projections.</p>
+                  <p className="text-xs">Grow branches of savings with automated tracking.</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
 
-            {/* Investments & Assets */}
+            {/* Investments & Assets - Leaves */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
                     onClick={() => navigate('/savings')}
-                    variant="default"
-                    className="h-32 flex-col gap-2 relative bg-secondary/10 hover:bg-secondary/20 border border-secondary/30"
+                    className="h-36 flex-col gap-3 relative group overflow-hidden rounded-[1.5rem] border-2 border-primary/20 bg-gradient-to-br from-card to-primary/15 hover:from-primary/10 hover:to-primary/25 shadow-[0_4px_24px_hsl(var(--primary)/0.15)] hover:shadow-[0_8px_32px_hsl(var(--primary)/0.25)] transition-all duration-500"
                   >
-                    <div className="absolute top-2 right-2">
+                    <div className="absolute top-3 right-3 z-20">
                       <Badge variant={completionStatus.assets.complete ? "default" : "secondary"} className="text-xs">
                         {completionStatus.assets.label}
                       </Badge>
                     </div>
-                    <Wallet className="h-7 w-7" />
-                    <span className="text-sm font-semibold">Assets</span>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="absolute bottom-0 left-0 w-16 h-16 bg-primary/10 rounded-tr-full group-hover:scale-150 transition-transform duration-500" />
+                    <Wallet className="h-8 w-8 text-primary relative z-10" />
+                    <span className="text-base font-bold text-primary relative z-10">Assets</span>
+                    <div className="text-xs text-muted-foreground font-medium relative z-10">
                       {stats.assetCount} tracked
                     </div>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-xs">
+                <TooltipContent side="bottom" className="max-w-xs rounded-2xl">
                   <p className="font-semibold mb-1">Track Investments & Assets</p>
-                  <p className="text-xs">Monitor properties, retirement accounts (TFSA, RRSP), and other investments with growth projections.</p>
+                  <p className="text-xs">Flourish with investments and asset monitoring.</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
 
 
-            {/* AI Insights */}
+            {/* AI Insights - Canopy */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
                     onClick={() => navigate('/insights')}
-                    variant="default"
-                    className="h-32 flex-col gap-2 relative bg-primary/10 hover:bg-primary/20 border border-primary/30"
+                    className="h-36 flex-col gap-3 relative group overflow-hidden rounded-[1.5rem] border-2 border-secondary/20 bg-gradient-to-br from-card to-secondary/15 hover:from-secondary/10 hover:to-secondary/25 shadow-[0_4px_24px_hsl(var(--secondary)/0.15)] hover:shadow-[0_8px_32px_hsl(var(--secondary)/0.25)] transition-all duration-500"
                   >
-                    <div className="absolute top-2 right-2">
+                    <div className="absolute top-3 right-3 z-20">
                       <Badge variant={completionStatus.insights.complete ? "default" : "secondary"} className="text-xs">
                         {completionStatus.insights.label}
                       </Badge>
                     </div>
-                    <LineChart className="h-7 w-7" />
-                    <span className="text-sm font-semibold">AI Insights</span>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="absolute inset-0 bg-[image:var(--gradient-primary)] opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+                    <LineChart className="h-8 w-8 text-secondary relative z-10" />
+                    <span className="text-base font-bold text-secondary relative z-10">AI Insights</span>
+                    <div className="text-xs text-muted-foreground font-medium relative z-10">
                       Financial analysis & advice
                     </div>
                   </Button>
