@@ -227,11 +227,35 @@ function InsightsContent() {
     
     const surplus = totalIncome - totalExpenses;
     const savingsRate = totalIncome > 0 ? (surplus / totalIncome) * 100 : 0;
-    const debtToIncomeRatio = totalIncome > 0 ? (totalDebts / totalIncome) * 100 : 0;
+    
+    // Calculate debt-to-income ratio using MONTHLY payments vs MONTHLY gross income
+    const monthlyGrossIncome = budgets?.reduce((sum, b) => sum + Number(b.gross_income || 0), 0) / 12 || 0;
+    const debtToIncomeRatio = monthlyGrossIncome > 0 ? (monthlyDebtPayment / monthlyGrossIncome) * 100 : 0;
+    
     const netWorth = totalAssets - totalDebts;
     
-    // Calculate months to debt freedom
-    const debtFreeMonths = monthlyDebtPayment > 0 ? Math.ceil(totalDebts / monthlyDebtPayment) : 0;
+    // Calculate months to debt freedom (considering interest)
+    // Average weighted interest rate across all debts
+    const totalDebtBalance = allDebts.reduce((sum, d) => sum + d.balance, 0);
+    const weightedInterestRate = totalDebtBalance > 0 
+      ? allDebts.reduce((sum, d) => sum + (d.balance / totalDebtBalance) * (d.interestRate / 100), 0)
+      : 0;
+    
+    // Calculate months to payoff with interest using amortization formula
+    let debtFreeMonths = 0;
+    if (monthlyDebtPayment > 0 && totalDebts > 0) {
+      const monthlyRate = weightedInterestRate / 12;
+      if (monthlyRate > 0 && monthlyDebtPayment > (totalDebts * monthlyRate)) {
+        // Standard amortization formula: n = -log(1 - (P * r / M)) / log(1 + r)
+        debtFreeMonths = Math.ceil(-Math.log(1 - (totalDebts * monthlyRate / monthlyDebtPayment)) / Math.log(1 + monthlyRate));
+      } else if (monthlyRate === 0) {
+        // No interest, simple division
+        debtFreeMonths = Math.ceil(totalDebts / monthlyDebtPayment);
+      } else {
+        // Monthly payment too low to cover interest
+        debtFreeMonths = 999; // Essentially infinite
+      }
+    }
 
     setMetrics({
       totalAnnualIncome: totalIncome,
@@ -278,12 +302,15 @@ function InsightsContent() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
           <Card className="border-2">
             <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
-              <CardTitle className="text-sm font-medium">Annual Income</CardTitle>
+              <CardTitle className="text-sm font-medium">Annual Net Income</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary">
                 ${formatCurrency(metrics.totalAnnualIncome)}
               </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                After-tax income
+              </p>
             </CardContent>
           </Card>
 
