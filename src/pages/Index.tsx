@@ -31,7 +31,7 @@ const Index = () => {
           </h1>
           
           <p className="mb-8 text-xl text-muted-foreground max-w-2xl mx-auto">
-            Take control of your finances with powerful budget planning, cashflow analysis, and savings optimization tools.
+            Take control of your finances with powerful budget planning, cashflow analysis, savings optimization, and AI insights tools.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
