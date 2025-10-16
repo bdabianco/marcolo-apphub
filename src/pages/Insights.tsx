@@ -416,20 +416,13 @@ function InsightsContent() {
               {/* Visual indicator with color zones properly scaled */}
               <div className="space-y-1">
                 <div className="relative h-4 rounded-full overflow-hidden border border-border bg-muted w-full">
-                  {/* Background gradient zones - scaled to 0-100% */}
-                  <div className="absolute inset-0 w-full h-full" 
-                       style={{ 
-                         background: `linear-gradient(to right, 
-                           hsl(var(--primary) / 0.25) 0%, 
-                           hsl(var(--primary) / 0.25) 28%, 
-                           rgb(234 179 8 / 0.25) 28%, 
-                           rgb(234 179 8 / 0.25) 36%, 
-                           rgb(249 115 22 / 0.25) 36%, 
-                           rgb(249 115 22 / 0.25) 43%, 
-                           hsl(var(--destructive) / 0.25) 43%,
-                           hsl(var(--destructive) / 0.25) 100%)`
-                       }}
-                   />
+                  {/* Background gradient zones using positioned divs for accuracy */}
+                  <div className="absolute inset-0 flex">
+                    <div className="h-full bg-primary/25" style={{ width: '28%' }}></div>
+                    <div className="h-full bg-yellow-500/25" style={{ width: '8%' }}></div>
+                    <div className="h-full bg-orange-500/25" style={{ width: '7%' }}></div>
+                    <div className="h-full bg-destructive/25" style={{ width: '57%' }}></div>
+                  </div>
                    
                   {/* Threshold markers */}
                   <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/20" style={{ left: '28%' }} />
@@ -497,20 +490,13 @@ function InsightsContent() {
               {/* Visual indicator with color zones properly scaled */}
               <div className="space-y-1">
                 <div className="relative h-4 rounded-full overflow-hidden border border-border bg-muted w-full">
-                  {/* Background gradient zones - scaled to 0-100% */}
-                  <div className="absolute inset-0 w-full h-full" 
-                       style={{ 
-                         background: `linear-gradient(to right, 
-                           hsl(var(--destructive) / 0.25) 0%, 
-                           hsl(var(--destructive) / 0.25) 10%, 
-                           rgb(249 115 22 / 0.25) 10%, 
-                           rgb(249 115 22 / 0.25) 15%, 
-                           rgb(234 179 8 / 0.25) 15%, 
-                           rgb(234 179 8 / 0.25) 20%, 
-                           hsl(var(--primary) / 0.25) 20%,
-                           hsl(var(--primary) / 0.25) 100%)`
-                       }}
-                  />
+                  {/* Background gradient zones using positioned divs for accuracy */}
+                  <div className="absolute inset-0 flex">
+                    <div className="h-full bg-destructive/25" style={{ width: '10%' }}></div>
+                    <div className="h-full bg-orange-500/25" style={{ width: '5%' }}></div>
+                    <div className="h-full bg-yellow-500/25" style={{ width: '5%' }}></div>
+                    <div className="h-full bg-primary/25" style={{ width: '80%' }}></div>
+                  </div>
                   
                   {/* Threshold markers */}
                   <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/20" style={{ left: '10%' }} />
