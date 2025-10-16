@@ -55,6 +55,10 @@ function SavingsContent() {
   const [otherAssetValue, setOtherAssetValue] = useState('');
   const [otherAssetRate, setOtherAssetRate] = useState('');
 
+  // Edit asset state
+  const [editingAsset, setEditingAsset] = useState<any>(null);
+  const [isEditAssetOpen, setIsEditAssetOpen] = useState(false);
+
   useEffect(() => {
     loadCashflowSurplus();
     loadExistingGoals();
@@ -405,6 +409,39 @@ function SavingsContent() {
       loadAssets();
     } catch (error: any) {
       toast.error(error.message || 'Failed to delete asset');
+    }
+  };
+
+  const handleEditAsset = (asset: any) => {
+    setEditingAsset(asset);
+    setIsEditAssetOpen(true);
+  };
+
+  const updateAsset = async () => {
+    if (!editingAsset || !user) return;
+
+    try {
+      const { error } = await supabase
+        .from('assets')
+        .update({
+          current_value: Number(editingAsset.current_value),
+          name: editingAsset.name,
+          appreciation_rate: editingAsset.asset_type === 'other_investment' 
+            ? Number(editingAsset.appreciation_rate) 
+            : editingAsset.appreciation_rate,
+        })
+        .eq('id', editingAsset.id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast.success('Asset updated successfully!');
+      setIsEditAssetOpen(false);
+      setEditingAsset(null);
+      loadAssets();
+    } catch (error: any) {
+      console.error('Failed to update asset:', error);
+      toast.error(error.message || 'Failed to update asset');
     }
   };
 
@@ -926,9 +963,14 @@ function SavingsContent() {
                         Rate: {(Number(property.appreciation_rate) * 100).toFixed(1)}% annually
                       </p>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={() => deleteAsset(property.id)}>
-                      Delete
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="icon" onClick={() => handleEditAsset(property)} className="h-8 w-8">
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => deleteAsset(property.id)}>
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -1026,9 +1068,14 @@ function SavingsContent() {
                         Market rate: {(MARKET_INVESTMENT_RATE * 100).toFixed(1)}% annually
                       </p>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={() => deleteAsset(investment.id)}>
-                      Delete
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="icon" onClick={() => handleEditAsset(investment)} className="h-8 w-8">
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => deleteAsset(investment.id)}>
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -1129,9 +1176,14 @@ function SavingsContent() {
                         Custom rate: {(Number(asset.appreciation_rate) * 100).toFixed(1)}% annually
                       </p>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={() => deleteAsset(asset.id)}>
-                      Delete
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="icon" onClick={() => handleEditAsset(asset)} className="h-8 w-8">
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => deleteAsset(asset.id)}>
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -1264,6 +1316,81 @@ function SavingsContent() {
                     Save Changes
                   </Button>
                   <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} className="flex-1">
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Asset Dialog */}
+        <Dialog open={isEditAssetOpen} onOpenChange={setIsEditAssetOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Edit Asset</DialogTitle>
+            </DialogHeader>
+            {editingAsset && (
+              <div className="space-y-4 pt-4">
+                <div>
+                  <Label htmlFor="edit-assetName">Asset Name</Label>
+                  <Input
+                    id="edit-assetName"
+                    value={editingAsset.name}
+                    onChange={(e) => setEditingAsset({ ...editingAsset, name: e.target.value })}
+                    disabled={editingAsset.asset_type === 'property' || ['tfsa', 'rrsp', 'group_retirement'].includes(editingAsset.asset_type)}
+                  />
+                  {(editingAsset.asset_type === 'property' || ['tfsa', 'rrsp', 'group_retirement'].includes(editingAsset.asset_type)) && (
+                    <p className="text-xs text-muted-foreground mt-1">Name cannot be changed for this asset type</p>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-assetValue">Current Value ($)</Label>
+                  <Input
+                    id="edit-assetValue"
+                    type="number"
+                    value={editingAsset.current_value}
+                    onChange={(e) => setEditingAsset({ ...editingAsset, current_value: e.target.value })}
+                  />
+                </div>
+
+                {editingAsset.asset_type === 'other_investment' && (
+                  <div>
+                    <Label htmlFor="edit-assetRate">Expected Annual Growth Rate (%)</Label>
+                    <Input
+                      id="edit-assetRate"
+                      type="number"
+                      step="0.1"
+                      value={(Number(editingAsset.appreciation_rate) * 100).toFixed(1)}
+                      onChange={(e) => setEditingAsset({ ...editingAsset, appreciation_rate: Number(e.target.value) / 100 })}
+                    />
+                  </div>
+                )}
+
+                {editingAsset.asset_type === 'property' && (
+                  <div className="bg-muted/50 p-3 rounded-lg">
+                    <p className="text-sm text-muted-foreground">
+                      Appreciation Rate: {(Number(editingAsset.appreciation_rate) * 100).toFixed(1)}% annually
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">Rate is based on {editingAsset.name} historical data and cannot be changed</p>
+                  </div>
+                )}
+
+                {['tfsa', 'rrsp', 'group_retirement'].includes(editingAsset.asset_type) && (
+                  <div className="bg-muted/50 p-3 rounded-lg">
+                    <p className="text-sm text-muted-foreground">
+                      Market Rate: {(MARKET_INVESTMENT_RATE * 100).toFixed(1)}% annually
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">Rate is based on market averages and cannot be changed</p>
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-4">
+                  <Button onClick={updateAsset} className="flex-1">
+                    Save Changes
+                  </Button>
+                  <Button variant="outline" onClick={() => setIsEditAssetOpen(false)} className="flex-1">
                     Cancel
                   </Button>
                 </div>
