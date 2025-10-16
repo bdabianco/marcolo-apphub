@@ -123,15 +123,26 @@ function InsightsContent() {
     cashflows?.forEach(cf => {
       console.log('Processing cashflow record:', cf);
       
-      // Add mortgage if exists
-      if (cf.mortgage && typeof cf.mortgage === 'object') {
-        const mortgage = cf.mortgage as any;
-        console.log('Mortgage data:', mortgage);
+      // Add mortgage if exists - parse if it's a string
+      let mortgage = cf.mortgage;
+      if (typeof mortgage === 'string') {
+        try {
+          mortgage = JSON.parse(mortgage);
+          console.log('Parsed mortgage from string:', mortgage);
+        } catch (e) {
+          console.error('Failed to parse mortgage JSON:', e);
+          mortgage = null;
+        }
+      }
+      
+      if (mortgage && typeof mortgage === 'object') {
+        const mortgageData = mortgage as any;
+        console.log('Mortgage data:', mortgageData);
         
-        if (mortgage.primary && mortgage.primary.balance > 0) {
-          const primaryBalance = Number(mortgage.primary.balance || 0);
-          const primaryPayment = Number(mortgage.primary.monthlyPayment || 0);
-          const primaryRate = Number(mortgage.primary.interestRate || 0);
+        if (mortgageData.primary && mortgageData.primary.balance > 0) {
+          const primaryBalance = Number(mortgageData.primary.balance || 0);
+          const primaryPayment = Number(mortgageData.primary.monthlyPayment || 0);
+          const primaryRate = Number(mortgageData.primary.interestRate || 0);
           
           allDebts.push({
             name: 'Mortgage (Primary)',
@@ -144,10 +155,10 @@ function InsightsContent() {
           console.log('Added primary mortgage:', { primaryBalance, primaryPayment });
         }
         
-        if (mortgage.secondary && mortgage.secondary.balance > 0) {
-          const secondaryBalance = Number(mortgage.secondary.balance || 0);
-          const secondaryPayment = Number(mortgage.secondary.monthlyPayment || 0);
-          const secondaryRate = Number(mortgage.secondary.interestRate || 0);
+        if (mortgageData.secondary && mortgageData.secondary.balance > 0) {
+          const secondaryBalance = Number(mortgageData.secondary.balance || 0);
+          const secondaryPayment = Number(mortgageData.secondary.monthlyPayment || 0);
+          const secondaryRate = Number(mortgageData.secondary.interestRate || 0);
           
           allDebts.push({
             name: 'Mortgage (Secondary)',
@@ -161,9 +172,19 @@ function InsightsContent() {
         }
       }
       
-      // Add other debts
-      if (cf.debts && Array.isArray(cf.debts)) {
-        cf.debts.forEach((debt: any) => {
+      // Add other debts - parse if it's a string
+      let debts = cf.debts;
+      if (typeof debts === 'string') {
+        try {
+          debts = JSON.parse(debts);
+        } catch (e) {
+          console.error('Failed to parse debts JSON:', e);
+          debts = [];
+        }
+      }
+      
+      if (debts && Array.isArray(debts)) {
+        debts.forEach((debt: any) => {
           if (debt.balance > 0) {
             allDebts.push({
               name: debt.name || 'Unnamed Debt',
