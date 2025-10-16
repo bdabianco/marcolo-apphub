@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           appreciation_rate: number | null
           asset_type: string
+          budget_plan_id: string | null
           created_at: string
           current_value: number
           id: string
@@ -31,6 +32,7 @@ export type Database = {
         Insert: {
           appreciation_rate?: number | null
           asset_type: string
+          budget_plan_id?: string | null
           created_at?: string
           current_value?: number
           id?: string
@@ -44,6 +46,7 @@ export type Database = {
         Update: {
           appreciation_rate?: number | null
           asset_type?: string
+          budget_plan_id?: string | null
           created_at?: string
           current_value?: number
           id?: string
@@ -54,7 +57,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "assets_budget_plan_id_fkey"
+            columns: ["budget_plan_id"]
+            isOneToOne: false
+            referencedRelation: "budget_plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       budget_plans: {
         Row: {

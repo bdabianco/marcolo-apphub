@@ -232,13 +232,14 @@ function SavingsContent() {
   };
 
   const loadAssets = async () => {
-    if (!user) return;
+    if (!user || !currentProject) return;
 
     try {
       const { data } = await supabase
         .from('assets')
         .select('*')
         .eq('user_id', user.id)
+        .eq('budget_plan_id', currentProject.id)
         .order('created_at', { ascending: false });
 
       setAssets(data || []);
@@ -264,6 +265,7 @@ function SavingsContent() {
       
       const { data, error } = await supabase.from('assets').insert({
         user_id: user.id,
+        budget_plan_id: currentProject.id,
         asset_type: 'property',
         name: propertyCity,
         current_value: Number(propertyValue),
@@ -325,6 +327,7 @@ function SavingsContent() {
 
       const { data, error } = await supabase.from('assets').insert({
         user_id: user.id,
+        budget_plan_id: currentProject.id,
         asset_type: investmentType,
         name: investmentNames[investmentType],
         current_value: Number(investmentValue),
@@ -370,6 +373,7 @@ function SavingsContent() {
 
       const { data, error } = await supabase.from('assets').insert({
         user_id: user.id,
+        budget_plan_id: currentProject.id,
         asset_type: 'other_investment',
         name: otherAssetName,
         current_value: Number(otherAssetValue),
