@@ -240,27 +240,38 @@ function InsightsContent() {
     const netWorth = totalAssets - totalDebts;
     
     // Calculate months to debt freedom (considering interest)
-    // Average weighted interest rate across all debts
-    const totalDebtBalance = allDebts.reduce((sum, d) => sum + d.balance, 0);
-    const weightedInterestRate = totalDebtBalance > 0 
-      ? allDebts.reduce((sum, d) => sum + (d.balance / totalDebtBalance) * (d.interestRate / 100), 0)
-      : 0;
-    
-    // Calculate months to payoff with interest using amortization formula
+    // Calculate payoff time for each individual debt, then take the maximum
     let debtFreeMonths = 0;
-    if (monthlyDebtPayment > 0 && totalDebts > 0) {
-      const monthlyRate = weightedInterestRate / 12;
-      if (monthlyRate > 0 && monthlyDebtPayment > (totalDebts * monthlyRate)) {
-        // Standard amortization formula: n = -log(1 - (P * r / M)) / log(1 + r)
-        debtFreeMonths = Math.ceil(-Math.log(1 - (totalDebts * monthlyRate / monthlyDebtPayment)) / Math.log(1 + monthlyRate));
-      } else if (monthlyRate === 0) {
-        // No interest, simple division
-        debtFreeMonths = Math.ceil(totalDebts / monthlyDebtPayment);
-      } else {
-        // Monthly payment too low to cover interest
-        debtFreeMonths = 999; // Essentially infinite
+    
+    allDebts.forEach(debt => {
+      if (debt.monthlyPayment > 0 && debt.balance > 0) {
+        const monthlyRate = (debt.interestRate / 100) / 12;
+        let monthsToPayoff = 0;
+        
+        if (monthlyRate > 0) {
+          // Check if payment covers interest
+          const monthlyInterest = debt.balance * monthlyRate;
+          if (debt.monthlyPayment > monthlyInterest) {
+            // Standard amortization formula: n = -log(1 - (P * r / M)) / log(1 + r)
+            monthsToPayoff = Math.ceil(
+              -Math.log(1 - (debt.balance * monthlyRate / debt.monthlyPayment)) / 
+              Math.log(1 + monthlyRate)
+            );
+          } else {
+            // Payment doesn't cover interest - will never be paid off
+            monthsToPayoff = 999;
+          }
+        } else {
+          // No interest, simple division
+          monthsToPayoff = Math.ceil(debt.balance / debt.monthlyPayment);
+        }
+        
+        // Track the longest payoff time
+        debtFreeMonths = Math.max(debtFreeMonths, monthsToPayoff);
+        
+        console.log(`${debt.name}: ${monthsToPayoff} months to payoff`);
       }
-    }
+    });
 
     setMetrics({
       totalAnnualIncome: totalIncome,
