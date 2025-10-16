@@ -410,41 +410,45 @@ function InsightsContent() {
                   {metrics.debtToIncomeRatio.toFixed(1)}%
                 </span>
               </div>
-              {/* Gradient bar showing health ranges with proper color zones */}
-              <div className="relative h-3 rounded-full overflow-hidden border border-border">
-                {/* Color zones based on DTI thresholds: <28% (green), 28-36% (yellow), 36-43% (orange), >43% (red) */}
-                <div className="absolute inset-0 flex">
-                  <div className="h-full bg-primary/30" style={{ width: '28%' }} />
-                  <div className="h-full bg-yellow-500/30" style={{ width: '8%' }} />
-                  <div className="h-full bg-orange-500/30" style={{ width: '7%' }} />
-                  <div className="h-full bg-destructive/30" style={{ width: '57%' }} />
+              {/* Visual indicator with color zones properly scaled */}
+              <div className="space-y-1">
+                <div className="relative h-4 rounded-full overflow-hidden border border-border bg-muted">
+                  {/* Background gradient zones - scaled to 0-100% */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-yellow-500/20 via-orange-500/20 to-destructive/20" 
+                       style={{ 
+                         background: `linear-gradient(to right, 
+                           hsl(var(--primary) / 0.25) 0%, 
+                           hsl(var(--primary) / 0.25) 28%, 
+                           rgb(234 179 8 / 0.25) 28%, 
+                           rgb(234 179 8 / 0.25) 36%, 
+                           rgb(249 115 22 / 0.25) 36%, 
+                           rgb(249 115 22 / 0.25) 43%, 
+                           hsl(var(--destructive) / 0.25) 43%,
+                           hsl(var(--destructive) / 0.25) 100%)`
+                       }}
+                  />
+                  
+                  {/* Threshold markers */}
+                  <div className="absolute top-0 bottom-0 left-[28%] w-0.5 bg-foreground/20" />
+                  <div className="absolute top-0 bottom-0 left-[36%] w-0.5 bg-foreground/20" />
+                  <div className="absolute top-0 bottom-0 left-[43%] w-0.5 bg-foreground/20" />
+                  
+                  {/* User's position marker - positioned on 0-100 scale */}
+                  <div
+                    className="absolute top-0 bottom-0 w-1 bg-foreground shadow-md z-10 transition-all duration-300"
+                    style={{ left: `${Math.min(Math.max(metrics.debtToIncomeRatio, 0), 100)}%` }}
+                  >
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-foreground rounded-full border-2 border-background shadow-lg" />
+                  </div>
                 </div>
                 
-                {/* Range markers at key thresholds */}
-                <div className="absolute top-0 left-[28%] w-0.5 h-full bg-border/60" />
-                <div className="absolute top-0 left-[36%] w-0.5 h-full bg-border/60" />
-                <div className="absolute top-0 left-[43%] w-0.5 h-full bg-border/60" />
-                
-                {/* User's current position indicator */}
-                <div
-                  className="absolute top-0 h-full w-1 bg-foreground shadow-lg transition-all z-10"
-                  style={{ 
-                    left: `${Math.min(Math.max(metrics.debtToIncomeRatio, 0), 100)}%`, 
-                    transform: 'translateX(-50%)' 
-                  }}
-                  title={`Your DTI: ${metrics.debtToIncomeRatio.toFixed(1)}%`}
-                >
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-foreground rounded-full border-2 border-background" />
+                {/* Labels */}
+                <div className="flex justify-between text-[10px] text-muted-foreground px-0.5">
+                  <span className="text-primary font-medium">Excellent<br/>0-28%</span>
+                  <span className="text-yellow-600 font-medium">Good<br/>28-36%</span>
+                  <span className="text-orange-600 font-medium">Fair<br/>36-43%</span>
+                  <span className="text-destructive font-medium">Poor<br/>43%+</span>
                 </div>
-              </div>
-              
-              {/* Range labels */}
-              <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span>0%</span>
-                <span className="text-primary">28%</span>
-                <span className="text-yellow-600">36%</span>
-                <span className="text-orange-600">43%</span>
-                <span className="text-destructive">100%</span>
               </div>
               
               {metrics.debtToIncomeRatio > 43 && (
@@ -483,41 +487,45 @@ function InsightsContent() {
                   {metrics.savingsRate.toFixed(1)}%
                 </span>
               </div>
-              {/* Gradient bar showing health ranges with proper color zones */}
-              <div className="relative h-3 rounded-full overflow-hidden border border-border">
-                {/* Color zones based on savings rate thresholds: <10% (red), 10-15% (orange), 15-20% (yellow), >20% (green) */}
-                <div className="absolute inset-0 flex">
-                  <div className="h-full bg-destructive/30" style={{ width: '10%' }} />
-                  <div className="h-full bg-orange-500/30" style={{ width: '5%' }} />
-                  <div className="h-full bg-yellow-500/30" style={{ width: '5%' }} />
-                  <div className="h-full bg-primary/30" style={{ width: '80%' }} />
+              {/* Visual indicator with color zones properly scaled */}
+              <div className="space-y-1">
+                <div className="relative h-4 rounded-full overflow-hidden border border-border bg-muted">
+                  {/* Background gradient zones - scaled to 0-100% */}
+                  <div className="absolute inset-0" 
+                       style={{ 
+                         background: `linear-gradient(to right, 
+                           hsl(var(--destructive) / 0.25) 0%, 
+                           hsl(var(--destructive) / 0.25) 10%, 
+                           rgb(249 115 22 / 0.25) 10%, 
+                           rgb(249 115 22 / 0.25) 15%, 
+                           rgb(234 179 8 / 0.25) 15%, 
+                           rgb(234 179 8 / 0.25) 20%, 
+                           hsl(var(--primary) / 0.25) 20%,
+                           hsl(var(--primary) / 0.25) 100%)`
+                       }}
+                  />
+                  
+                  {/* Threshold markers */}
+                  <div className="absolute top-0 bottom-0 left-[10%] w-0.5 bg-foreground/20" />
+                  <div className="absolute top-0 bottom-0 left-[15%] w-0.5 bg-foreground/20" />
+                  <div className="absolute top-0 bottom-0 left-[20%] w-0.5 bg-foreground/20" />
+                  
+                  {/* User's position marker - positioned on 0-100 scale */}
+                  <div
+                    className="absolute top-0 bottom-0 w-1 bg-foreground shadow-md z-10 transition-all duration-300"
+                    style={{ left: `${Math.min(Math.max(metrics.savingsRate, 0), 100)}%` }}
+                  >
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-foreground rounded-full border-2 border-background shadow-lg" />
+                  </div>
                 </div>
                 
-                {/* Range markers at key thresholds */}
-                <div className="absolute top-0 left-[10%] w-0.5 h-full bg-border/60" />
-                <div className="absolute top-0 left-[15%] w-0.5 h-full bg-border/60" />
-                <div className="absolute top-0 left-[20%] w-0.5 h-full bg-border/60" />
-                
-                {/* User's current position indicator */}
-                <div
-                  className="absolute top-0 h-full w-1 bg-foreground shadow-lg transition-all z-10"
-                  style={{ 
-                    left: `${Math.min(Math.max(metrics.savingsRate, 0), 100)}%`, 
-                    transform: 'translateX(-50%)' 
-                  }}
-                  title={`Your Savings Rate: ${metrics.savingsRate.toFixed(1)}%`}
-                >
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-foreground rounded-full border-2 border-background" />
+                {/* Labels */}
+                <div className="flex justify-between text-[10px] text-muted-foreground px-0.5">
+                  <span className="text-destructive font-medium">Poor<br/>0-10%</span>
+                  <span className="text-orange-600 font-medium">Fair<br/>10-15%</span>
+                  <span className="text-yellow-600 font-medium">Good<br/>15-20%</span>
+                  <span className="text-primary font-medium">Excellent<br/>20%+</span>
                 </div>
-              </div>
-              
-              {/* Range labels */}
-              <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span className="text-destructive">0%</span>
-                <span className="text-orange-600">10%</span>
-                <span className="text-yellow-600">15%</span>
-                <span className="text-primary">20%+</span>
-                <span>100%</span>
               </div>
               
               {metrics.savingsRate < 20 && (
