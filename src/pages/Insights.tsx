@@ -237,6 +237,17 @@ function InsightsContent() {
     const monthlyGrossIncome = budgets?.reduce((sum, b) => sum + Number(b.gross_income || 0), 0) / 12 || 0;
     const debtToIncomeRatio = monthlyGrossIncome > 0 ? (monthlyDebtPayment / monthlyGrossIncome) * 100 : 0;
     
+    console.log('DTI Calculation:', {
+      monthlyDebtPayment,
+      monthlyGrossIncome,
+      debtToIncomeRatio: debtToIncomeRatio.toFixed(1) + '%'
+    });
+    console.log('Savings Rate:', {
+      surplus,
+      totalIncome,
+      savingsRate: savingsRate.toFixed(1) + '%'
+    });
+    
     const netWorth = totalAssets - totalDebts;
     
     // Calculate months to debt freedom (considering interest)
@@ -417,7 +428,11 @@ function InsightsContent() {
                 {/* User's current position indicator */}
                 <div
                   className="absolute top-0 h-full w-1 bg-foreground shadow-lg transition-all z-10"
-                  style={{ left: `${Math.min(metrics.debtToIncomeRatio, 100)}%`, transform: 'translateX(-50%)' }}
+                  style={{ 
+                    left: `${Math.min(Math.max(metrics.debtToIncomeRatio, 0), 100)}%`, 
+                    transform: 'translateX(-50%)' 
+                  }}
+                  title={`Your DTI: ${metrics.debtToIncomeRatio.toFixed(1)}%`}
                 >
                   <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-foreground rounded-full border-2 border-background" />
                 </div>
@@ -486,7 +501,11 @@ function InsightsContent() {
                 {/* User's current position indicator */}
                 <div
                   className="absolute top-0 h-full w-1 bg-foreground shadow-lg transition-all z-10"
-                  style={{ left: `${Math.min(metrics.savingsRate, 100)}%`, transform: 'translateX(-50%)' }}
+                  style={{ 
+                    left: `${Math.min(Math.max(metrics.savingsRate, 0), 100)}%`, 
+                    transform: 'translateX(-50%)' 
+                  }}
+                  title={`Your Savings Rate: ${metrics.savingsRate.toFixed(1)}%`}
                 >
                   <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-foreground rounded-full border-2 border-background" />
                 </div>
