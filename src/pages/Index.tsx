@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, DollarSign, TrendingUp, PiggyBank, Shield } from 'lucide-react';
+import { ArrowRight, DollarSign, TrendingUp, PiggyBank, Shield, Sparkles } from 'lucide-react';
 import marcoloLogo from '@/assets/marcolo-logo.png';
 import { useEffect } from 'react';
 
@@ -55,7 +55,7 @@ const Index = () => {
         </div>
 
         {/* Features Grid */}
-        <div className="mt-24 grid gap-8 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
+        <div className="mt-24 grid gap-8 md:grid-cols-2 lg:grid-cols-5 max-w-7xl mx-auto">
           <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border hover:shadow-lg transition-shadow">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <DollarSign className="h-8 w-8 text-primary" />
@@ -83,6 +83,16 @@ const Index = () => {
             <h3 className="mb-2 text-lg font-semibold">Savings Goals</h3>
             <p className="text-sm text-muted-foreground">
               Set and track savings goals with automated progress monitoring
+            </p>
+          </div>
+
+          <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border hover:shadow-lg transition-shadow">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-secondary/10">
+              <Sparkles className="h-8 w-8 text-secondary" />
+            </div>
+            <h3 className="mb-2 text-lg font-semibold">AI Insights</h3>
+            <p className="text-sm text-muted-foreground">
+              Get intelligent recommendations and insights powered by AI
             </p>
           </div>
 
