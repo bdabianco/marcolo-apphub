@@ -293,13 +293,22 @@ function DashboardContent() {
               </div>
             </div>
             
-            {/* Overall Progress Bar */}
-            <Progress 
-              value={Math.round(
-                (Object.values(completionStatus).filter(s => s.complete).length / 5) * 100
-              )} 
-              className="h-2 mt-3"
-            />
+            {/* Overall Progress Bar with Gradient */}
+            <div className="relative mt-3">
+              <Progress 
+                value={Math.round(
+                  (Object.values(completionStatus).filter(s => s.complete).length / 5) * 100
+                )} 
+                className="h-2"
+              />
+              <div 
+                className="absolute inset-0 h-2 rounded-full bg-gradient-to-r from-primary via-secondary to-accent opacity-20 pointer-events-none"
+                style={{ 
+                  width: `${Math.round((Object.values(completionStatus).filter(s => s.complete).length / 5) * 100)}%`,
+                  transition: 'width 0.3s ease'
+                }}
+              />
+            </div>
           </CardHeader>
           
           <CardContent className="grid gap-4 md:grid-cols-5">
@@ -327,34 +336,6 @@ function DashboardContent() {
                 <TooltipContent side="bottom" className="max-w-xs">
                   <p className="font-semibold mb-1">Create Your Budget</p>
                   <p className="text-xs">Set up income sources and track monthly expenses with automatic tax calculations.</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-            {/* Investments & Assets */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    onClick={() => navigate('/savings')}
-                    variant="outline"
-                    className="h-32 flex-col gap-2 hover:border-secondary hover:bg-secondary/5 relative"
-                  >
-                    <div className="absolute top-2 right-2">
-                      <Badge variant={completionStatus.assets.complete ? "default" : "secondary"} className="text-xs">
-                        {completionStatus.assets.label}
-                      </Badge>
-                    </div>
-                    <Wallet className="h-7 w-7" />
-                    <span className="text-sm font-semibold">Assets</span>
-                    <div className="text-xs text-muted-foreground">
-                      {stats.assetCount} tracked
-                    </div>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-xs">
-                  <p className="font-semibold mb-1">Track Investments & Assets</p>
-                  <p className="text-xs">Monitor properties, retirement accounts (TFSA, RRSP), and other investments with growth projections.</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -417,6 +398,35 @@ function DashboardContent() {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+
+            {/* Investments & Assets */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    onClick={() => navigate('/savings')}
+                    variant="outline"
+                    className="h-32 flex-col gap-2 hover:border-secondary hover:bg-secondary/5 relative"
+                  >
+                    <div className="absolute top-2 right-2">
+                      <Badge variant={completionStatus.assets.complete ? "default" : "secondary"} className="text-xs">
+                        {completionStatus.assets.label}
+                      </Badge>
+                    </div>
+                    <Wallet className="h-7 w-7" />
+                    <span className="text-sm font-semibold">Assets</span>
+                    <div className="text-xs text-muted-foreground">
+                      {stats.assetCount} tracked
+                    </div>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs">
+                  <p className="font-semibold mb-1">Track Investments & Assets</p>
+                  <p className="text-xs">Monitor properties, retirement accounts (TFSA, RRSP), and other investments with growth projections.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
 
             {/* AI Insights */}
             <TooltipProvider>
