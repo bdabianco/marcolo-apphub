@@ -410,6 +410,9 @@ function InsightsContent() {
                   {metrics.debtToIncomeRatio.toFixed(1)}%
                 </span>
               </div>
+              <div className="text-xs text-muted-foreground mb-1">
+                Your DTI: {metrics.debtToIncomeRatio.toFixed(1)}% (marker should be at {metrics.debtToIncomeRatio.toFixed(1)}% from left)
+              </div>
               {/* Visual indicator with color zones properly scaled */}
               <div className="space-y-1">
                 <div className="relative h-4 rounded-full overflow-hidden border border-border bg-muted">
@@ -435,10 +438,10 @@ function InsightsContent() {
                   
                   {/* User's position marker - positioned on 0-100 scale */}
                   <div
-                    className="absolute top-0 bottom-0 w-1 bg-foreground shadow-md z-10 transition-all duration-300"
+                    className="absolute top-0 bottom-0 z-10 transition-all duration-300"
                     style={{ left: `${Math.min(Math.max(metrics.debtToIncomeRatio, 0), 100)}%` }}
                   >
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-foreground rounded-full border-2 border-background shadow-lg" />
+                    <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-foreground rounded-full border-2 border-background shadow-lg" />
                   </div>
                 </div>
                 
@@ -487,6 +490,9 @@ function InsightsContent() {
                   {metrics.savingsRate.toFixed(1)}%
                 </span>
               </div>
+              <div className="text-xs text-muted-foreground mb-1">
+                Your Savings Rate: {metrics.savingsRate.toFixed(1)}% (marker should be at {metrics.savingsRate.toFixed(1)}% from left)
+              </div>
               {/* Visual indicator with color zones properly scaled */}
               <div className="space-y-1">
                 <div className="relative h-4 rounded-full overflow-hidden border border-border bg-muted">
@@ -512,10 +518,10 @@ function InsightsContent() {
                   
                   {/* User's position marker - positioned on 0-100 scale */}
                   <div
-                    className="absolute top-0 bottom-0 w-1 bg-foreground shadow-md z-10 transition-all duration-300"
+                    className="absolute top-0 bottom-0 z-10 transition-all duration-300"
                     style={{ left: `${Math.min(Math.max(metrics.savingsRate, 0), 100)}%` }}
                   >
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-foreground rounded-full border-2 border-background shadow-lg" />
+                    <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-foreground rounded-full border-2 border-background shadow-lg" />
                   </div>
                 </div>
                 
