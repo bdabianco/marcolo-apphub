@@ -62,8 +62,16 @@ export default function Auth() {
           <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             {isLogin ? 'Welcome Back' : 'Create Account'}
           </CardTitle>
-          <CardDescription>
-            {isLogin ? 'Sign in to access your cashflow dashboard' : 'Start managing your finances today'}
+          <CardDescription className="text-base">
+            {isLogin ? (
+              <>
+                Sign in to access your{' '}
+                <span className="font-semibold text-primary">"Mycashflow"</span>{' '}
+                dashboard
+              </>
+            ) : (
+              'Start managing your finances today'
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent>
