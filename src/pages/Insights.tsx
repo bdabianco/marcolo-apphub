@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useAuth, ProtectedRoute } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, AlertCircle, Target, PiggyBank, CreditCard, Lightbulb } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertCircle, Target, PiggyBank, CreditCard, Lightbulb, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AppHeader } from '@/components/AppHeader';
 import { formatCurrency } from '@/lib/utils';
@@ -329,7 +330,28 @@ function InsightsContent() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Debt-to-Income Ratio</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Debt-to-Income Ratio</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="font-semibold mb-1">Financial Health Standards:</p>
+                        <ul className="text-xs space-y-1">
+                          <li>• <strong>Excellent:</strong> Below 28%</li>
+                          <li>• <strong>Good:</strong> 28-36%</li>
+                          <li>• <strong>Fair:</strong> 36-43%</li>
+                          <li>• <strong>Poor:</strong> Above 43%</li>
+                        </ul>
+                        <p className="text-xs mt-2 text-muted-foreground">
+                          Lenders typically prefer DTI below 43%. Lower is better for financial flexibility.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <span className={`font-bold ${metrics.debtToIncomeRatio > 43 ? 'text-destructive' : 'text-primary'}`}>
                   {metrics.debtToIncomeRatio.toFixed(1)}%
                 </span>
@@ -350,7 +372,28 @@ function InsightsContent() {
 
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Savings Rate</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Savings Rate</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="font-semibold mb-1">Financial Health Standards:</p>
+                        <ul className="text-xs space-y-1">
+                          <li>• <strong>Excellent:</strong> 20% or more</li>
+                          <li>• <strong>Good:</strong> 15-20%</li>
+                          <li>• <strong>Fair:</strong> 10-15%</li>
+                          <li>• <strong>Poor:</strong> Below 10%</li>
+                        </ul>
+                        <p className="text-xs mt-2 text-muted-foreground">
+                          The 50/30/20 rule recommends saving 20% of income. Higher rates accelerate wealth building.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <span className={`font-bold ${metrics.savingsRate < 20 ? 'text-destructive' : 'text-primary'}`}>
                   {metrics.savingsRate.toFixed(1)}%
                 </span>
