@@ -436,13 +436,13 @@ function InsightsContent() {
                   <div className="absolute top-0 bottom-0 left-[36%] w-0.5 bg-foreground/20" />
                   <div className="absolute top-0 bottom-0 left-[43%] w-0.5 bg-foreground/20" />
                   
-                  {/* User's position marker - positioned on 0-100 scale */}
+                  {/* User's position marker - centered dot at exact percentage */}
                   <div
-                    className="absolute top-0 bottom-0 z-10 transition-all duration-300"
-                    style={{ left: `${Math.min(Math.max(metrics.debtToIncomeRatio, 0), 100)}%` }}
-                  >
-                    <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-foreground rounded-full border-2 border-background shadow-lg" />
-                  </div>
+                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-foreground rounded-full border-2 border-background shadow-lg z-10 transition-all duration-300"
+                    style={{ 
+                      left: `calc(${Math.min(Math.max(metrics.debtToIncomeRatio, 0), 100)}% - 8px)`
+                    }}
+                  />
                 </div>
                 
                 {/* Labels */}
@@ -516,13 +516,13 @@ function InsightsContent() {
                   <div className="absolute top-0 bottom-0 left-[15%] w-0.5 bg-foreground/20" />
                   <div className="absolute top-0 bottom-0 left-[20%] w-0.5 bg-foreground/20" />
                   
-                  {/* User's position marker - positioned on 0-100 scale */}
+                  {/* User's position marker - centered dot at exact percentage */}
                   <div
-                    className="absolute top-0 bottom-0 z-10 transition-all duration-300"
-                    style={{ left: `${Math.min(Math.max(metrics.savingsRate, 0), 100)}%` }}
-                  >
-                    <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-foreground rounded-full border-2 border-background shadow-lg" />
-                  </div>
+                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-foreground rounded-full border-2 border-background shadow-lg z-10 transition-all duration-300"
+                    style={{ 
+                      left: `calc(${Math.min(Math.max(metrics.savingsRate, 0), 100)}% - 8px)`
+                    }}
+                  />
                 </div>
                 
                 {/* Labels */}
