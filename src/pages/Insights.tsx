@@ -3,8 +3,9 @@ import { useAuth, ProtectedRoute } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, AlertCircle, Target, PiggyBank, CreditCard, Lightbulb, Info } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertCircle, Target, PiggyBank, CreditCard, Lightbulb, Info, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AppHeader } from '@/components/AppHeader';
 import { formatCurrency } from '@/lib/utils';
@@ -532,6 +533,83 @@ function InsightsContent() {
           </CardContent>
         </Card>
 
+        {/* Additional Financial Ratios */}
+        <Card className="mb-6 border-2 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
+            <CardTitle>Additional Financial Metrics</CardTitle>
+            <CardDescription>More indicators of your financial health</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6 md:grid-cols-2">
+            {/* Debt-to-Asset Ratio */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Debt-to-Asset Ratio</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="font-semibold mb-1">Financial Health Standards:</p>
+                        <ul className="text-xs space-y-1">
+                          <li>• <strong>Excellent:</strong> Below 30%</li>
+                          <li>• <strong>Good:</strong> 30-50%</li>
+                          <li>• <strong>Fair:</strong> 50-70%</li>
+                          <li>• <strong>Poor:</strong> Above 70%</li>
+                        </ul>
+                        <p className="text-xs mt-2 text-muted-foreground">
+                          Shows what portion of your assets are financed by debt. Lower is better.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <span className={`font-bold ${(metrics.totalDebts / metrics.totalAssets * 100) > 70 ? 'text-destructive' : 'text-primary'}`}>
+                  {metrics.totalAssets > 0 ? ((metrics.totalDebts / metrics.totalAssets) * 100).toFixed(1) : '0.0'}%
+                </span>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                ${formatCurrency(metrics.totalDebts)} debt / ${formatCurrency(metrics.totalAssets)} assets
+              </div>
+            </div>
+
+            {/* Net Worth to Income Ratio */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Net Worth to Income</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="font-semibold mb-1">Target by Age:</p>
+                        <ul className="text-xs space-y-1">
+                          <li>• <strong>Age 30:</strong> 1x annual income</li>
+                          <li>• <strong>Age 40:</strong> 3x annual income</li>
+                          <li>• <strong>Age 50:</strong> 6x annual income</li>
+                          <li>• <strong>Age 60:</strong> 8x annual income</li>
+                        </ul>
+                        <p className="text-xs mt-2 text-muted-foreground">
+                          Measures wealth accumulation relative to income. Higher is better.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <span className="font-bold text-primary">
+                  {metrics.totalAnnualIncome > 0 ? ((metrics.netWorth / metrics.totalAnnualIncome)).toFixed(1) : '0.0'}x
+                </span>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                ${formatCurrency(metrics.netWorth)} net worth / ${formatCurrency(metrics.totalAnnualIncome)} income
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Savings Goals Progress */}
         {metrics.savingsGoalsCount > 0 && (
           <Card className="mb-6 border-2 shadow-lg">
@@ -593,73 +671,86 @@ function InsightsContent() {
           </Card>
         )}
 
-        {/* Debt Payoff Timeline */}
+        {/* Debt Payoff Timeline - Collapsible */}
         {metrics.totalDebts > 0 && (
-          <Card className="mb-6 border-2 shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-destructive/5 via-destructive/3 to-transparent">
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5" />
-                Debt Payoff Timeline
-              </CardTitle>
-              <CardDescription>Your path to becoming debt-free</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="text-sm text-muted-foreground mb-1">Total Debt</div>
-                  <div className="text-2xl font-bold text-destructive">
-                    ${formatCurrency(metrics.totalDebts)}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-sm text-muted-foreground mb-1">Monthly Payment</div>
-                  <div className="text-2xl font-bold">
-                    ${formatCurrency(metrics.monthlyDebtPayment)}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-sm text-muted-foreground mb-1">Months to Freedom</div>
-                  <div className="text-2xl font-bold text-primary">
-                    {metrics.debtFreeMonths > 0 ? metrics.debtFreeMonths : 'N/A'}
-                  </div>
-                </div>
-              </div>
-
-              {/* Individual Debt Breakdown */}
-              {debtBreakdown.length > 0 && (
-                <div className="space-y-3 mt-4">
-                  <div className="text-sm font-semibold text-muted-foreground">Debt Breakdown</div>
-                  {debtBreakdown.map((debt, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded border">
-                      <div className="flex-1">
-                        <div className="font-medium">{debt.name}</div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          {debt.interestRate > 0 && `${debt.interestRate}% APR`}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-bold text-destructive">
-                          ${formatCurrency(debt.balance)}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          ${formatCurrency(debt.monthlyPayment)}/mo
-                        </div>
+          <Collapsible defaultOpen={false}>
+            <Card className="mb-6 border-2 shadow-lg">
+              <CollapsibleTrigger className="w-full">
+                <CardHeader className="bg-gradient-to-r from-destructive/5 via-destructive/3 to-transparent hover:from-destructive/10 hover:via-destructive/5 transition-colors cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="h-5 w-5" />
+                      <div className="text-left">
+                        <CardTitle>Debt Payoff Timeline</CardTitle>
+                        <CardDescription>Your path to becoming debt-free</CardDescription>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-
-              {metrics.debtFreeMonths > 0 && (
-                <div className="bg-muted/50 p-3 rounded mt-4">
-                  <div className="text-sm font-medium mb-1">Projected Debt-Free Date</div>
-                  <div className="text-lg font-bold">
-                    {new Date(Date.now() + metrics.debtFreeMonths * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    <ChevronDown className="h-5 w-5 transition-transform ui-expanded:rotate-180" />
                   </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                  
+                  {/* Summary View (always visible) */}
+                  <div className="grid grid-cols-3 gap-4 mt-4">
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground mb-1">Total Debt</div>
+                      <div className="text-lg font-bold text-destructive">
+                        ${formatCurrency(metrics.totalDebts)}
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground mb-1">Monthly Payment</div>
+                      <div className="text-lg font-bold">
+                        ${formatCurrency(metrics.monthlyDebtPayment)}
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground mb-1">Months to Freedom</div>
+                      <div className="text-lg font-bold text-primary">
+                        {metrics.debtFreeMonths > 0 && metrics.debtFreeMonths < 999 ? metrics.debtFreeMonths : 'N/A'}
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+              </CollapsibleTrigger>
+
+              <CollapsibleContent>
+                <CardContent className="space-y-4 pt-4">
+                  {/* Individual Debt Breakdown */}
+                  {debtBreakdown.length > 0 && (
+                    <div className="space-y-3">
+                      <div className="text-sm font-semibold text-muted-foreground">Debt Breakdown</div>
+                      {debtBreakdown.map((debt, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded border">
+                          <div className="flex-1">
+                            <div className="font-medium">{debt.name}</div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {debt.interestRate > 0 && `${debt.interestRate}% APR`}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-bold text-destructive">
+                              ${formatCurrency(debt.balance)}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              ${formatCurrency(debt.monthlyPayment)}/mo
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {metrics.debtFreeMonths > 0 && metrics.debtFreeMonths < 999 && (
+                    <div className="bg-muted/50 p-3 rounded">
+                      <div className="text-sm font-medium mb-1">Projected Debt-Free Date</div>
+                      <div className="text-lg font-bold">
+                        {new Date(Date.now() + metrics.debtFreeMonths * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
         )}
 
         {/* Net Worth */}
