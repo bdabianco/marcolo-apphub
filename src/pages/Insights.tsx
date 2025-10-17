@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, AlertCircle, Target, PiggyBank, CreditCard, Lightbulb, Info, ChevronDown } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { AppHeader } from '@/components/AppHeader';
 import { formatCurrency } from '@/lib/utils';
@@ -390,11 +391,152 @@ function InsightsContent() {
             <CardTitle>Financial Ratios</CardTitle>
             <CardDescription>Key indicators of your financial health</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Debt-to-Income Ratio</span>
+          <CardContent className="pt-6">
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart
+                data={[
+                  {
+                    name: 'Debt-to-Income',
+                    value: Number(metrics.debtToIncomeRatio.toFixed(1)),
+                    target: 28,
+                    max: 100,
+                    unit: '%',
+                    excellent: 28,
+                    good: 36,
+                    fair: 43,
+                  },
+                  {
+                    name: 'Savings Rate',
+                    value: Number(metrics.savingsRate.toFixed(1)),
+                    target: 20,
+                    max: 100,
+                    unit: '%',
+                    excellent: 20,
+                    good: 15,
+                    fair: 10,
+                  },
+                ]}
+                layout="vertical"
+                margin={{ top: 20, right: 40, left: 120, bottom: 20 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                <XAxis 
+                  type="number" 
+                  domain={[0, 100]}
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  tickFormatter={(value) => `${value}%`}
+                />
+                <YAxis 
+                  type="category" 
+                  dataKey="name" 
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={13}
+                  fontWeight={500}
+                  width={110}
+                />
+                <RechartsTooltip
+                  cursor={{ fill: 'hsl(var(--accent) / 0.1)' }}
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      const isDebtRatio = data.name === 'Debt-to-Income';
+                      
+                      let status = '';
+                      let statusColor = '';
+                      
+                      if (isDebtRatio) {
+                        if (data.value < 28) {
+                          status = 'Excellent';
+                          statusColor = 'text-primary';
+                        } else if (data.value < 36) {
+                          status = 'Good';
+                          statusColor = 'text-yellow-600';
+                        } else if (data.value < 43) {
+                          status = 'Fair';
+                          statusColor = 'text-orange-600';
+                        } else {
+                          status = 'Poor';
+                          statusColor = 'text-destructive';
+                        }
+                      } else {
+                        if (data.value >= 20) {
+                          status = 'Excellent';
+                          statusColor = 'text-primary';
+                        } else if (data.value >= 15) {
+                          status = 'Good';
+                          statusColor = 'text-yellow-600';
+                        } else if (data.value >= 10) {
+                          status = 'Fair';
+                          statusColor = 'text-orange-600';
+                        } else {
+                          status = 'Poor';
+                          statusColor = 'text-destructive';
+                        }
+                      }
+                      
+                      return (
+                        <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
+                          <p className="font-semibold mb-1">{data.name}</p>
+                          <p className="text-2xl font-bold text-primary mb-1">{data.value}%</p>
+                          <p className={`text-sm font-medium ${statusColor}`}>{status}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Target: {isDebtRatio ? 'Below' : 'Above'} {data.target}%
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Bar 
+                  dataKey="value" 
+                  radius={[0, 8, 8, 0]}
+                  maxBarSize={50}
+                >
+                  {[
+                    {
+                      name: 'Debt-to-Income',
+                      value: Number(metrics.debtToIncomeRatio.toFixed(1)),
+                    },
+                    {
+                      name: 'Savings Rate',
+                      value: Number(metrics.savingsRate.toFixed(1)),
+                    },
+                  ].map((entry, index) => {
+                    let fillColor = 'hsl(var(--primary))';
+                    
+                    if (entry.name === 'Debt-to-Income') {
+                      if (entry.value >= 43) fillColor = 'hsl(var(--destructive))';
+                      else if (entry.value >= 36) fillColor = 'hsl(20 100% 50%)'; // orange
+                      else if (entry.value >= 28) fillColor = 'hsl(45 100% 50%)'; // yellow
+                    } else {
+                      if (entry.value < 10) fillColor = 'hsl(var(--destructive))';
+                      else if (entry.value < 15) fillColor = 'hsl(20 100% 50%)';
+                      else if (entry.value < 20) fillColor = 'hsl(45 100% 50%)';
+                    }
+                    
+                    return <Cell key={`cell-${index}`} fill={fillColor} />;
+                  })}
+                  <LabelList 
+                    dataKey="value" 
+                    position="right" 
+                    formatter={(value: number) => `${value}%`}
+                    style={{ 
+                      fill: 'hsl(var(--foreground))',
+                      fontWeight: 600,
+                      fontSize: 14,
+                    }}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+            
+            {/* Legends and Info */}
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className="space-y-2 p-4 rounded-lg bg-muted/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-semibold text-sm">Debt-to-Income Ratio</span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -415,60 +557,23 @@ function InsightsContent() {
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                <span className={`font-bold ${metrics.debtToIncomeRatio > 43 ? 'text-destructive' : 'text-primary'}`}>
-                  {metrics.debtToIncomeRatio.toFixed(1)}%
-                </span>
-              </div>
-              <div className="text-xs text-muted-foreground mb-1">
-                Your DTI: {metrics.debtToIncomeRatio.toFixed(1)}% (marker should be at {metrics.debtToIncomeRatio.toFixed(1)}% from left)
-              </div>
-              {/* Visual indicator with color zones properly scaled */}
-              <div className="space-y-1">
-                <div className="relative h-4 rounded-full overflow-hidden border border-border bg-muted w-full">
-                  {/* Background gradient zones using positioned divs for accuracy */}
-                  <div className="absolute inset-0 flex">
-                    <div className="h-full bg-primary/25" style={{ width: '28%' }}></div>
-                    <div className="h-full bg-yellow-500/25" style={{ width: '8%' }}></div>
-                    <div className="h-full bg-orange-500/25" style={{ width: '7%' }}></div>
-                    <div className="h-full bg-destructive/25" style={{ width: '57%' }}></div>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <span className="px-2 py-1 rounded bg-primary/20 text-primary font-medium">Excellent: &lt;28%</span>
+                  <span className="px-2 py-1 rounded bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 font-medium">Good: 28-36%</span>
+                  <span className="px-2 py-1 rounded bg-orange-500/20 text-orange-700 dark:text-orange-400 font-medium">Fair: 36-43%</span>
+                  <span className="px-2 py-1 rounded bg-destructive/20 text-destructive font-medium">Poor: &gt;43%</span>
+                </div>
+                {metrics.debtToIncomeRatio > 43 && (
+                  <div className="flex items-center gap-2 text-sm text-destructive mt-2">
+                    <AlertCircle className="h-4 w-4" />
+                    <span>Consider debt reduction strategies.</span>
                   </div>
-                   
-                  {/* Threshold markers */}
-                  <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/20" style={{ left: '28%' }} />
-                  <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/20" style={{ left: '36%' }} />
-                  <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/20" style={{ left: '43%' }} />
-                  
-                  {/* User's position marker - centered dot at exact percentage */}
-                  <div
-                    className="absolute top-1/2 w-4 h-4 bg-foreground rounded-full border-2 border-background shadow-lg z-10 transition-all duration-300"
-                    style={{ 
-                      left: `${Math.min(Math.max(metrics.debtToIncomeRatio, 0), 100)}%`,
-                      transform: 'translate(-50%, -50%)'
-                    }}
-                  />
-                </div>
-                
-                {/* Labels */}
-                <div className="flex justify-between text-[10px] text-muted-foreground px-0.5">
-                  <span className="text-primary font-medium">Excellent<br/>0-28%</span>
-                  <span className="text-yellow-600 font-medium">Good<br/>28-36%</span>
-                  <span className="text-orange-600 font-medium">Fair<br/>36-43%</span>
-                  <span className="text-destructive font-medium">Poor<br/>43%+</span>
-                </div>
+                )}
               </div>
               
-              {metrics.debtToIncomeRatio > 43 && (
-                <div className="flex items-center gap-2 text-sm text-destructive mt-2">
-                  <AlertCircle className="h-4 w-4" />
-                  <span>High debt-to-income ratio. Consider debt reduction strategies.</span>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Savings Rate</span>
+              <div className="space-y-2 p-4 rounded-lg bg-muted/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-semibold text-sm">Savings Rate</span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -489,54 +594,19 @@ function InsightsContent() {
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                <span className={`font-bold ${metrics.savingsRate < 20 ? 'text-destructive' : 'text-primary'}`}>
-                  {metrics.savingsRate.toFixed(1)}%
-                </span>
-              </div>
-              <div className="text-xs text-muted-foreground mb-1">
-                Your Savings Rate: {metrics.savingsRate.toFixed(1)}% (marker should be at {metrics.savingsRate.toFixed(1)}% from left)
-              </div>
-              {/* Visual indicator with color zones properly scaled */}
-              <div className="space-y-1">
-                <div className="relative h-4 rounded-full overflow-hidden border border-border bg-muted w-full">
-                  {/* Background gradient zones using positioned divs for accuracy */}
-                  <div className="absolute inset-0 flex">
-                    <div className="h-full bg-destructive/25" style={{ width: '10%' }}></div>
-                    <div className="h-full bg-orange-500/25" style={{ width: '5%' }}></div>
-                    <div className="h-full bg-yellow-500/25" style={{ width: '5%' }}></div>
-                    <div className="h-full bg-primary/25" style={{ width: '80%' }}></div>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <span className="px-2 py-1 rounded bg-destructive/20 text-destructive font-medium">Poor: &lt;10%</span>
+                  <span className="px-2 py-1 rounded bg-orange-500/20 text-orange-700 dark:text-orange-400 font-medium">Fair: 10-15%</span>
+                  <span className="px-2 py-1 rounded bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 font-medium">Good: 15-20%</span>
+                  <span className="px-2 py-1 rounded bg-primary/20 text-primary font-medium">Excellent: &gt;20%</span>
+                </div>
+                {metrics.savingsRate < 20 && (
+                  <div className="flex items-center gap-2 text-sm text-destructive mt-2">
+                    <AlertCircle className="h-4 w-4" />
+                    <span>Aim for at least 20% for financial security.</span>
                   </div>
-                  
-                  {/* Threshold markers */}
-                  <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/20" style={{ left: '10%' }} />
-                  <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/20" style={{ left: '15%' }} />
-                  <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/20" style={{ left: '20%' }} />
-                  
-                  {/* User's position marker - centered dot at exact percentage */}
-                  <div
-                    className="absolute top-1/2 w-4 h-4 bg-foreground rounded-full border-2 border-background shadow-lg z-10 transition-all duration-300"
-                    style={{ 
-                      left: `${Math.min(Math.max(metrics.savingsRate, 0), 100)}%`,
-                      transform: 'translate(-50%, -50%)'
-                    }}
-                  />
-                </div>
-                
-                {/* Labels */}
-                <div className="flex justify-between text-[10px] text-muted-foreground px-0.5">
-                  <span className="text-destructive font-medium">Poor<br/>0-10%</span>
-                  <span className="text-orange-600 font-medium">Fair<br/>10-15%</span>
-                  <span className="text-yellow-600 font-medium">Good<br/>15-20%</span>
-                  <span className="text-primary font-medium">Excellent<br/>20%+</span>
-                </div>
+                )}
               </div>
-              
-              {metrics.savingsRate < 20 && (
-                <div className="flex items-center gap-2 text-sm text-destructive mt-2">
-                  <AlertCircle className="h-4 w-4" />
-                  <span>Aim for at least 20% savings rate for financial security.</span>
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>
