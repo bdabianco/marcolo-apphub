@@ -392,7 +392,7 @@ function InsightsContent() {
             <CardDescription>Key indicators of your financial health</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
-            <ResponsiveContainer width="100%" height={350}>
+            <ResponsiveContainer width="100%" height={280}>
               <BarChart
                 data={[
                   {
