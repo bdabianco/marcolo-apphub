@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Trash2, CalendarIcon, DollarSign, TrendingDown, CreditCard, Wallet, Calculator, PiggyBank, ChevronRight, Info } from 'lucide-react';
+import { Plus, Trash2, CalendarIcon, DollarSign, TrendingDown, CreditCard, Wallet, Calculator, PiggyBank, ChevronRight, Info, Pencil } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -28,6 +28,12 @@ interface Income {
   grossMargin?: number; // for business revenue streams
   startDate?: Date;
   weighting?: 'equal' | 'quarterly';
+  quarterlyWeights?: {
+    q1: number;
+    q2: number;
+    q3: number;
+    q4: number;
+  };
 }
 
 interface Subscription {
@@ -61,6 +67,9 @@ function BudgetContent() {
   const [newGrossMargin, setNewGrossMargin] = useState('');
   const [newIncomeStartDate, setNewIncomeStartDate] = useState<Date>();
   const [newIncomeWeighting, setNewIncomeWeighting] = useState<'equal' | 'quarterly'>('equal');
+  const [newQuarterlyWeights, setNewQuarterlyWeights] = useState({ q1: 25, q2: 25, q3: 25, q4: 25 });
+  const [editingIncome, setEditingIncome] = useState<Income | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [newExpenseName, setNewExpenseName] = useState('');
   const [newExpenseAmount, setNewExpenseAmount] = useState('');
   const [newExpenseStartDate, setNewExpenseStartDate] = useState<Date>();
@@ -215,6 +224,15 @@ function BudgetContent() {
 
   const addIncome = () => {
     if (newIncomeName && newIncomeAmount) {
+      // Validate quarterly weights if quarterly weighting is selected
+      if (newIncomeWeighting === 'quarterly') {
+        const total = newQuarterlyWeights.q1 + newQuarterlyWeights.q2 + newQuarterlyWeights.q3 + newQuarterlyWeights.q4;
+        if (total !== 100) {
+          toast.error(`Quarterly weights must total 100%. Current total: ${total}%`);
+          return;
+        }
+      }
+
       setIncomes([
         ...incomes,
         {
@@ -226,6 +244,7 @@ function BudgetContent() {
           grossMargin: newGrossMargin ? parseFloat(newGrossMargin) : undefined,
           startDate: newIncomeStartDate,
           weighting: newIncomeWeighting,
+          quarterlyWeights: newIncomeWeighting === 'quarterly' ? { ...newQuarterlyWeights } : undefined,
         },
       ]);
       setNewIncomeName('');
@@ -235,7 +254,32 @@ function BudgetContent() {
       setNewGrossMargin('');
       setNewIncomeStartDate(undefined);
       setNewIncomeWeighting('equal');
+      setNewQuarterlyWeights({ q1: 25, q2: 25, q3: 25, q4: 25 });
     }
+  };
+
+  const updateIncome = () => {
+    if (!editingIncome) return;
+
+    // Validate quarterly weights if quarterly weighting is selected
+    if (editingIncome.weighting === 'quarterly' && editingIncome.quarterlyWeights) {
+      const total = editingIncome.quarterlyWeights.q1 + editingIncome.quarterlyWeights.q2 + 
+                    editingIncome.quarterlyWeights.q3 + editingIncome.quarterlyWeights.q4;
+      if (total !== 100) {
+        toast.error(`Quarterly weights must total 100%. Current total: ${total}%`);
+        return;
+      }
+    }
+
+    setIncomes(incomes.map(inc => inc.id === editingIncome.id ? editingIncome : inc));
+    setEditDialogOpen(false);
+    setEditingIncome(null);
+    toast.success('Income updated successfully');
+  };
+
+  const startEditIncome = (income: Income) => {
+    setEditingIncome({ ...income });
+    setEditDialogOpen(true);
   };
 
   const removeIncome = (id: string) => {
@@ -434,6 +478,61 @@ function BudgetContent() {
                           </Select>
                         </div>
                       </div>
+                      {newIncomeWeighting === 'quarterly' && (
+                        <div className="grid grid-cols-4 gap-2 p-4 bg-muted/50 rounded-lg">
+                          <div>
+                            <Label className="text-xs">Q1 Weight (%)</Label>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={newQuarterlyWeights.q1}
+                              onChange={(e) => setNewQuarterlyWeights({ ...newQuarterlyWeights, q1: parseFloat(e.target.value) || 0 })}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Q2 Weight (%)</Label>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={newQuarterlyWeights.q2}
+                              onChange={(e) => setNewQuarterlyWeights({ ...newQuarterlyWeights, q2: parseFloat(e.target.value) || 0 })}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Q3 Weight (%)</Label>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={newQuarterlyWeights.q3}
+                              onChange={(e) => setNewQuarterlyWeights({ ...newQuarterlyWeights, q3: parseFloat(e.target.value) || 0 })}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Q4 Weight (%)</Label>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={newQuarterlyWeights.q4}
+                              onChange={(e) => setNewQuarterlyWeights({ ...newQuarterlyWeights, q4: parseFloat(e.target.value) || 0 })}
+                            />
+                          </div>
+                          <div className="col-span-4 text-sm">
+                            <span className={cn(
+                              "font-medium",
+                              (newQuarterlyWeights.q1 + newQuarterlyWeights.q2 + newQuarterlyWeights.q3 + newQuarterlyWeights.q4) === 100 
+                                ? "text-green-600 dark:text-green-400" 
+                                : "text-destructive"
+                            )}>
+                              Total: {newQuarterlyWeights.q1 + newQuarterlyWeights.q2 + newQuarterlyWeights.q3 + newQuarterlyWeights.q4}% 
+                              {(newQuarterlyWeights.q1 + newQuarterlyWeights.q2 + newQuarterlyWeights.q3 + newQuarterlyWeights.q4) === 100 ? ' ✓' : ' (must equal 100%)'}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </>
                   ) : (
                     <>
@@ -511,6 +610,61 @@ function BudgetContent() {
                           </Select>
                         </div>
                       </div>
+                      {newIncomeWeighting === 'quarterly' && (
+                        <div className="grid grid-cols-4 gap-2 p-4 bg-muted/50 rounded-lg">
+                          <div>
+                            <Label className="text-xs">Q1 Weight (%)</Label>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={newQuarterlyWeights.q1}
+                              onChange={(e) => setNewQuarterlyWeights({ ...newQuarterlyWeights, q1: parseFloat(e.target.value) || 0 })}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Q2 Weight (%)</Label>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={newQuarterlyWeights.q2}
+                              onChange={(e) => setNewQuarterlyWeights({ ...newQuarterlyWeights, q2: parseFloat(e.target.value) || 0 })}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Q3 Weight (%)</Label>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={newQuarterlyWeights.q3}
+                              onChange={(e) => setNewQuarterlyWeights({ ...newQuarterlyWeights, q3: parseFloat(e.target.value) || 0 })}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Q4 Weight (%)</Label>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={newQuarterlyWeights.q4}
+                              onChange={(e) => setNewQuarterlyWeights({ ...newQuarterlyWeights, q4: parseFloat(e.target.value) || 0 })}
+                            />
+                          </div>
+                          <div className="col-span-4 text-sm">
+                            <span className={cn(
+                              "font-medium",
+                              (newQuarterlyWeights.q1 + newQuarterlyWeights.q2 + newQuarterlyWeights.q3 + newQuarterlyWeights.q4) === 100 
+                                ? "text-green-600 dark:text-green-400" 
+                                : "text-destructive"
+                            )}>
+                              Total: {newQuarterlyWeights.q1 + newQuarterlyWeights.q2 + newQuarterlyWeights.q3 + newQuarterlyWeights.q4}% 
+                              {(newQuarterlyWeights.q1 + newQuarterlyWeights.q2 + newQuarterlyWeights.q3 + newQuarterlyWeights.q4) === 100 ? ' ✓' : ' (must equal 100%)'}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </>
                   )}
 
@@ -529,6 +683,13 @@ function BudgetContent() {
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="font-medium">${formatCurrency(income.amount)}</span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => startEditIncome(income)}
+                          >
+                            <Pencil className="h-4 w-4 text-primary" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"
@@ -956,6 +1117,214 @@ function BudgetContent() {
           <DollarSign className="h-4 w-4 mr-2" />
           Save Budget Plan
         </Button>
+
+        {/* Edit Income Dialog */}
+        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Income</DialogTitle>
+              <DialogDescription>Update the income details below</DialogDescription>
+            </DialogHeader>
+            {editingIncome && (
+              <div className="space-y-4">
+                <div>
+                  <Label>Name</Label>
+                  <Input
+                    value={editingIncome.name}
+                    onChange={(e) => setEditingIncome({ ...editingIncome, name: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label>Amount</Label>
+                  <Input
+                    type="number"
+                    value={editingIncome.amount}
+                    onChange={(e) => setEditingIncome({ ...editingIncome, amount: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+                {isBusinessProject ? (
+                  <div>
+                    <Label>Gross Margin (%)</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={editingIncome.grossMargin || 0}
+                      onChange={(e) => setEditingIncome({ ...editingIncome, grossMargin: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <Label>Type</Label>
+                    <Select 
+                      value={editingIncome.type} 
+                      onValueChange={(val: 'gross' | 'net') => setEditingIncome({ ...editingIncome, type: val })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="net">Net</SelectItem>
+                        <SelectItem value="gross">Gross</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+                <div>
+                  <Label>Schedule</Label>
+                  <Select 
+                    value={editingIncome.schedule} 
+                    onValueChange={(val: 'monthly' | 'quarterly' | 'annual') => setEditingIncome({ ...editingIncome, schedule: val })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                      <SelectItem value="quarterly">Quarterly</SelectItem>
+                      <SelectItem value="annual">Annual</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Start Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !editingIncome.startDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {editingIncome.startDate ? format(new Date(editingIncome.startDate), "PPP") : "Select date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={editingIncome.startDate ? new Date(editingIncome.startDate) : undefined}
+                        onSelect={(date) => setEditingIncome({ ...editingIncome, startDate: date })}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div>
+                  <Label>Revenue Weighting</Label>
+                  <Select 
+                    value={editingIncome.weighting || 'equal'} 
+                    onValueChange={(val: 'equal' | 'quarterly') => setEditingIncome({ 
+                      ...editingIncome, 
+                      weighting: val,
+                      quarterlyWeights: val === 'quarterly' ? (editingIncome.quarterlyWeights || { q1: 25, q2: 25, q3: 25, q4: 25 }) : undefined
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="equal">Equally Weighted</SelectItem>
+                      <SelectItem value="quarterly">Quarterly Weighted</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {editingIncome.weighting === 'quarterly' && editingIncome.quarterlyWeights && (
+                  <div className="grid grid-cols-4 gap-2 p-4 bg-muted/50 rounded-lg">
+                    <div>
+                      <Label className="text-xs">Q1 Weight (%)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={editingIncome.quarterlyWeights.q1}
+                        onChange={(e) => setEditingIncome({
+                          ...editingIncome,
+                          quarterlyWeights: {
+                            ...editingIncome.quarterlyWeights!,
+                            q1: parseFloat(e.target.value) || 0
+                          }
+                        })}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Q2 Weight (%)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={editingIncome.quarterlyWeights.q2}
+                        onChange={(e) => setEditingIncome({
+                          ...editingIncome,
+                          quarterlyWeights: {
+                            ...editingIncome.quarterlyWeights!,
+                            q2: parseFloat(e.target.value) || 0
+                          }
+                        })}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Q3 Weight (%)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={editingIncome.quarterlyWeights.q3}
+                        onChange={(e) => setEditingIncome({
+                          ...editingIncome,
+                          quarterlyWeights: {
+                            ...editingIncome.quarterlyWeights!,
+                            q3: parseFloat(e.target.value) || 0
+                          }
+                        })}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Q4 Weight (%)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={editingIncome.quarterlyWeights.q4}
+                        onChange={(e) => setEditingIncome({
+                          ...editingIncome,
+                          quarterlyWeights: {
+                            ...editingIncome.quarterlyWeights!,
+                            q4: parseFloat(e.target.value) || 0
+                          }
+                        })}
+                      />
+                    </div>
+                    <div className="col-span-4 text-sm">
+                      <span className={cn(
+                        "font-medium",
+                        (editingIncome.quarterlyWeights.q1 + editingIncome.quarterlyWeights.q2 + 
+                         editingIncome.quarterlyWeights.q3 + editingIncome.quarterlyWeights.q4) === 100 
+                          ? "text-green-600 dark:text-green-400" 
+                          : "text-destructive"
+                      )}>
+                        Total: {editingIncome.quarterlyWeights.q1 + editingIncome.quarterlyWeights.q2 + 
+                                editingIncome.quarterlyWeights.q3 + editingIncome.quarterlyWeights.q4}% 
+                        {(editingIncome.quarterlyWeights.q1 + editingIncome.quarterlyWeights.q2 + 
+                          editingIncome.quarterlyWeights.q3 + editingIncome.quarterlyWeights.q4) === 100 
+                          ? ' ✓' : ' (must equal 100%)'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <div className="flex gap-2 pt-4">
+                  <Button onClick={updateIncome} className="flex-1">
+                    Update Income
+                  </Button>
+                  <Button onClick={() => setEditDialogOpen(false)} variant="outline" className="flex-1">
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
