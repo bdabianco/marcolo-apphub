@@ -136,6 +136,7 @@ export type Database = {
       cashflow_records: {
         Row: {
           adjustments: Json | null
+          assets: Json | null
           available_cashflow: number
           budget_plan_id: string | null
           created_at: string
@@ -150,6 +151,7 @@ export type Database = {
         }
         Insert: {
           adjustments?: Json | null
+          assets?: Json | null
           available_cashflow?: number
           budget_plan_id?: string | null
           created_at?: string
@@ -164,6 +166,7 @@ export type Database = {
         }
         Update: {
           adjustments?: Json | null
+          assets?: Json | null
           available_cashflow?: number
           budget_plan_id?: string | null
           created_at?: string

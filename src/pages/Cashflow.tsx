@@ -304,6 +304,28 @@ function CashflowContent() {
   // Total monthly payment includes mortgages and other debts
   const totalMonthlyPayment = monthlyPayment + primaryMortgagePaymentNum + secondaryMortgagePaymentNum;
 
+  const addAsset = () => {
+    if (newAssetName && newAssetValue) {
+      const newAsset = {
+        id: Date.now().toString(),
+        name: newAssetName,
+        type: newAssetType,
+        value: parseFloat(newAssetValue) || 0,
+      };
+      
+      setAssets([...assets, newAsset]);
+      
+      // Clear input fields after adding
+      setNewAssetName('');
+      setNewAssetType('cash');
+      setNewAssetValue('');
+    }
+  };
+
+  const removeAsset = (id: string) => {
+    setAssets(assets.filter((asset) => asset.id !== id));
+  };
+
   const addDebt = () => {
     if (newDebtName && newDebtBalance && newDebtPayment) {
       const newDebt = {
@@ -426,6 +448,7 @@ function CashflowContent() {
           .from('cashflow_records')
           .update({
             debts: debtsToSave,
+            assets: JSON.stringify(assets),
             mortgage: JSON.stringify(mortgageData),
             adjustments: JSON.stringify(adjustmentsData),
             total_debt: totalDebt,
@@ -445,12 +468,13 @@ function CashflowContent() {
         console.log('Creating new record...');
         const debtsToSave = JSON.stringify(debts);
         console.log('Debts being saved:', debtsToSave);
-        const { data, error } = await supabase
+        const { data, error} = await supabase
           .from('cashflow_records')
           .insert({
             user_id: user.id,
             budget_plan_id: currentProject.id,
             debts: debtsToSave,
+            assets: JSON.stringify(assets),
             mortgage: JSON.stringify(mortgageData),
             adjustments: JSON.stringify(adjustmentsData),
             total_debt: totalDebt,
@@ -504,6 +528,90 @@ function CashflowContent() {
             </div>
           </CardHeader>
           <CardContent className="space-y-6 pt-[10px]">
+            {/* Assets Section - Only show for business projects */}
+            {currentProject?.project_type === 'business' && (
+              <Accordion type="multiple" defaultValue={['assets']} className="w-full mb-4">
+                <AccordionItem value="assets" className="border rounded-lg px-4 mb-3">
+                  <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                    <div className="flex items-center gap-2">
+                      <Landmark className="h-5 w-5 text-green-600" />
+                      <span>Assets</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-4">
+                    <div className="grid grid-cols-1 gap-2">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                        <Input
+                          placeholder="Asset name (e.g., Cash in Bank)"
+                          value={newAssetName}
+                          onChange={(e) => setNewAssetName(e.target.value)}
+                          className="px-3"
+                        />
+                        <select
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                          value={newAssetType}
+                          onChange={(e) => setNewAssetType(e.target.value as any)}
+                        >
+                          <option value="cash">Cash</option>
+                          <option value="receivables">Accounts Receivable</option>
+                          <option value="inventory">Inventory</option>
+                          <option value="equipment">Equipment</option>
+                          <option value="other">Other</option>
+                        </select>
+                        <Input
+                          type="number"
+                          placeholder="Current value"
+                          value={newAssetValue}
+                          onChange={(e) => setNewAssetValue(e.target.value)}
+                        />
+                        <Button onClick={addAsset} className="hover:scale-105 transition-transform">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Asset
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      {assets.map((asset) => (
+                        <div key={asset.id} className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/10 p-4 rounded-lg border shadow-sm hover:shadow-md transition-all duration-200 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Coins className="h-5 w-5 text-green-600" />
+                              <span className="font-medium">{asset.name}</span>
+                              <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded capitalize">
+                                {asset.type}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-green-700 dark:text-green-300">${formatCurrency(asset.value)}</span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removeAsset(asset.id)}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {assets.length > 0 && (
+                      <div className="border-t pt-4 space-y-2">
+                        <div className="flex justify-between bg-green-50 dark:bg-green-950/20 p-3 rounded-lg">
+                          <span className="font-semibold">Total Assets:</span>
+                          <span className="font-bold text-green-700 dark:text-green-300">
+                            ${formatCurrency(assets.reduce((sum, asset) => sum + asset.value, 0))}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            )}
+
             <Accordion type="multiple" defaultValue={['mortgages', 'other-debts']} className="w-full">
               {/* Mortgage Section - Only show for personal projects */}
               {currentProject?.project_type !== 'business' && (
