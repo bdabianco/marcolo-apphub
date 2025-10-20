@@ -26,6 +26,8 @@ interface Income {
   type: 'gross' | 'net';
   schedule: 'monthly' | 'quarterly' | 'annual';
   grossMargin?: number; // for business revenue streams
+  startDate?: Date;
+  weighting?: 'equal' | 'quarterly';
 }
 
 interface Subscription {
@@ -57,6 +59,8 @@ function BudgetContent() {
   const [newIncomeType, setNewIncomeType] = useState<'gross' | 'net'>('net');
   const [newIncomeSchedule, setNewIncomeSchedule] = useState<'monthly' | 'quarterly' | 'annual'>('monthly');
   const [newGrossMargin, setNewGrossMargin] = useState('');
+  const [newIncomeStartDate, setNewIncomeStartDate] = useState<Date>();
+  const [newIncomeWeighting, setNewIncomeWeighting] = useState<'equal' | 'quarterly'>('equal');
   const [newExpenseName, setNewExpenseName] = useState('');
   const [newExpenseAmount, setNewExpenseAmount] = useState('');
   const [newExpenseStartDate, setNewExpenseStartDate] = useState<Date>();
@@ -220,6 +224,8 @@ function BudgetContent() {
           type: newIncomeType,
           schedule: newIncomeSchedule,
           grossMargin: newGrossMargin ? parseFloat(newGrossMargin) : undefined,
+          startDate: newIncomeStartDate,
+          weighting: newIncomeWeighting,
         },
       ]);
       setNewIncomeName('');
@@ -227,6 +233,8 @@ function BudgetContent() {
       setNewIncomeType('net');
       setNewIncomeSchedule('monthly');
       setNewGrossMargin('');
+      setNewIncomeStartDate(undefined);
+      setNewIncomeWeighting('equal');
     }
   };
 
@@ -352,76 +360,158 @@ function BudgetContent() {
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
                   {isBusinessProject ? (
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-                      <Input
-                        placeholder="Revenue stream"
-                        value={newIncomeName}
-                        onChange={(e) => setNewIncomeName(e.target.value)}
-                      />
-                      <Input
-                        type="number"
-                        placeholder="Amount"
-                        value={newIncomeAmount}
-                        onChange={(e) => setNewIncomeAmount(e.target.value)}
-                      />
-                      <Input
-                        type="number"
-                        placeholder="Gross Margin %"
-                        value={newGrossMargin}
-                        onChange={(e) => setNewGrossMargin(e.target.value)}
-                        min="0"
-                        max="100"
-                      />
-                      <Select value={newIncomeSchedule} onValueChange={(val: 'monthly' | 'quarterly' | 'annual') => setNewIncomeSchedule(val)}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="monthly">Monthly</SelectItem>
-                          <SelectItem value="quarterly">Quarterly</SelectItem>
-                          <SelectItem value="annual">Annual</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Button onClick={addIncome} className="hover:scale-105 transition-transform">
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
+                        <Input
+                          placeholder="Revenue stream"
+                          value={newIncomeName}
+                          onChange={(e) => setNewIncomeName(e.target.value)}
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Amount"
+                          value={newIncomeAmount}
+                          onChange={(e) => setNewIncomeAmount(e.target.value)}
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Gross Margin %"
+                          value={newGrossMargin}
+                          onChange={(e) => setNewGrossMargin(e.target.value)}
+                          min="0"
+                          max="100"
+                        />
+                        <Select value={newIncomeSchedule} onValueChange={(val: 'monthly' | 'quarterly' | 'annual') => setNewIncomeSchedule(val)}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="monthly">Monthly</SelectItem>
+                            <SelectItem value="quarterly">Quarterly</SelectItem>
+                            <SelectItem value="annual">Annual</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button onClick={addIncome} className="hover:scale-105 transition-transform">
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <div>
+                          <Label className="text-xs text-muted-foreground mb-1 block">Start Date</Label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full justify-start text-left font-normal",
+                                  !newIncomeStartDate && "text-muted-foreground"
+                                )}
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {newIncomeStartDate ? format(newIncomeStartDate, "PPP") : "Select date"}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                              <Calendar
+                                mode="single"
+                                selected={newIncomeStartDate}
+                                onSelect={setNewIncomeStartDate}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground mb-1 block">Revenue Weighting</Label>
+                          <Select value={newIncomeWeighting} onValueChange={(val: 'equal' | 'quarterly') => setNewIncomeWeighting(val)}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="equal">Equally Weighted</SelectItem>
+                              <SelectItem value="quarterly">Quarterly Weighted</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-                      <Input
-                        placeholder="Income source"
-                        value={newIncomeName}
-                        onChange={(e) => setNewIncomeName(e.target.value)}
-                      />
-                      <Input
-                        type="number"
-                        placeholder="Amount"
-                        value={newIncomeAmount}
-                        onChange={(e) => setNewIncomeAmount(e.target.value)}
-                      />
-                      <Select value={newIncomeType} onValueChange={(val: 'gross' | 'net') => setNewIncomeType(val)}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="net">Net</SelectItem>
-                          <SelectItem value="gross">Gross</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Select value={newIncomeSchedule} onValueChange={(val: 'monthly' | 'quarterly' | 'annual') => setNewIncomeSchedule(val)}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="monthly">Monthly</SelectItem>
-                          <SelectItem value="quarterly">Quarterly</SelectItem>
-                          <SelectItem value="annual">Annual</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Button onClick={addIncome} className="hover:scale-105 transition-transform">
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
+                        <Input
+                          placeholder="Income source"
+                          value={newIncomeName}
+                          onChange={(e) => setNewIncomeName(e.target.value)}
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Amount"
+                          value={newIncomeAmount}
+                          onChange={(e) => setNewIncomeAmount(e.target.value)}
+                        />
+                        <Select value={newIncomeType} onValueChange={(val: 'gross' | 'net') => setNewIncomeType(val)}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="net">Net</SelectItem>
+                            <SelectItem value="gross">Gross</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Select value={newIncomeSchedule} onValueChange={(val: 'monthly' | 'quarterly' | 'annual') => setNewIncomeSchedule(val)}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="monthly">Monthly</SelectItem>
+                            <SelectItem value="quarterly">Quarterly</SelectItem>
+                            <SelectItem value="annual">Annual</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button onClick={addIncome} className="hover:scale-105 transition-transform">
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <div>
+                          <Label className="text-xs text-muted-foreground mb-1 block">Start Date</Label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full justify-start text-left font-normal",
+                                  !newIncomeStartDate && "text-muted-foreground"
+                                )}
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {newIncomeStartDate ? format(newIncomeStartDate, "PPP") : "Select date"}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                              <Calendar
+                                mode="single"
+                                selected={newIncomeStartDate}
+                                onSelect={setNewIncomeStartDate}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground mb-1 block">Revenue Weighting</Label>
+                          <Select value={newIncomeWeighting} onValueChange={(val: 'equal' | 'quarterly') => setNewIncomeWeighting(val)}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="equal">Equally Weighted</SelectItem>
+                              <SelectItem value="quarterly">Quarterly Weighted</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </>
                   )}
 
                   <div className="space-y-2">
@@ -433,6 +523,8 @@ function BudgetContent() {
                             {isBusinessProject 
                               ? `Margin: ${income.grossMargin || 0}% • ${income.schedule}` 
                               : `${income.type.toUpperCase()} • ${income.schedule}`}
+                            {income.startDate && ` • Start: ${format(new Date(income.startDate), 'MMM dd, yyyy')}`}
+                            {income.weighting && ` • ${income.weighting === 'equal' ? 'Equally weighted' : 'Quarterly weighted'}`}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
