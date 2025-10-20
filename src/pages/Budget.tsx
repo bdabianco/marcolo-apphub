@@ -712,7 +712,7 @@ function BudgetContent() {
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">Avg Gross Margin:</span>
-                          <span className="font-medium">{totalRevenue > 0 ? ((totalGrossMargin / totalRevenue) / totalRevenue * 100).toFixed(1) : 0}%</span>
+                          <span className="font-medium">{totalRevenue > 0 ? (totalGrossMargin / totalRevenue).toFixed(1) : 0}%</span>
                         </div>
                         <div className="flex justify-between text-sm font-semibold">
                           <span>Gross Profit:</span>
