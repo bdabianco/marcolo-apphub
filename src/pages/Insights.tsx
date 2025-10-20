@@ -637,16 +637,10 @@ function InsightsContent() {
                       <TooltipContent className="max-w-xs">
                         {currentProject?.project_type === 'business' ? (
                           <>
-                            <p className="font-semibold mb-1">Business Health Standards:</p>
-                            <ul className="text-xs space-y-1">
-                              <li>• <strong>Excellent:</strong> 15% or more</li>
-                              <li>• <strong>Good:</strong> 10-15%</li>
-                              <li>• <strong>Fair:</strong> 5-10%</li>
-                              <li>• <strong>Poor:</strong> Below 5%</li>
-                            </ul>
-                            <p className="text-xs mt-2 text-muted-foreground">
-                              Measures profitability. Higher margins indicate better cost control and pricing power.
-                            </p>
+                            <p className="font-semibold mb-1">Profit Margin</p>
+                            <p className="text-xs mb-2">Formula: (Net Profit / Revenue) × 100</p>
+                            <p className="text-xs mb-2">Benchmarks vary significantly by industry, product type, and business model.</p>
+                            <p className="text-xs font-medium">💡 Ask the AI advisor for industry-specific benchmarks and guidance tailored to your business.</p>
                           </>
                         ) : (
                           <>
@@ -669,10 +663,12 @@ function InsightsContent() {
                 <div className="flex flex-wrap gap-2 text-xs">
                   {currentProject?.project_type === 'business' ? (
                     <>
-                      <span className="px-2 py-1 rounded bg-destructive/20 text-destructive font-medium">Poor: &lt;5%</span>
-                      <span className="px-2 py-1 rounded bg-orange-500/20 text-orange-700 dark:text-orange-400 font-medium">Fair: 5-10%</span>
-                      <span className="px-2 py-1 rounded bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 font-medium">Good: 10-15%</span>
-                      <span className="px-2 py-1 rounded bg-primary/20 text-primary font-medium">Excellent: &gt;15%</span>
+                      <div className="text-sm text-muted-foreground">
+                        Your margin: <span className="font-bold text-primary">{metrics.savingsRate.toFixed(1)}%</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Industry benchmarks vary widely - consult AI advisor for specific guidance
+                      </div>
                     </>
                   ) : (
                     <>
@@ -683,15 +679,10 @@ function InsightsContent() {
                     </>
                   )}
                 </div>
-                {(currentProject?.project_type === 'business' ? metrics.savingsRate < 15 : metrics.savingsRate < 20) && (
+                {currentProject?.project_type !== 'business' && metrics.savingsRate < 20 && (
                   <div className="flex items-center gap-2 text-sm text-destructive mt-2">
                     <AlertCircle className="h-4 w-4" />
-                    <span>
-                      {currentProject?.project_type === 'business' 
-                        ? 'Consider cost reduction or pricing strategies.'
-                        : 'Aim for at least 20% for financial security.'
-                      }
-                    </span>
+                    <span>Aim for at least 20% for financial security.</span>
                   </div>
                 )}
               </div>
@@ -1028,40 +1019,96 @@ function InsightsContent() {
         {/* Recommendations */}
         <Card className="border-2 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-accent/5 via-accent/3 to-transparent">
-            <CardTitle>Recommendations</CardTitle>
+            <CardTitle>
+              {currentProject?.project_type === 'business' ? 'Business Insights' : 'Recommendations'}
+            </CardTitle>
+            <CardDescription>
+              {currentProject?.project_type === 'business' 
+                ? 'Strategic guidance based on your financial metrics - Ask AI advisor for industry-specific advice'
+                : 'Personalized suggestions to improve your financial health'
+              }
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            {metrics.savingsRate < 20 && (
-              <div className="p-3 bg-muted rounded">
-                <div className="font-medium mb-1">Increase Your Savings Rate</div>
-                <div className="text-sm text-muted-foreground">
-                  Try to reduce expenses or increase income to reach a 20% savings rate.
+            {currentProject?.project_type === 'business' ? (
+              <>
+                {metrics.debtToIncomeRatio > 43 && (
+                  <div className="p-3 bg-muted rounded">
+                    <div className="font-medium mb-1">High Debt Service Ratio</div>
+                    <div className="text-sm text-muted-foreground">
+                      Your debt obligations are consuming significant cash flow. Consider refinancing or debt restructuring. Ask the AI advisor for strategies specific to your industry.
+                    </div>
+                  </div>
+                )}
+                {metrics.savingsGoalsCount === 0 && (
+                  <div className="p-3 bg-muted rounded">
+                    <div className="font-medium mb-1">Build Capital Reserves</div>
+                    <div className="text-sm text-muted-foreground">
+                      Establish capital allocation goals for cash reserves, tax obligations, and planned investments to strengthen financial stability.
+                    </div>
+                  </div>
+                )}
+                {metrics.netWorth < 0 && (
+                  <div className="p-3 bg-muted rounded">
+                    <div className="font-medium mb-1">Improve Business Equity</div>
+                    <div className="text-sm text-muted-foreground">
+                      Focus on increasing assets (receivables collection, inventory turnover) and reducing liabilities to build positive business value.
+                    </div>
+                  </div>
+                )}
+                {metrics.budgetPlansCount === 0 && (
+                  <div className="p-3 bg-muted rounded">
+                    <div className="font-medium mb-1">Implement Financial Tracking</div>
+                    <div className="text-sm text-muted-foreground">
+                      Create a detailed revenue and expense tracking system to monitor business performance and identify optimization opportunities.
+                    </div>
+                  </div>
+                )}
+                <div className="p-3 bg-primary/5 rounded border border-primary/20">
+                  <div className="font-medium mb-1 flex items-center gap-2">
+                    <Info className="h-4 w-4 text-primary" />
+                    Industry-Specific Guidance
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Financial benchmarks vary significantly by industry. Use the AI Financial Advisor to get tailored recommendations for your specific business type, market conditions, and growth stage.
+                  </div>
                 </div>
-              </div>
-            )}
-            {metrics.debtToIncomeRatio > 43 && (
-              <div className="p-3 bg-muted rounded">
-                <div className="font-medium mb-1">Reduce Debt Burden</div>
-                <div className="text-sm text-muted-foreground">
-                  Your debt-to-income ratio is high. Consider debt consolidation or extra payments.
-                </div>
-              </div>
-            )}
-            {metrics.savingsGoalsCount === 0 && (
-              <div className="p-3 bg-muted rounded">
-                <div className="font-medium mb-1">Set Savings Goals</div>
-                <div className="text-sm text-muted-foreground">
-                  Start by creating an emergency fund goal equal to 6 months of expenses.
-                </div>
-              </div>
-            )}
-            {metrics.budgetPlansCount === 0 && (
-              <div className="p-3 bg-muted rounded">
-                <div className="font-medium mb-1">Create a Budget Plan</div>
-                <div className="text-sm text-muted-foreground">
-                  Track your income and expenses with a detailed budget plan.
-                </div>
-              </div>
+              </>
+            ) : (
+              <>
+                {metrics.savingsRate < 20 && (
+                  <div className="p-3 bg-muted rounded">
+                    <div className="font-medium mb-1">Increase Your Savings Rate</div>
+                    <div className="text-sm text-muted-foreground">
+                      Try to reduce expenses or increase income to reach a 20% savings rate.
+                    </div>
+                  </div>
+                )}
+                {metrics.debtToIncomeRatio > 43 && (
+                  <div className="p-3 bg-muted rounded">
+                    <div className="font-medium mb-1">Reduce Debt Burden</div>
+                    <div className="text-sm text-muted-foreground">
+                      Your debt-to-income ratio is high. Consider debt consolidation or extra payments.
+                    </div>
+                  </div>
+                )}
+                {metrics.savingsGoalsCount === 0 && (
+                  <div className="p-3 bg-muted rounded">
+                    <div className="font-medium mb-1">Set Savings Goals</div>
+                    <div className="text-sm text-muted-foreground">
+                      Start by creating an emergency fund goal equal to 6 months of expenses.
+                    </div>
+                  </div>
+                )}
+                {metrics.budgetPlansCount === 0 && (
+                  <div className="p-3 bg-muted rounded">
+                    <div className="font-medium mb-1">Create a Budget Plan</div>
+                    <div className="text-sm text-muted-foreground">
+                      Track your income and expenses with a detailed budget plan.
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </CardContent>
         </Card>
