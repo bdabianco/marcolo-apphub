@@ -697,6 +697,86 @@ function CashflowContent() {
                 </div>
               </div>
             )}
+
+            {/* Business Debt Summary Cards */}
+            {currentProject?.project_type === 'business' && (primaryMortgageBalanceNum > 0 || secondaryMortgageBalanceNum > 0 || debts.length > 0) && (
+              <div className="mt-6 space-y-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Calculator className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold">Debt Metrics Dashboard</h3>
+                </div>
+                
+                {/* Primary Metrics Row */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Total Debt Balance Card */}
+                  <div className="relative overflow-hidden bg-gradient-to-br from-red-50 via-red-100 to-orange-50 dark:from-red-950/40 dark:to-orange-950/30 p-5 rounded-2xl border-2 border-red-200 dark:border-red-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-300/20 dark:bg-red-700/20 rounded-full -mr-16 -mt-16"></div>
+                    <div className="relative">
+                      <div className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">Total Debt Balance</div>
+                      <div className="text-3xl font-bold text-red-900 dark:text-red-100">${formatCurrency(totalDebt + primaryMortgageBalanceNum + secondaryMortgageBalanceNum)}</div>
+                      <div className="text-xs text-red-600 dark:text-red-400 mt-2">Outstanding principal</div>
+                    </div>
+                  </div>
+
+                  {/* Monthly Principal Payment Card */}
+                  <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/30 p-5 rounded-2xl border-2 border-blue-200 dark:border-blue-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-300/20 dark:bg-blue-700/20 rounded-full -mr-16 -mt-16"></div>
+                    <div className="relative">
+                      <div className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Monthly Principal</div>
+                      <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">${formatCurrency(totalMonthlyPayment - totalMonthlyInterest)}</div>
+                      <div className="text-xs text-blue-600 dark:text-blue-400 mt-2">Debt reduction per month</div>
+                    </div>
+                  </div>
+
+                  {/* Monthly Interest Payment Card */}
+                  <div className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-purple-100 to-pink-50 dark:from-purple-950/40 dark:to-pink-950/30 p-5 rounded-2xl border-2 border-purple-200 dark:border-purple-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-300/20 dark:bg-purple-700/20 rounded-full -mr-16 -mt-16"></div>
+                    <div className="relative">
+                      <div className="text-sm font-medium text-purple-800 dark:text-purple-300 mb-1">Monthly Interest</div>
+                      <div className="text-3xl font-bold text-purple-900 dark:text-purple-100">${formatCurrency(totalMonthlyInterest)}</div>
+                      <div className="text-xs text-purple-600 dark:text-purple-400 mt-2">Cost of borrowing per month</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Secondary Metrics Row */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  {/* Average Interest Rate Card */}
+                  <div className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/20 p-4 rounded-xl border border-amber-200 dark:border-amber-800 shadow-md hover:shadow-lg transition-all duration-300">
+                    <div className="text-xs font-medium text-amber-800 dark:text-amber-300 mb-1">Avg Interest Rate</div>
+                    <div className="text-2xl font-bold text-amber-900 dark:text-amber-100">
+                      {(totalDebt + primaryMortgageBalanceNum + secondaryMortgageBalanceNum) > 0 
+                        ? ((totalAnnualInterest / (totalDebt + primaryMortgageBalanceNum + secondaryMortgageBalanceNum)) * 100).toFixed(2)
+                        : '0.00'}%
+                    </div>
+                  </div>
+
+                  {/* Tax Deductible Interest Card */}
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/20 p-4 rounded-xl border border-green-200 dark:border-green-800 shadow-md hover:shadow-lg transition-all duration-300">
+                    <div className="text-xs font-medium text-green-800 dark:text-green-300 mb-1">Tax Ded. Interest/yr</div>
+                    <div className="text-2xl font-bold text-green-900 dark:text-green-100">${formatCurrency(taxDeductibleAnnualInterest)}</div>
+                  </div>
+
+                  {/* Debt Service Ratio Card */}
+                  <div className="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/30 dark:to-teal-950/20 p-4 rounded-xl border border-cyan-200 dark:border-cyan-800 shadow-md hover:shadow-lg transition-all duration-300">
+                    <div className="text-xs font-medium text-cyan-800 dark:text-cyan-300 mb-1">Debt Service Ratio</div>
+                    <div className="text-2xl font-bold text-cyan-900 dark:text-cyan-100">
+                      {monthlyNetIncome > 0 
+                        ? ((totalMonthlyPayment / monthlyNetIncome) * 100).toFixed(1)
+                        : '0.0'}%
+                    </div>
+                  </div>
+
+                  {/* Annual Interest Cost Card */}
+                  <div className="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-950/30 dark:to-pink-950/20 p-4 rounded-xl border border-rose-200 dark:border-rose-800 shadow-md hover:shadow-lg transition-all duration-300">
+                    <div className="text-xs font-medium text-rose-800 dark:text-rose-300 mb-1">Annual Interest Cost</div>
+                    <div className="text-2xl font-bold text-rose-900 dark:text-rose-100">${formatCurrency(totalAnnualInterest)}</div>
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
