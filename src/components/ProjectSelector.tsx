@@ -18,7 +18,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ChevronDown, Plus, FolderOpen, Trash2 } from 'lucide-react';
+import { ChevronDown, Plus, FolderOpen, Trash2, User, Briefcase } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,12 +35,14 @@ export function ProjectSelector() {
   const { projects, currentProject, setCurrentProject, createProject, deleteProject } = useProject();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
+  const [projectType, setProjectType] = useState<'personal' | 'business'>('personal');
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const handleCreateProject = async () => {
     if (!newProjectName.trim()) return;
-    await createProject(newProjectName.trim());
+    await createProject(newProjectName.trim(), projectType);
     setNewProjectName('');
+    setProjectType('personal');
     setIsCreateDialogOpen(false);
   };
 
@@ -116,9 +119,34 @@ export function ProjectSelector() {
                 value={newProjectName}
                 onChange={(e) => setNewProjectName(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleCreateProject();
+                  if (e.key === 'Enter' && projectType) handleCreateProject();
                 }}
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Project Type</Label>
+              <RadioGroup value={projectType} onValueChange={(value) => setProjectType(value as 'personal' | 'business')}>
+                <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-accent cursor-pointer">
+                  <RadioGroupItem value="personal" id="personal" />
+                  <Label htmlFor="personal" className="flex items-center gap-2 cursor-pointer flex-1">
+                    <User className="h-4 w-4" />
+                    <div>
+                      <div className="font-medium">Personal</div>
+                      <div className="text-xs text-muted-foreground">Individual budget planning</div>
+                    </div>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-accent cursor-pointer">
+                  <RadioGroupItem value="business" id="business" />
+                  <Label htmlFor="business" className="flex items-center gap-2 cursor-pointer flex-1">
+                    <Briefcase className="h-4 w-4" />
+                    <div>
+                      <div className="font-medium">Business</div>
+                      <div className="text-xs text-muted-foreground">Corporate budget planning</div>
+                    </div>
+                  </Label>
+                </div>
+              </RadioGroup>
             </div>
           </div>
           <DialogFooter>

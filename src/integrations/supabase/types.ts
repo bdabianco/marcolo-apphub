@@ -81,6 +81,7 @@ export type Database = {
           income_categories: Json | null
           net_income: number
           project_name: string
+          project_type: string
           provincial_tax: number
           subscriptions: Json | null
           surplus: number
@@ -101,6 +102,7 @@ export type Database = {
           income_categories?: Json | null
           net_income?: number
           project_name?: string
+          project_type?: string
           provincial_tax?: number
           subscriptions?: Json | null
           surplus?: number
@@ -121,6 +123,7 @@ export type Database = {
           income_categories?: Json | null
           net_income?: number
           project_name?: string
+          project_type?: string
           provincial_tax?: number
           subscriptions?: Json | null
           surplus?: number

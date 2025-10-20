@@ -8,6 +8,7 @@ interface BudgetPlan {
   project_name: string;
   user_id: string;
   created_at: string;
+  project_type: 'personal' | 'business';
 }
 
 interface ProjectContextType {
@@ -15,7 +16,7 @@ interface ProjectContextType {
   currentProject: BudgetPlan | null;
   setCurrentProject: (project: BudgetPlan | null) => void;
   loadProjects: () => Promise<void>;
-  createProject: (name: string) => Promise<void>;
+  createProject: (name: string, projectType: 'personal' | 'business') => Promise<void>;
   deleteProject: (id: string) => Promise<void>;
   loading: boolean;
 }
@@ -61,12 +62,15 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       const { data, error } = await supabase
         .from('budget_plans')
-        .select('id, project_name, user_id, created_at')
+        .select('id, project_name, user_id, created_at, project_type')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setProjects(data || []);
+      setProjects((data || []).map(p => ({
+        ...p,
+        project_type: (p.project_type || 'personal') as 'personal' | 'business'
+      })));
     } catch (error: any) {
       toast.error('Failed to load projects');
       console.error(error);
@@ -84,7 +88,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const createProject = async (name: string) => {
+  const createProject = async (name: string, projectType: 'personal' | 'business' = 'personal') => {
     if (!user) return;
 
     try {
@@ -93,6 +97,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         .insert({
           user_id: user.id,
           project_name: name,
+          project_type: projectType,
           gross_income: 0,
           federal_tax: 0,
           provincial_tax: 0,
@@ -103,13 +108,18 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
           total_expenses: 0,
           surplus: 0,
         })
-        .select('id, project_name, user_id, created_at')
+        .select('id, project_name, user_id, created_at, project_type')
         .single();
 
       if (error) throw error;
       
       await loadProjects();
-      setCurrentProject(data);
+      if (data) {
+        setCurrentProject({
+          ...data,
+          project_type: (data.project_type || 'personal') as 'personal' | 'business'
+        });
+      }
       toast.success('Project created successfully!');
     } catch (error: any) {
       toast.error('Failed to create project');

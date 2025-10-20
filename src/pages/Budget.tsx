@@ -25,6 +25,7 @@ interface Income {
   amount: number;
   type: 'gross' | 'net';
   schedule: 'monthly' | 'quarterly' | 'annual';
+  grossMargin?: number; // for business revenue streams
 }
 
 interface Subscription {
@@ -40,6 +41,7 @@ interface Expense {
   amount: number;
   startDate?: Date;
   duration?: number; // number of months
+  expenseType?: 'standard' | 'employee'; // for business expenses
 }
 
 function BudgetContent() {
@@ -54,13 +56,17 @@ function BudgetContent() {
   const [newIncomeAmount, setNewIncomeAmount] = useState('');
   const [newIncomeType, setNewIncomeType] = useState<'gross' | 'net'>('net');
   const [newIncomeSchedule, setNewIncomeSchedule] = useState<'monthly' | 'quarterly' | 'annual'>('monthly');
+  const [newGrossMargin, setNewGrossMargin] = useState('');
   const [newExpenseName, setNewExpenseName] = useState('');
   const [newExpenseAmount, setNewExpenseAmount] = useState('');
   const [newExpenseStartDate, setNewExpenseStartDate] = useState<Date>();
   const [newExpenseDuration, setNewExpenseDuration] = useState('');
+  const [newExpenseType, setNewExpenseType] = useState<'standard' | 'employee'>('standard');
   const [newSubscriptionName, setNewSubscriptionName] = useState('');
   const [newSubscriptionAmount, setNewSubscriptionAmount] = useState('');
   const [newSubscriptionBillingCycle, setNewSubscriptionBillingCycle] = useState<'monthly' | 'quarterly' | 'annual'>('monthly');
+
+  const isBusinessProject = currentProject?.project_type === 'business';
 
   // Load existing budget data
   useEffect(() => {
@@ -120,28 +126,69 @@ function BudgetContent() {
     }
   };
 
-  // Canadian tax calculations (simplified) - only for gross income
+  // Tax calculations
   const calculateTaxes = (annualIncome: number) => {
-    const federalTax = annualIncome * 0.15;
-    const provincialTax = annualIncome * 0.10;
-    const cpp = Math.min(annualIncome * 0.0595, 3867.50);
-    const ei = Math.min(annualIncome * 0.0163, 1049.12);
-    return { federalTax, provincialTax, cpp, ei };
+    if (isBusinessProject) {
+      // Ontario + Federal corporate tax (simplified)
+      const federalCorporateTax = annualIncome * 0.15; // 15% federal
+      const ontarioCorporateTax = annualIncome * 0.115; // 11.5% Ontario
+      return { 
+        federalTax: federalCorporateTax, 
+        provincialTax: ontarioCorporateTax, 
+        cpp: 0, 
+        ei: 0 
+      };
+    } else {
+      // Personal tax (simplified Canadian)
+      const federalTax = annualIncome * 0.15;
+      const provincialTax = annualIncome * 0.10;
+      const cpp = Math.min(annualIncome * 0.0595, 3867.50);
+      const ei = Math.min(annualIncome * 0.0163, 1049.12);
+      return { federalTax, provincialTax, cpp, ei };
+    }
   };
 
-  // Calculate total monthly income
-  const monthlyGrossIncome = incomes
-    .filter(inc => inc.type === 'gross')
-    .reduce((sum, inc) => sum + convertToMonthly(inc.amount, inc.schedule), 0);
+  // Calculate employer payroll remittances for employee expenses
+  const calculateEmployerRemittances = (employeeSalary: number) => {
+    const cppEmployer = Math.min(employeeSalary * 0.0595, 3867.50);
+    const eiEmployer = Math.min(employeeSalary * 0.0163 * 1.4, 1468.77); // Employer pays 1.4x employee rate
+    return cppEmployer + eiEmployer;
+  };
+
+  // Calculate revenue/income
+  let monthlyGrossIncome = 0;
+  let monthlyGrossProfit = 0;
+  let totalRevenue = 0;
+  let totalGrossMargin = 0;
+  
+  if (isBusinessProject) {
+    // Business: Calculate revenue and gross profit
+    incomes.forEach(inc => {
+      const monthlyRev = convertToMonthly(inc.amount, inc.schedule);
+      totalRevenue += monthlyRev;
+      const margin = inc.grossMargin || 0;
+      const grossProfit = monthlyRev * (margin / 100);
+      monthlyGrossProfit += grossProfit;
+      totalGrossMargin += (monthlyRev * margin);
+    });
+    monthlyGrossIncome = totalRevenue;
+  } else {
+    // Personal: Calculate income as before
+    monthlyGrossIncome = incomes
+      .filter(inc => inc.type === 'gross')
+      .reduce((sum, inc) => sum + convertToMonthly(inc.amount, inc.schedule), 0);
+  }
   
   const monthlyNetIncome = incomes
     .filter(inc => inc.type === 'net')
     .reduce((sum, inc) => sum + convertToMonthly(inc.amount, inc.schedule), 0);
 
-  const annualGrossIncome = monthlyGrossIncome * 12;
+  const annualGrossIncome = isBusinessProject ? totalRevenue * 12 : monthlyGrossIncome * 12;
   const taxes = calculateTaxes(annualGrossIncome);
   const annualNetFromGross = annualGrossIncome - taxes.federalTax - taxes.provincialTax - taxes.cpp - taxes.ei;
-  const totalMonthlyNetIncome = (annualNetFromGross / 12) + monthlyNetIncome;
+  const totalMonthlyNetIncome = isBusinessProject 
+    ? monthlyGrossProfit 
+    : (annualNetFromGross / 12) + monthlyNetIncome;
   
   // Calculate total subscriptions as annual amount
   const totalAnnualSubscriptions = subscriptions.reduce((sum, sub) => {
@@ -151,7 +198,15 @@ function BudgetContent() {
     return sum + annualAmount;
   }, 0);
   
-  const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0) + (totalAnnualSubscriptions / 12);
+  // Calculate expenses with employer remittances for business
+  let totalExpenses = (totalAnnualSubscriptions / 12);
+  expenses.forEach(exp => {
+    totalExpenses += exp.amount;
+    if (isBusinessProject && exp.expenseType === 'employee') {
+      const monthlyRemittances = calculateEmployerRemittances(exp.amount * 12) / 12;
+      totalExpenses += monthlyRemittances;
+    }
+  });
   const surplus = totalMonthlyNetIncome - totalExpenses;
 
   const addIncome = () => {
@@ -164,12 +219,14 @@ function BudgetContent() {
           amount: parseFloat(newIncomeAmount) || 0,
           type: newIncomeType,
           schedule: newIncomeSchedule,
+          grossMargin: newGrossMargin ? parseFloat(newGrossMargin) : undefined,
         },
       ]);
       setNewIncomeName('');
       setNewIncomeAmount('');
       setNewIncomeType('net');
       setNewIncomeSchedule('monthly');
+      setNewGrossMargin('');
     }
   };
 
@@ -187,12 +244,14 @@ function BudgetContent() {
           amount: parseFloat(newExpenseAmount) || 0,
           startDate: newExpenseStartDate,
           duration: newExpenseDuration ? parseFloat(newExpenseDuration) : undefined,
+          expenseType: isBusinessProject ? newExpenseType : undefined,
         },
       ]);
       setNewExpenseName('');
       setNewExpenseAmount('');
       setNewExpenseStartDate(undefined);
       setNewExpenseDuration('');
+      setNewExpenseType('standard');
     }
   };
 
@@ -273,8 +332,12 @@ function BudgetContent() {
                 <DollarSign className="h-7 w-7 text-primary" />
               </div>
               <div>
-                <CardTitle>Income</CardTitle>
-                <CardDescription>Add your income sources (gross or net)</CardDescription>
+                <CardTitle>{isBusinessProject ? 'Revenue' : 'Income'}</CardTitle>
+                <CardDescription>
+                  {isBusinessProject 
+                    ? 'Add your revenue streams with gross margins' 
+                    : 'Add your income sources (gross or net)'}
+                </CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -288,41 +351,78 @@ function BudgetContent() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-                    <Input
-                      placeholder="Income source"
-                      value={newIncomeName}
-                      onChange={(e) => setNewIncomeName(e.target.value)}
-                    />
-                    <Input
-                      type="number"
-                      placeholder="Amount"
-                      value={newIncomeAmount}
-                      onChange={(e) => setNewIncomeAmount(e.target.value)}
-                    />
-                    <Select value={newIncomeType} onValueChange={(val: 'gross' | 'net') => setNewIncomeType(val)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="net">Net</SelectItem>
-                        <SelectItem value="gross">Gross</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select value={newIncomeSchedule} onValueChange={(val: 'monthly' | 'quarterly' | 'annual') => setNewIncomeSchedule(val)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="monthly">Monthly</SelectItem>
-                        <SelectItem value="quarterly">Quarterly</SelectItem>
-                        <SelectItem value="annual">Annual</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button onClick={addIncome} className="hover:scale-105 transition-transform">
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  {isBusinessProject ? (
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
+                      <Input
+                        placeholder="Revenue stream"
+                        value={newIncomeName}
+                        onChange={(e) => setNewIncomeName(e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Amount"
+                        value={newIncomeAmount}
+                        onChange={(e) => setNewIncomeAmount(e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Gross Margin %"
+                        value={newGrossMargin}
+                        onChange={(e) => setNewGrossMargin(e.target.value)}
+                        min="0"
+                        max="100"
+                      />
+                      <Select value={newIncomeSchedule} onValueChange={(val: 'monthly' | 'quarterly' | 'annual') => setNewIncomeSchedule(val)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="monthly">Monthly</SelectItem>
+                          <SelectItem value="quarterly">Quarterly</SelectItem>
+                          <SelectItem value="annual">Annual</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button onClick={addIncome} className="hover:scale-105 transition-transform">
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
+                      <Input
+                        placeholder="Income source"
+                        value={newIncomeName}
+                        onChange={(e) => setNewIncomeName(e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Amount"
+                        value={newIncomeAmount}
+                        onChange={(e) => setNewIncomeAmount(e.target.value)}
+                      />
+                      <Select value={newIncomeType} onValueChange={(val: 'gross' | 'net') => setNewIncomeType(val)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="net">Net</SelectItem>
+                          <SelectItem value="gross">Gross</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select value={newIncomeSchedule} onValueChange={(val: 'monthly' | 'quarterly' | 'annual') => setNewIncomeSchedule(val)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="monthly">Monthly</SelectItem>
+                          <SelectItem value="quarterly">Quarterly</SelectItem>
+                          <SelectItem value="annual">Annual</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button onClick={addIncome} className="hover:scale-105 transition-transform">
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     {incomes.map((income) => (
@@ -330,7 +430,9 @@ function BudgetContent() {
                         <div className="flex flex-col">
                           <span>{income.name}</span>
                           <span className="text-xs text-muted-foreground">
-                            {income.type.toUpperCase()} • {income.schedule}
+                            {isBusinessProject 
+                              ? `Margin: ${income.grossMargin || 0}% • ${income.schedule}` 
+                              : `${income.type.toUpperCase()} • ${income.schedule}`}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -347,7 +449,27 @@ function BudgetContent() {
                     ))}
                   </div>
 
-                  {monthlyGrossIncome > 0 && (
+                  {isBusinessProject && incomes.length > 0 && (
+                    <div className="border-t pt-4 space-y-2">
+                      <h4 className="font-semibold text-sm">Revenue Summary</h4>
+                      <div className="bg-muted p-3 rounded space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Total Revenue:</span>
+                          <span className="font-medium">${formatCurrency(totalRevenue)}/mo</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Avg Gross Margin:</span>
+                          <span className="font-medium">{totalRevenue > 0 ? ((totalGrossMargin / totalRevenue) / totalRevenue * 100).toFixed(1) : 0}%</span>
+                        </div>
+                        <div className="flex justify-between text-sm font-semibold">
+                          <span>Gross Profit:</span>
+                          <span className="text-primary">${formatCurrency(monthlyGrossProfit)}/mo</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {!isBusinessProject && monthlyGrossIncome > 0 && (
                     <div className="border-t pt-4 space-y-2">
                       <h4 className="font-semibold text-sm">Tax Deductions (Canadian - Gross Income Only)</h4>
                       <div className="bg-muted p-3 rounded space-y-2">
@@ -372,7 +494,7 @@ function BudgetContent() {
                   )}
 
                   <div className="flex justify-between border-t pt-3">
-                    <span className="font-semibold">Total Monthly Net Income:</span>
+                    <span className="font-semibold">{isBusinessProject ? 'Gross Profit:' : 'Total Monthly Net Income:'}</span>
                     <span className="font-bold text-primary">${formatCurrency(totalMonthlyNetIncome)}</span>
                   </div>
                 </AccordionContent>
@@ -417,53 +539,112 @@ function BudgetContent() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-                    <Input
-                      placeholder="Expense name"
-                      value={newExpenseName}
-                      onChange={(e) => setNewExpenseName(e.target.value)}
-                    />
-                    <Input
-                      type="number"
-                      placeholder="Amount"
-                      value={newExpenseAmount}
-                      onChange={(e) => setNewExpenseAmount(e.target.value)}
-                    />
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "justify-start text-left font-normal",
-                            !newExpenseStartDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {newExpenseStartDate ? format(newExpenseStartDate, "MM/dd/yyyy") : "Start date"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={newExpenseStartDate}
-                          onSelect={setNewExpenseStartDate}
-                          initialFocus
-                          className={cn("p-3 pointer-events-auto")}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <Input
-                      type="number"
-                      placeholder="Duration (months)"
-                      value={newExpenseDuration}
-                      onChange={(e) => setNewExpenseDuration(e.target.value)}
-                      min="1"
-                      max="12"
-                    />
-                    <Button onClick={addExpense} className="hover:scale-105 transition-transform">
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  {isBusinessProject ? (
+                    <div className="grid grid-cols-1 md:grid-cols-6 gap-2">
+                      <Input
+                        placeholder="Expense name"
+                        value={newExpenseName}
+                        onChange={(e) => setNewExpenseName(e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Amount"
+                        value={newExpenseAmount}
+                        onChange={(e) => setNewExpenseAmount(e.target.value)}
+                      />
+                      <Select value={newExpenseType} onValueChange={(val: 'standard' | 'employee') => setNewExpenseType(val)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="standard">Standard</SelectItem>
+                          <SelectItem value="employee">Employee</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "justify-start text-left font-normal",
+                              !newExpenseStartDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {newExpenseStartDate ? format(newExpenseStartDate, "MM/dd/yyyy") : "Start date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={newExpenseStartDate}
+                            onSelect={setNewExpenseStartDate}
+                            initialFocus
+                            className={cn("p-3 pointer-events-auto")}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <Input
+                        type="number"
+                        placeholder="Duration"
+                        value={newExpenseDuration}
+                        onChange={(e) => setNewExpenseDuration(e.target.value)}
+                        min="1"
+                        max="12"
+                      />
+                      <Button onClick={addExpense} className="hover:scale-105 transition-transform">
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
+                      <Input
+                        placeholder="Expense name"
+                        value={newExpenseName}
+                        onChange={(e) => setNewExpenseName(e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Amount"
+                        value={newExpenseAmount}
+                        onChange={(e) => setNewExpenseAmount(e.target.value)}
+                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "justify-start text-left font-normal",
+                              !newExpenseStartDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {newExpenseStartDate ? format(newExpenseStartDate, "MM/dd/yyyy") : "Start date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={newExpenseStartDate}
+                            onSelect={setNewExpenseStartDate}
+                            initialFocus
+                            className={cn("p-3 pointer-events-auto")}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <Input
+                        type="number"
+                        placeholder="Duration (months)"
+                        value={newExpenseDuration}
+                        onChange={(e) => setNewExpenseDuration(e.target.value)}
+                        min="1"
+                        max="12"
+                      />
+                      <Button onClick={addExpense} className="hover:scale-105 transition-transform">
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
 
                   {/* Subscriptions Special Entry */}
                   <Dialog open={subscriptionsDialogOpen} onOpenChange={setSubscriptionsDialogOpen}>
@@ -550,29 +731,35 @@ function BudgetContent() {
                   </Dialog>
 
                   <div className="space-y-2">
-                    {expenses.map((expense) => (
-                      <div key={expense.id} className="flex items-center justify-between bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/10 p-3 rounded-lg border shadow-sm hover:shadow-md transition-all duration-200">
-                        <div className="flex flex-col">
-                          <span>{expense.name}</span>
-                          {(expense.startDate || expense.duration) && (
+                    {expenses.map((expense) => {
+                      const employerRemittances = (isBusinessProject && expense.expenseType === 'employee') 
+                        ? calculateEmployerRemittances(expense.amount * 12) / 12 
+                        : 0;
+                      return (
+                        <div key={expense.id} className="flex items-center justify-between bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/10 p-3 rounded-lg border shadow-sm hover:shadow-md transition-all duration-200">
+                          <div className="flex flex-col">
+                            <span>{expense.name}</span>
                             <span className="text-xs text-muted-foreground">
+                              {isBusinessProject && expense.expenseType === 'employee' && 'Employee • '}
+                              {isBusinessProject && expense.expenseType === 'standard' && 'Standard • '}
                               {expense.startDate && format(expense.startDate, "MM/dd/yyyy")}
                               {expense.duration && ` • ${expense.duration} months`}
+                              {employerRemittances > 0 && ` • +$${formatCurrency(employerRemittances)} payroll`}
                             </span>
-                          )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">${formatCurrency(expense.amount + employerRemittances)}</span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeExpense(expense.id)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">${formatCurrency(expense.amount)}</span>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeExpense(expense.id)}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -593,36 +780,83 @@ function BudgetContent() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4 pt-[10px]">
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950/30 dark:to-emerald-900/20 p-4 rounded-lg border-2 border-green-200 dark:border-green-800 shadow-md hover:shadow-lg transition-all duration-300">
-                <div className="flex items-center gap-2 mb-2">
-                  <Wallet className="h-4 w-4 text-green-600" />
-                  <div className="text-sm text-muted-foreground">Total Income</div>
+            {isBusinessProject ? (
+              <>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border">
+                    <span className="font-medium">Gross Profit:</span>
+                    <span className="font-bold text-lg">${formatCurrency(totalMonthlyNetIncome)}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg border">
+                    <span className="font-medium">Total Expenses:</span>
+                    <span className="font-bold text-lg">${formatCurrency(totalExpenses)}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-muted rounded-lg border">
+                    <span className="font-medium">Operating Income:</span>
+                    <span className="font-bold text-lg">${formatCurrency(totalMonthlyNetIncome - totalExpenses)}</span>
+                  </div>
+                  
+                  {annualGrossIncome > 0 && (
+                    <div className="border-t pt-3 space-y-2">
+                      <h4 className="font-semibold text-sm">Corporate Taxes (Ontario + Federal)</h4>
+                      <div className="bg-muted p-3 rounded space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Federal Corporate Tax (15%):</span>
+                          <span className="font-medium">${formatCurrency(taxes.federalTax / 12)}/mo</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Ontario Corporate Tax (11.5%):</span>
+                          <span className="font-medium">${formatCurrency(taxes.provincialTax / 12)}/mo</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className={cn(
+                    "flex justify-between items-center p-4 rounded-lg border-2 shadow-md",
+                    surplus >= 0 
+                      ? "bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/30 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800" 
+                      : "bg-gradient-to-br from-red-50 to-pink-100 dark:from-red-950/30 dark:to-pink-900/20 border-red-200 dark:border-red-800"
+                  )}>
+                    <span className="font-bold">Net Income (After Tax):</span>
+                    <span className={cn("text-2xl font-bold", surplus >= 0 ? "text-blue-600" : "text-red-600")}>
+                      ${formatCurrency(surplus)}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-2xl font-bold">${formatCurrency(totalMonthlyNetIncome)}</div>
+              </>
+            ) : (
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950/30 dark:to-emerald-900/20 p-4 rounded-lg border-2 border-green-200 dark:border-green-800 shadow-md hover:shadow-lg transition-all duration-300">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Wallet className="h-4 w-4 text-green-600" />
+                    <div className="text-sm text-muted-foreground">Total Income</div>
+                  </div>
+                  <div className="text-2xl font-bold">${formatCurrency(totalMonthlyNetIncome)}</div>
+                </div>
+                <div className="bg-gradient-to-br from-orange-50 to-red-100 dark:from-orange-950/30 dark:to-red-900/20 p-4 rounded-lg border-2 border-orange-200 dark:border-orange-800 shadow-md hover:shadow-lg transition-all duration-300">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CreditCard className="h-4 w-4 text-orange-600" />
+                    <div className="text-sm text-muted-foreground">Total Expenses</div>
+                  </div>
+                  <div className="text-2xl font-bold">${formatCurrency(totalExpenses)}</div>
+                </div>
+                <div className={cn(
+                  "p-4 rounded-lg border-2 shadow-md hover:shadow-lg transition-all duration-300",
+                  surplus >= 0 
+                    ? "bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/30 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800" 
+                    : "bg-gradient-to-br from-red-50 to-pink-100 dark:from-red-950/30 dark:to-pink-900/20 border-red-200 dark:border-red-800"
+                )}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <PiggyBank className={cn("h-4 w-4", surplus >= 0 ? "text-blue-600" : "text-red-600")} />
+                    <div className="text-sm text-muted-foreground">Surplus/Deficit</div>
+                  </div>
+                  <div className={cn("text-2xl font-bold", surplus >= 0 ? "text-blue-600" : "text-red-600")}>
+                    ${formatCurrency(surplus)}
+                  </div>
+                </div>
               </div>
-              <div className="bg-gradient-to-br from-orange-50 to-red-100 dark:from-orange-950/30 dark:to-red-900/20 p-4 rounded-lg border-2 border-orange-200 dark:border-orange-800 shadow-md hover:shadow-lg transition-all duration-300">
-                <div className="flex items-center gap-2 mb-2">
-                  <CreditCard className="h-4 w-4 text-orange-600" />
-                  <div className="text-sm text-muted-foreground">Total Expenses</div>
-                </div>
-                <div className="text-2xl font-bold">${formatCurrency(totalExpenses)}</div>
-              </div>
-              <div className={cn(
-                "p-4 rounded-lg border-2 shadow-md hover:shadow-lg transition-all duration-300",
-                surplus >= 0 
-                  ? "bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/30 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800" 
-                  : "bg-gradient-to-br from-red-50 to-pink-100 dark:from-red-950/30 dark:to-pink-900/20 border-red-200 dark:border-red-800"
-              )}>
-                <div className="flex items-center gap-2 mb-2">
-                  <PiggyBank className={cn("h-4 w-4", surplus >= 0 ? "text-blue-600" : "text-red-600")} />
-                  <div className="text-sm text-muted-foreground">Surplus/Deficit</div>
-                </div>
-                <div className={cn("text-2xl font-bold", surplus >= 0 ? "text-blue-600" : "text-red-600")}>
-                  ${formatCurrency(surplus)}
-                </div>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 
