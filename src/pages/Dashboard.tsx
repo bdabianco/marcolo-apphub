@@ -397,15 +397,23 @@ function DashboardContent() {
                     </div>
                     <div className="absolute top-0 right-0 w-20 h-20 bg-accent-foreground/10 rounded-bl-full group-hover:scale-150 transition-transform duration-500" />
                     <PiggyBank className="h-8 w-8 text-accent-foreground relative z-10" />
-                    <span className="text-base font-bold text-accent-foreground relative z-10">Savings Goals</span>
+                    <span className="text-base font-bold text-accent-foreground relative z-10">
+                      {currentProject?.project_type === 'business' ? 'Retained Earnings' : 'Savings Goals'}
+                    </span>
                     <div className="text-xs text-accent-foreground/80 font-medium relative z-10">
-                      {stats.savingsGoals} active goals
+                      {stats.savingsGoals} active {currentProject?.project_type === 'business' ? 'targets' : 'goals'}
                     </div>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="max-w-xs rounded-2xl">
-                  <p className="font-semibold mb-1">Set Savings Goals</p>
-                  <p className="text-xs">Grow branches of savings with automated tracking.</p>
+                  <p className="font-semibold mb-1">
+                    {currentProject?.project_type === 'business' ? 'Track Retained Earnings' : 'Set Savings Goals'}
+                  </p>
+                  <p className="text-xs">
+                    {currentProject?.project_type === 'business' 
+                      ? 'Build reserves and reinvestment capacity for business growth.' 
+                      : 'Grow branches of savings with automated tracking.'}
+                  </p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -425,15 +433,23 @@ function DashboardContent() {
                     </div>
                     <div className="absolute bottom-0 left-0 w-16 h-16 bg-primary/10 rounded-tr-full group-hover:scale-150 transition-transform duration-500" />
                     <Wallet className="h-8 w-8 text-primary relative z-10" />
-                    <span className="text-base font-bold text-primary relative z-10">Assets</span>
+                    <span className="text-base font-bold text-primary relative z-10">
+                      {currentProject?.project_type === 'business' ? 'Business Assets' : 'Assets'}
+                    </span>
                     <div className="text-xs text-muted-foreground font-medium relative z-10">
                       {stats.assetCount} tracked
                     </div>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="max-w-xs rounded-2xl">
-                  <p className="font-semibold mb-1">Track Investments & Assets</p>
-                  <p className="text-xs">Flourish with investments and asset monitoring.</p>
+                  <p className="font-semibold mb-1">
+                    {currentProject?.project_type === 'business' ? 'Track Business Assets' : 'Track Investments & Assets'}
+                  </p>
+                  <p className="text-xs">
+                    {currentProject?.project_type === 'business'
+                      ? 'Monitor equipment, property, and business investments.'
+                      : 'Flourish with investments and asset monitoring.'}
+                  </p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -454,15 +470,23 @@ function DashboardContent() {
                     </div>
                     <div className="absolute inset-0 bg-[image:var(--gradient-primary)] opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
                     <LineChart className="h-8 w-8 text-secondary relative z-10" />
-                    <span className="text-base font-bold text-secondary relative z-10">AI Insights</span>
+                    <span className="text-base font-bold text-secondary relative z-10">
+                      {currentProject?.project_type === 'business' ? 'Business Insights' : 'AI Insights'}
+                    </span>
                     <div className="text-xs text-muted-foreground font-medium relative z-10">
-                      Financial analysis & advice
+                      {currentProject?.project_type === 'business' ? 'Business analysis & advice' : 'Financial analysis & advice'}
                     </div>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="max-w-xs">
-                  <p className="font-semibold mb-1">Get AI Insights</p>
-                  <p className="text-xs">View financial ratios, debt payoff timeline, and get personalized AI advice based on your data.</p>
+                  <p className="font-semibold mb-1">
+                    {currentProject?.project_type === 'business' ? 'Get Business Intelligence' : 'Get AI Insights'}
+                  </p>
+                  <p className="text-xs">
+                    {currentProject?.project_type === 'business'
+                      ? 'View profitability ratios, growth analysis, and get personalized business advice.'
+                      : 'View financial ratios, debt payoff timeline, and get personalized AI advice based on your data.'}
+                  </p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
