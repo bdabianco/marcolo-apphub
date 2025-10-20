@@ -1,13 +1,20 @@
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import marcoloLogo from '@/assets/marcolo-logo.png';
-import { FileText, TrendingUp, PiggyBank, LineChart } from 'lucide-react';
+import { FileText, TrendingUp, PiggyBank, LineChart, Briefcase } from 'lucide-react';
+import { useProject } from '@/contexts/ProjectContext';
 
 export function AppHeader() {
+  const { currentProject } = useProject();
+  
   const navItems = [
     { to: '/budget', icon: FileText, label: 'Budget' },
     { to: '/cashflow', icon: TrendingUp, label: 'Cashflow' },
-    { to: '/savings', icon: PiggyBank, label: 'Savings' },
+    { 
+      to: '/savings', 
+      icon: currentProject?.project_type === 'business' ? Briefcase : PiggyBank, 
+      label: currentProject?.project_type === 'business' ? 'Capital Planning' : 'Savings' 
+    },
     { to: '/insights', icon: LineChart, label: 'Insights' },
   ];
 
