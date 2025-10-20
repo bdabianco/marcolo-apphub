@@ -106,6 +106,16 @@ const Index = () => {
             </p>
           </div>
         </div>
+
+        {/* Footer */}
+        <div className="mt-24 pt-8 border-t border-border/50">
+          <div className="flex items-center justify-center gap-2 text-muted-foreground">
+            <Shield className="h-5 w-5 text-primary" />
+            <p className="text-sm font-medium">
+              Your Data is Safe - Protected by enterprise-grade encryption
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
