@@ -19,6 +19,7 @@ interface Debt {
   balance: number;
   monthlyPayment: number;
   interestRate: number;
+  isTaxDeductible?: boolean;
 }
 
 interface Expense {
@@ -64,6 +65,7 @@ function CashflowContent() {
   const [newDebtBalance, setNewDebtBalance] = useState('');
   const [newDebtPayment, setNewDebtPayment] = useState('');
   const [newDebtInterest, setNewDebtInterest] = useState('');
+  const [newDebtTaxDeductible, setNewDebtTaxDeductible] = useState(false);
   const [monthlyExpenses, setMonthlyExpenses] = useState(0);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
@@ -265,6 +267,17 @@ function CashflowContent() {
   const totalAnnualInterest = primaryAnnualInterest + secondaryAnnualInterest + otherDebtsAnnualInterest;
   const totalMonthlyInterest = totalAnnualInterest / 12;
   
+  // Calculate tax-deductible interest for business projects
+  const taxDeductibleAnnualInterest = currentProject?.project_type === 'business' 
+    ? debts.reduce((sum, debt) => {
+        if (debt.isTaxDeductible) {
+          return sum + (debt.balance * debt.interestRate) / 100;
+        }
+        return sum;
+      }, 0)
+    : 0;
+  const taxDeductibleMonthlyInterest = taxDeductibleAnnualInterest / 12;
+  
   // Total monthly payment includes mortgages and other debts
   const totalMonthlyPayment = monthlyPayment + primaryMortgagePaymentNum + secondaryMortgagePaymentNum;
 
@@ -276,6 +289,7 @@ function CashflowContent() {
         balance: parseFloat(newDebtBalance) || 0,
         monthlyPayment: parseFloat(newDebtPayment) || 0,
         interestRate: parseFloat(newDebtInterest) || 0,
+        isTaxDeductible: currentProject?.project_type === 'business' ? newDebtTaxDeductible : false,
       };
       
       setDebts([...debts, newDebt]);
@@ -285,6 +299,7 @@ function CashflowContent() {
       setNewDebtBalance('');
       setNewDebtPayment('');
       setNewDebtInterest('');
+      setNewDebtTaxDeductible(false);
     }
   };
 
@@ -467,137 +482,157 @@ function CashflowContent() {
           </CardHeader>
           <CardContent className="space-y-6 pt-[10px]">
             <Accordion type="multiple" defaultValue={['mortgages', 'other-debts']} className="w-full">
-              {/* Mortgage Section */}
-              <AccordionItem value="mortgages" className="border rounded-lg px-4 mb-3">
-                <AccordionTrigger className="text-lg font-semibold hover:no-underline">
-                  <div className="flex items-center gap-2">
-                    <Home className="h-5 w-5 text-primary" />
-                    <span>Mortgages</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="space-y-4 pt-4">
-                  {/* Primary Mortgage */}
-                  <div className="bg-gradient-to-br from-muted via-muted/50 to-background p-4 rounded-lg border shadow-sm space-y-2">
-                    <div className="font-medium flex items-center gap-2">
-                      <ChevronRight className="h-4 w-4 text-primary" />
-                      Primary Mortgage
+              {/* Mortgage Section - Only show for personal projects */}
+              {currentProject?.project_type !== 'business' && (
+                <AccordionItem value="mortgages" className="border rounded-lg px-4 mb-3">
+                  <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                    <div className="flex items-center gap-2">
+                      <Home className="h-5 w-5 text-primary" />
+                      <span>Mortgages</span>
                     </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div>
-                        <Label>Total Balance</Label>
-                        <Input
-                          type="number"
-                          placeholder="Total balance"
-                          value={primaryMortgageBalance}
-                          onChange={(e) => setPrimaryMortgageBalance(e.target.value)}
-                        />
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-4">
+                    {/* Primary Mortgage */}
+                    <div className="bg-gradient-to-br from-muted via-muted/50 to-background p-4 rounded-lg border shadow-sm space-y-2">
+                      <div className="font-medium flex items-center gap-2">
+                        <ChevronRight className="h-4 w-4 text-primary" />
+                        Primary Mortgage
                       </div>
-                      <div>
-                        <Label>Interest Rate (%)</Label>
-                        <Input
-                          type="number"
-                          placeholder="Interest rate"
-                          value={primaryMortgageInterest}
-                          onChange={(e) => setPrimaryMortgageInterest(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <Label>Monthly Payment</Label>
-                        <Input
-                          type="number"
-                          placeholder="Monthly payment"
-                          value={primaryMortgagePayment}
-                          onChange={(e) => setPrimaryMortgagePayment(e.target.value)}
-                        />
+                      <div className="grid grid-cols-3 gap-4">
+                        <div>
+                          <Label>Total Balance</Label>
+                          <Input
+                            type="number"
+                            placeholder="Total balance"
+                            value={primaryMortgageBalance}
+                            onChange={(e) => setPrimaryMortgageBalance(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Interest Rate (%)</Label>
+                          <Input
+                            type="number"
+                            placeholder="Interest rate"
+                            value={primaryMortgageInterest}
+                            onChange={(e) => setPrimaryMortgageInterest(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Monthly Payment</Label>
+                          <Input
+                            type="number"
+                            placeholder="Monthly payment"
+                            value={primaryMortgagePayment}
+                            onChange={(e) => setPrimaryMortgagePayment(e.target.value)}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Secondary Mortgage */}
-                  <div className="bg-gradient-to-br from-muted via-muted/50 to-background p-4 rounded-lg border shadow-sm space-y-2">
-                    <div className="font-medium flex items-center gap-2">
-                      <ChevronRight className="h-4 w-4 text-primary" />
-                      Secondary Mortgage
+                    {/* Secondary Mortgage */}
+                    <div className="bg-gradient-to-br from-muted via-muted/50 to-background p-4 rounded-lg border shadow-sm space-y-2">
+                      <div className="font-medium flex items-center gap-2">
+                        <ChevronRight className="h-4 w-4 text-primary" />
+                        Secondary Mortgage
+                      </div>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div>
+                          <Label>Total Balance</Label>
+                          <Input
+                            type="number"
+                            placeholder="Total balance"
+                            value={secondaryMortgageBalance}
+                            onChange={(e) => setSecondaryMortgageBalance(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Interest Rate (%)</Label>
+                          <Input
+                            type="number"
+                            placeholder="Interest rate"
+                            value={secondaryMortgageInterest}
+                            onChange={(e) => setSecondaryMortgageInterest(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Monthly Payment</Label>
+                          <Input
+                            type="number"
+                            placeholder="Monthly payment"
+                            value={secondaryMortgagePayment}
+                            onChange={(e) => setSecondaryMortgagePayment(e.target.value)}
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div>
-                        <Label>Total Balance</Label>
-                        <Input
-                          type="number"
-                          placeholder="Total balance"
-                          value={secondaryMortgageBalance}
-                          onChange={(e) => setSecondaryMortgageBalance(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <Label>Interest Rate (%)</Label>
-                        <Input
-                          type="number"
-                          placeholder="Interest rate"
-                          value={secondaryMortgageInterest}
-                          onChange={(e) => setSecondaryMortgageInterest(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <Label>Monthly Payment</Label>
-                        <Input
-                          type="number"
-                          placeholder="Monthly payment"
-                          value={secondaryMortgagePayment}
-                          onChange={(e) => setSecondaryMortgagePayment(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
 
-              {/* Other Debts Section */}
+              {/* Debts Section */}
               <AccordionItem value="other-debts" className="border rounded-lg px-4 mb-3">
                 <AccordionTrigger className="text-lg font-semibold hover:no-underline">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="h-5 w-5 text-primary" />
-                    <span>Other Debts</span>
+                    <span>{currentProject?.project_type === 'business' ? 'Debts' : 'Other Debts'}</span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-              <Input
-                placeholder="Debt name (e.g., Car Loan)"
-                value={newDebtName}
-                onChange={(e) => setNewDebtName(e.target.value)}
-                className="px-3"
-              />
-              <Input
-                type="number"
-                placeholder="Total balance"
-                value={newDebtBalance}
-                onChange={(e) => setNewDebtBalance(e.target.value)}
-              />
-              <Input
-                type="number"
-                placeholder="Interest rate (%)"
-                value={newDebtInterest}
-                onChange={(e) => setNewDebtInterest(e.target.value)}
-              />
-              <div className="flex gap-2">
-                <Input
-                  type="number"
-                  placeholder="Monthly payment"
-                  value={newDebtPayment}
-                  onChange={(e) => setNewDebtPayment(e.target.value)}
-                />
-                <Button onClick={addDebt} className="hover:scale-105 transition-transform">
-                      <Plus className="h-4 w-4" />
+                  <div className="grid grid-cols-1 gap-2">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                      <Input
+                        placeholder="Debt name (e.g., Car Loan)"
+                        value={newDebtName}
+                        onChange={(e) => setNewDebtName(e.target.value)}
+                        className="px-3"
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Total balance"
+                        value={newDebtBalance}
+                        onChange={(e) => setNewDebtBalance(e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Interest rate (%)"
+                        value={newDebtInterest}
+                        onChange={(e) => setNewDebtInterest(e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Monthly payment"
+                        value={newDebtPayment}
+                        onChange={(e) => setNewDebtPayment(e.target.value)}
+                      />
+                    </div>
+                    {currentProject?.project_type === 'business' && (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="tax-deductible"
+                          checked={newDebtTaxDeductible}
+                          onChange={(e) => setNewDebtTaxDeductible(e.target.checked)}
+                          className="w-4 h-4"
+                        />
+                        <Label htmlFor="tax-deductible" className="cursor-pointer">Tax Deductible Interest</Label>
+                      </div>
+                    )}
+                    <Button onClick={addDebt} className="hover:scale-105 transition-transform w-full">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Debt
                     </Button>
                   </div>
-                </div>
 
                 <div className="space-y-2">
                   {debts.map((debt) => (
                     <div key={debt.id} className="bg-gradient-to-r from-muted/80 to-muted/40 p-4 rounded-lg border shadow-sm hover:shadow-md transition-all duration-200 space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="font-medium">{debt.name}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{debt.name}</span>
+                          {currentProject?.project_type === 'business' && debt.isTaxDeductible && (
+                            <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">Tax Deductible</span>
+                          )}
+                        </div>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -725,67 +760,130 @@ function CashflowContent() {
                   {/* Total Row - Shown by Default */}
                 <AccordionItem value="total">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline bg-primary/5 px-4 py-3 rounded-lg">
-                      <div className="grid grid-cols-8 gap-3 w-full pr-4 text-sm">
-                        <div className="font-bold text-primary">Annual Totals</div>
-                        <div className="text-right">
-                          <div className="text-xs text-muted-foreground mb-1">Net Income</div>
-                          <div className="font-bold text-primary">${formatCurrency(monthlyNetIncome * 12)}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-muted-foreground mb-1">Expenses</div>
-                          <div className="font-bold text-destructive">${formatCurrency(monthlyExpenses * 12)}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-muted-foreground mb-1">Debt</div>
-                          <div className="font-bold">${formatCurrency((totalMonthlyPayment - totalMonthlyInterest) * 12)}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-muted-foreground mb-1">Interest</div>
-                          <div className="font-bold">${formatCurrency(totalMonthlyInterest * 12)}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-muted-foreground mb-1">Cum. Surplus</div>
-                          <div className={`font-bold ${(monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 >= 0 ? 'text-primary' : 'text-destructive'}`}>
-                            ${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12)}
+                      {currentProject?.project_type === 'business' ? (
+                        <div className="grid grid-cols-8 gap-3 w-full pr-4 text-sm">
+                          <div className="font-bold text-primary">Annual Totals</div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">Net Income</div>
+                            <div className="font-bold text-primary">${formatCurrency(monthlyNetIncome * 12)}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">Expenses</div>
+                            <div className="font-bold text-destructive">${formatCurrency(monthlyExpenses * 12)}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">EBITDA</div>
+                            <div className="font-bold text-primary">${formatCurrency((monthlyNetIncome - monthlyExpenses) * 12)}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">Interest</div>
+                            <div className="font-bold">${formatCurrency(totalMonthlyInterest * 12)}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">Tax Ded. Int</div>
+                            <div className="font-bold text-green-600">${formatCurrency(taxDeductibleAnnualInterest)}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">Debt Pmt</div>
+                            <div className="font-bold">${formatCurrency((totalMonthlyPayment - totalMonthlyInterest) * 12)}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">Surplus</div>
+                            <div className={`font-bold ${(monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                              ${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12)}
+                            </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-xs text-muted-foreground mb-1">Adjustments</div>
-                          <div className={`font-bold ${totalAdjustment >= 0 ? 'text-primary' : 'text-destructive'}`}>
-                            ${formatCurrency(totalAdjustment)}
+                      ) : (
+                        <div className="grid grid-cols-8 gap-3 w-full pr-4 text-sm">
+                          <div className="font-bold text-primary">Annual Totals</div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">Net Income</div>
+                            <div className="font-bold text-primary">${formatCurrency(monthlyNetIncome * 12)}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">Expenses</div>
+                            <div className="font-bold text-destructive">${formatCurrency(monthlyExpenses * 12)}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">Debt</div>
+                            <div className="font-bold">${formatCurrency((totalMonthlyPayment - totalMonthlyInterest) * 12)}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">Interest</div>
+                            <div className="font-bold">${formatCurrency(totalMonthlyInterest * 12)}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">Cum. Surplus</div>
+                            <div className={`font-bold ${(monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                              ${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12)}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">Adjustments</div>
+                            <div className={`font-bold ${totalAdjustment >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                              ${formatCurrency(totalAdjustment)}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">Adj. Surplus</div>
+                            <div className={`font-bold ${((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 + totalAdjustment) >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                              ${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 + totalAdjustment)}
+                            </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-xs text-muted-foreground mb-1">Adj. Surplus</div>
-                          <div className={`font-bold ${((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 + totalAdjustment) >= 0 ? 'text-primary' : 'text-destructive'}`}>
-                            ${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 + totalAdjustment)}
-                          </div>
-                        </div>
-                      </div>
+                      )}
                     </AccordionTrigger>
                     <AccordionContent>
                       <div className="space-y-2 bg-muted/30 p-4 rounded-lg">
                         {/* Header Row */}
-                        <div className="grid grid-cols-8 gap-3 text-sm font-semibold border-b-2 border-primary/20 pb-3 mb-2">
-                          <div className="text-primary">Month</div>
-                          <div className="text-right">Net Income</div>
-                          <div className="text-right">Expenses</div>
-                          <div className="text-right">Debt</div>
-                          <div className="text-right">Interest</div>
-                          <div className="text-right">Surplus</div>
-                          <div className="text-right">Adjustment</div>
-                          <div className="text-right">Adj. Surplus</div>
-                        </div>
+                        {currentProject?.project_type === 'business' ? (
+                          <div className="grid grid-cols-8 gap-3 text-sm font-semibold border-b-2 border-primary/20 pb-3 mb-2">
+                            <div className="text-primary">Month</div>
+                            <div className="text-right">Net Income</div>
+                            <div className="text-right">Expenses</div>
+                            <div className="text-right">EBITDA</div>
+                            <div className="text-right">Interest</div>
+                            <div className="text-right">Tax Ded. Int</div>
+                            <div className="text-right">Debt Pmt</div>
+                            <div className="text-right">Surplus</div>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-8 gap-3 text-sm font-semibold border-b-2 border-primary/20 pb-3 mb-2">
+                            <div className="text-primary">Month</div>
+                            <div className="text-right">Net Income</div>
+                            <div className="text-right">Expenses</div>
+                            <div className="text-right">Debt</div>
+                            <div className="text-right">Interest</div>
+                            <div className="text-right">Surplus</div>
+                            <div className="text-right">Adjustment</div>
+                            <div className="text-right">Adj. Surplus</div>
+                          </div>
+                        )}
                         
                         {/* Monthly Rows */}
                         {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => {
                           const expenses = calculateMonthlyExpense(index);
                           const monthlyDebtPrincipal = totalMonthlyPayment - totalMonthlyInterest;
                           const monthlyInterest = totalMonthlyInterest;
+                          const ebitda = monthlyNetIncome - expenses;
                           const surplus = monthlyNetIncome - expenses - totalMonthlyPayment;
                           const adjustedSurplus = surplus + monthlyAdjustment;
                           
-                          return (
+                          return currentProject?.project_type === 'business' ? (
+                            <div key={month} className="grid grid-cols-8 gap-3 text-sm py-3 hover:bg-primary/5 rounded-lg px-3 transition-colors border-b border-muted">
+                              <div className="font-medium">{month}</div>
+                              <div className="text-right">${formatCurrency(monthlyNetIncome)}</div>
+                              <div className="text-right text-destructive">${formatCurrency(expenses)}</div>
+                              <div className="text-right text-primary">${formatCurrency(ebitda)}</div>
+                              <div className="text-right">${formatCurrency(monthlyInterest)}</div>
+                              <div className="text-right text-green-600">${formatCurrency(taxDeductibleMonthlyInterest)}</div>
+                              <div className="text-right">${formatCurrency(monthlyDebtPrincipal)}</div>
+                              <div className={`text-right font-semibold ${surplus >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                                ${formatCurrency(surplus)}
+                              </div>
+                            </div>
+                          ) : (
                             <div key={month} className="grid grid-cols-8 gap-3 text-sm py-3 hover:bg-primary/5 rounded-lg px-3 transition-colors border-b border-muted">
                               <div className="font-medium">{month}</div>
                               <div className="text-right">${formatCurrency(monthlyNetIncome)}</div>
@@ -813,19 +911,20 @@ function CashflowContent() {
           );
         })()}
 
-        {/* Adjustments Section - moved after Cashflow Projection */}
-        <Card className="mb-6 border-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
-          <CardHeader className="bg-gradient-to-r from-accent/5 via-accent/3 to-transparent">
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-accent/10 rounded-lg">
-                <Sparkles className="h-6 w-6 text-accent-foreground" />
+        {/* Adjustments Section - Only show for personal projects */}
+        {currentProject?.project_type !== 'business' && (
+          <Card className="mb-6 border-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <CardHeader className="bg-gradient-to-r from-accent/5 via-accent/3 to-transparent">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-accent/10 rounded-lg">
+                  <Sparkles className="h-6 w-6 text-accent-foreground" />
+                </div>
+                <div>
+                  <CardTitle>Adjustments</CardTitle>
+                  <CardDescription>Create "what if" scenarios without affecting your budget</CardDescription>
+                </div>
               </div>
-              <div>
-                <CardTitle>Adjustments</CardTitle>
-                <CardDescription>Create "what if" scenarios without affecting your budget</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
+            </CardHeader>
           <CardContent className="pt-[10px]">
             <Accordion type="multiple" className="w-full">
               {/* Income Adjustment */}
@@ -1052,6 +1151,7 @@ function CashflowContent() {
             </Accordion>
           </CardContent>
         </Card>
+        )}
       </main>
     </div>
   );
