@@ -607,6 +607,151 @@ function CashflowContent() {
                         </div>
                       </div>
                     )}
+                    
+                    {/* Asset Summary Cards - for business projects */}
+                    {assets.length > 0 && (
+                      <div className="mt-4 pt-4 border-t">
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="p-2 bg-green-600/10 rounded-lg">
+                            <Landmark className="h-5 w-5 text-green-600" />
+                          </div>
+                          <h3 className="text-lg font-semibold">Asset Breakdown</h3>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                          {/* Cash Assets */}
+                          <TooltipProvider delayDuration={300}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/20 p-4 rounded-xl border border-blue-200 dark:border-blue-800 shadow-md hover:shadow-lg transition-all duration-300 cursor-help">
+                                  <div className="flex items-center gap-1 text-xs font-medium text-blue-800 dark:text-blue-300 mb-1">
+                                    <span>Cash</span>
+                                    <Info className="h-3 w-3" />
+                                  </div>
+                                  <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                                    ${formatCurrency(assets.filter(a => a.type === 'cash').reduce((sum, a) => sum + a.value, 0))}
+                                  </div>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs bg-popover border z-50">
+                                <p className="text-sm font-semibold mb-1">Cash & Liquid Assets</p>
+                                <p className="text-xs">Immediately available funds for operations and emergencies.</p>
+                                <p className="text-xs mt-1 text-muted-foreground">Target: 3-6 months of operating expenses.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+
+                          {/* Accounts Receivable */}
+                          <TooltipProvider delayDuration={300}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/20 p-4 rounded-xl border border-amber-200 dark:border-amber-800 shadow-md hover:shadow-lg transition-all duration-300 cursor-help">
+                                  <div className="flex items-center gap-1 text-xs font-medium text-amber-800 dark:text-amber-300 mb-1">
+                                    <span>Receivables</span>
+                                    <Info className="h-3 w-3" />
+                                  </div>
+                                  <div className="text-2xl font-bold text-amber-900 dark:text-amber-100">
+                                    ${formatCurrency(assets.filter(a => a.type === 'receivables').reduce((sum, a) => sum + a.value, 0))}
+                                  </div>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs bg-popover border z-50">
+                                <p className="text-sm font-semibold mb-1">Accounts Receivable</p>
+                                <p className="text-xs">Money owed to your business by customers.</p>
+                                <p className="text-xs mt-1 text-muted-foreground">Monitor aging to ensure timely collection.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+
+                          {/* Inventory */}
+                          <TooltipProvider delayDuration={300}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/20 p-4 rounded-xl border border-purple-200 dark:border-purple-800 shadow-md hover:shadow-lg transition-all duration-300 cursor-help">
+                                  <div className="flex items-center gap-1 text-xs font-medium text-purple-800 dark:text-purple-300 mb-1">
+                                    <span>Inventory</span>
+                                    <Info className="h-3 w-3" />
+                                  </div>
+                                  <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+                                    ${formatCurrency(assets.filter(a => a.type === 'inventory').reduce((sum, a) => sum + a.value, 0))}
+                                  </div>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs bg-popover border z-50">
+                                <p className="text-sm font-semibold mb-1">Inventory</p>
+                                <p className="text-xs">Value of products available for sale.</p>
+                                <p className="text-xs mt-1 text-muted-foreground">Balance holding costs with stockout risk.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+
+                          {/* Equipment */}
+                          <TooltipProvider delayDuration={300}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-950/30 dark:to-gray-950/20 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-lg transition-all duration-300 cursor-help">
+                                  <div className="flex items-center gap-1 text-xs font-medium text-slate-800 dark:text-slate-300 mb-1">
+                                    <span>Equipment</span>
+                                    <Info className="h-3 w-3" />
+                                  </div>
+                                  <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                                    ${formatCurrency(assets.filter(a => a.type === 'equipment').reduce((sum, a) => sum + a.value, 0))}
+                                  </div>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs bg-popover border z-50">
+                                <p className="text-sm font-semibold mb-1">Equipment & Fixed Assets</p>
+                                <p className="text-xs">Long-term assets used in business operations.</p>
+                                <p className="text-xs mt-1 text-muted-foreground">Consider depreciation in financial planning.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+
+                          {/* Other Assets */}
+                          <TooltipProvider delayDuration={300}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/20 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 shadow-md hover:shadow-lg transition-all duration-300 cursor-help">
+                                  <div className="flex items-center gap-1 text-xs font-medium text-emerald-800 dark:text-emerald-300 mb-1">
+                                    <span>Other</span>
+                                    <Info className="h-3 w-3" />
+                                  </div>
+                                  <div className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">
+                                    ${formatCurrency(assets.filter(a => a.type === 'other').reduce((sum, a) => sum + a.value, 0))}
+                                  </div>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs bg-popover border z-50">
+                                <p className="text-sm font-semibold mb-1">Other Assets</p>
+                                <p className="text-xs">Miscellaneous assets not classified elsewhere.</p>
+                                <p className="text-xs mt-1 text-muted-foreground">May include intangibles, investments, etc.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          
+                          {/* Net Worth / Business Equity */}
+                          <TooltipProvider delayDuration={300}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/40 dark:to-emerald-900/30 p-4 rounded-xl border-2 border-green-300 dark:border-green-700 shadow-lg hover:shadow-xl transition-all duration-300 cursor-help">
+                                  <div className="flex items-center gap-1 text-xs font-medium text-green-800 dark:text-green-200 mb-1">
+                                    <span>Business Equity</span>
+                                    <Info className="h-3 w-3" />
+                                  </div>
+                                  <div className="text-2xl font-bold text-green-900 dark:text-green-100">
+                                    ${formatCurrency(assets.reduce((sum, a) => sum + a.value, 0) - (totalDebt + primaryMortgageBalanceNum + secondaryMortgageBalanceNum))}
+                                  </div>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs bg-popover border z-50">
+                                <p className="text-sm font-semibold mb-1">Business Equity (Net Worth)</p>
+                                <p className="text-xs">Formula: Total Assets - Total Liabilities</p>
+                                <p className="text-xs mt-1 text-muted-foreground">The true value of your business after all debts. Positive equity indicates financial health.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      </div>
+                    )}
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

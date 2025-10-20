@@ -516,24 +516,38 @@ function InsightsContent() {
                 >
                   {[
                     {
-                      name: 'Debt-to-Income',
+                      name: currentProject?.project_type === 'business' ? 'Debt Service Coverage' : 'Debt-to-Income',
                       value: Number(metrics.debtToIncomeRatio.toFixed(1)),
                     },
                     {
-                      name: 'Savings Rate',
+                      name: currentProject?.project_type === 'business' ? 'Profit Margin' : 'Savings Rate',
                       value: Number(metrics.savingsRate.toFixed(1)),
                     },
                   ].map((entry, index) => {
                     let fillColor = 'hsl(var(--primary))';
                     
-                    if (entry.name === 'Debt-to-Income') {
-                      if (entry.value >= 43) fillColor = 'hsl(var(--destructive))';
-                      else if (entry.value >= 36) fillColor = 'hsl(20 100% 50%)'; // orange
-                      else if (entry.value >= 28) fillColor = 'hsl(45 100% 50%)'; // yellow
+                    if (currentProject?.project_type === 'business') {
+                      // Business logic
+                      if (entry.name === 'Debt Service Coverage') {
+                        if (entry.value >= 43) fillColor = 'hsl(var(--destructive))';
+                        else if (entry.value >= 36) fillColor = 'hsl(20 100% 50%)';
+                        else if (entry.value >= 28) fillColor = 'hsl(45 100% 50%)';
+                      } else { // Profit Margin
+                        if (entry.value < 5) fillColor = 'hsl(var(--destructive))';
+                        else if (entry.value < 10) fillColor = 'hsl(20 100% 50%)';
+                        else if (entry.value < 15) fillColor = 'hsl(45 100% 50%)';
+                      }
                     } else {
-                      if (entry.value < 10) fillColor = 'hsl(var(--destructive))';
-                      else if (entry.value < 15) fillColor = 'hsl(20 100% 50%)';
-                      else if (entry.value < 20) fillColor = 'hsl(45 100% 50%)';
+                      // Personal finance logic
+                      if (entry.name === 'Debt-to-Income') {
+                        if (entry.value >= 43) fillColor = 'hsl(var(--destructive))';
+                        else if (entry.value >= 36) fillColor = 'hsl(20 100% 50%)';
+                        else if (entry.value >= 28) fillColor = 'hsl(45 100% 50%)';
+                      } else {
+                        if (entry.value < 10) fillColor = 'hsl(var(--destructive))';
+                        else if (entry.value < 15) fillColor = 'hsl(20 100% 50%)';
+                        else if (entry.value < 20) fillColor = 'hsl(45 100% 50%)';
+                      }
                     }
                     
                     return <Cell key={`cell-${index}`} fill={fillColor} />;
@@ -556,23 +570,42 @@ function InsightsContent() {
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <div className="space-y-2 p-4 rounded-lg bg-muted/50">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="font-semibold text-sm">Debt-to-Income Ratio</span>
+                  <span className="font-semibold text-sm">
+                    {currentProject?.project_type === 'business' ? 'Debt Service Coverage' : 'Debt-to-Income Ratio'}
+                  </span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
                         <Info className="h-4 w-4 text-muted-foreground" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
-                        <p className="font-semibold mb-1">Financial Health Standards:</p>
-                        <ul className="text-xs space-y-1">
-                          <li>• <strong>Excellent:</strong> Below 28%</li>
-                          <li>• <strong>Good:</strong> 28-36%</li>
-                          <li>• <strong>Fair:</strong> 36-43%</li>
-                          <li>• <strong>Poor:</strong> Above 43%</li>
-                        </ul>
-                        <p className="text-xs mt-2 text-muted-foreground">
-                          Lenders typically prefer DTI below 43%. Lower is better for financial flexibility.
-                        </p>
+                        {currentProject?.project_type === 'business' ? (
+                          <>
+                            <p className="font-semibold mb-1">Business Health Standards:</p>
+                            <ul className="text-xs space-y-1">
+                              <li>• <strong>Excellent:</strong> Below 28%</li>
+                              <li>• <strong>Good:</strong> 28-36%</li>
+                              <li>• <strong>Fair:</strong> 36-43%</li>
+                              <li>• <strong>Poor:</strong> Above 43%</li>
+                            </ul>
+                            <p className="text-xs mt-2 text-muted-foreground">
+                              Measures debt obligations relative to operating income. Lower ratios indicate better ability to service debt.
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="font-semibold mb-1">Financial Health Standards:</p>
+                            <ul className="text-xs space-y-1">
+                              <li>• <strong>Excellent:</strong> Below 28%</li>
+                              <li>• <strong>Good:</strong> 28-36%</li>
+                              <li>• <strong>Fair:</strong> 36-43%</li>
+                              <li>• <strong>Poor:</strong> Above 43%</li>
+                            </ul>
+                            <p className="text-xs mt-2 text-muted-foreground">
+                              Lenders typically prefer DTI below 43%. Lower is better for financial flexibility.
+                            </p>
+                          </>
+                        )}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -593,37 +626,72 @@ function InsightsContent() {
               
               <div className="space-y-2 p-4 rounded-lg bg-muted/50">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="font-semibold text-sm">Savings Rate</span>
+                  <span className="font-semibold text-sm">
+                    {currentProject?.project_type === 'business' ? 'Profit Margin' : 'Savings Rate'}
+                  </span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
                         <Info className="h-4 w-4 text-muted-foreground" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
-                        <p className="font-semibold mb-1">Financial Health Standards:</p>
-                        <ul className="text-xs space-y-1">
-                          <li>• <strong>Excellent:</strong> 20% or more</li>
-                          <li>• <strong>Good:</strong> 15-20%</li>
-                          <li>• <strong>Fair:</strong> 10-15%</li>
-                          <li>• <strong>Poor:</strong> Below 10%</li>
-                        </ul>
-                        <p className="text-xs mt-2 text-muted-foreground">
-                          The 50/30/20 rule recommends saving 20% of income. Higher rates accelerate wealth building.
-                        </p>
+                        {currentProject?.project_type === 'business' ? (
+                          <>
+                            <p className="font-semibold mb-1">Business Health Standards:</p>
+                            <ul className="text-xs space-y-1">
+                              <li>• <strong>Excellent:</strong> 15% or more</li>
+                              <li>• <strong>Good:</strong> 10-15%</li>
+                              <li>• <strong>Fair:</strong> 5-10%</li>
+                              <li>• <strong>Poor:</strong> Below 5%</li>
+                            </ul>
+                            <p className="text-xs mt-2 text-muted-foreground">
+                              Measures profitability. Higher margins indicate better cost control and pricing power.
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="font-semibold mb-1">Financial Health Standards:</p>
+                            <ul className="text-xs space-y-1">
+                              <li>• <strong>Excellent:</strong> 20% or more</li>
+                              <li>• <strong>Good:</strong> 15-20%</li>
+                              <li>• <strong>Fair:</strong> 10-15%</li>
+                              <li>• <strong>Poor:</strong> Below 10%</li>
+                            </ul>
+                            <p className="text-xs mt-2 text-muted-foreground">
+                              The 50/30/20 rule recommends saving 20% of income. Higher rates accelerate wealth building.
+                            </p>
+                          </>
+                        )}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
                 <div className="flex flex-wrap gap-2 text-xs">
-                  <span className="px-2 py-1 rounded bg-destructive/20 text-destructive font-medium">Poor: &lt;10%</span>
-                  <span className="px-2 py-1 rounded bg-orange-500/20 text-orange-700 dark:text-orange-400 font-medium">Fair: 10-15%</span>
-                  <span className="px-2 py-1 rounded bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 font-medium">Good: 15-20%</span>
-                  <span className="px-2 py-1 rounded bg-primary/20 text-primary font-medium">Excellent: &gt;20%</span>
+                  {currentProject?.project_type === 'business' ? (
+                    <>
+                      <span className="px-2 py-1 rounded bg-destructive/20 text-destructive font-medium">Poor: &lt;5%</span>
+                      <span className="px-2 py-1 rounded bg-orange-500/20 text-orange-700 dark:text-orange-400 font-medium">Fair: 5-10%</span>
+                      <span className="px-2 py-1 rounded bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 font-medium">Good: 10-15%</span>
+                      <span className="px-2 py-1 rounded bg-primary/20 text-primary font-medium">Excellent: &gt;15%</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="px-2 py-1 rounded bg-destructive/20 text-destructive font-medium">Poor: &lt;10%</span>
+                      <span className="px-2 py-1 rounded bg-orange-500/20 text-orange-700 dark:text-orange-400 font-medium">Fair: 10-15%</span>
+                      <span className="px-2 py-1 rounded bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 font-medium">Good: 15-20%</span>
+                      <span className="px-2 py-1 rounded bg-primary/20 text-primary font-medium">Excellent: &gt;20%</span>
+                    </>
+                  )}
                 </div>
-                {metrics.savingsRate < 20 && (
+                {(currentProject?.project_type === 'business' ? metrics.savingsRate < 15 : metrics.savingsRate < 20) && (
                   <div className="flex items-center gap-2 text-sm text-destructive mt-2">
                     <AlertCircle className="h-4 w-4" />
-                    <span>Aim for at least 20% for financial security.</span>
+                    <span>
+                      {currentProject?.project_type === 'business' 
+                        ? 'Consider cost reduction or pricing strategies.'
+                        : 'Aim for at least 20% for financial security.'
+                      }
+                    </span>
                   </div>
                 )}
               </div>
@@ -656,16 +724,33 @@ function InsightsContent() {
                         <Info className="h-4 w-4 text-muted-foreground" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
-                        <p className="font-semibold mb-1">Financial Health Standards:</p>
-                        <ul className="text-xs space-y-1">
-                          <li>• <strong>Excellent:</strong> Below 30%</li>
-                          <li>• <strong>Good:</strong> 30-50%</li>
-                          <li>• <strong>Fair:</strong> 50-70%</li>
-                          <li>• <strong>Poor:</strong> Above 70%</li>
-                        </ul>
-                        <p className="text-xs mt-2 text-muted-foreground">
-                          Shows what portion of your assets are financed by debt. Lower is better.
-                        </p>
+                        {currentProject?.project_type === 'business' ? (
+                          <>
+                            <p className="font-semibold mb-1">Business Leverage Standards:</p>
+                            <ul className="text-xs space-y-1">
+                              <li>• <strong>Conservative:</strong> Below 30%</li>
+                              <li>• <strong>Moderate:</strong> 30-50%</li>
+                              <li>• <strong>Aggressive:</strong> 50-70%</li>
+                              <li>• <strong>High Risk:</strong> Above 70%</li>
+                            </ul>
+                            <p className="text-xs mt-2 text-muted-foreground">
+                              Shows financial leverage. Lower ratios indicate less dependency on borrowed funds.
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="font-semibold mb-1">Financial Health Standards:</p>
+                            <ul className="text-xs space-y-1">
+                              <li>• <strong>Excellent:</strong> Below 30%</li>
+                              <li>• <strong>Good:</strong> 30-50%</li>
+                              <li>• <strong>Fair:</strong> 50-70%</li>
+                              <li>• <strong>Poor:</strong> Above 70%</li>
+                            </ul>
+                            <p className="text-xs mt-2 text-muted-foreground">
+                              Shows what portion of your assets are financed by debt. Lower is better.
+                            </p>
+                          </>
+                        )}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -884,10 +969,12 @@ function InsightsContent() {
           </Collapsible>
         )}
 
-        {/* Net Worth */}
+        {/* Net Worth / Business Value */}
         <Card className="mb-6 border-2 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
-            <CardTitle>Net Worth Analysis</CardTitle>
+            <CardTitle>
+              {currentProject?.project_type === 'business' ? 'Business Value Analysis' : 'Net Worth Analysis'}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
@@ -904,7 +991,9 @@ function InsightsContent() {
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-sm text-muted-foreground mb-1">Net Worth</div>
+                <div className="text-sm text-muted-foreground mb-1">
+                  {currentProject?.project_type === 'business' ? 'Business Value' : 'Net Worth'}
+                </div>
                 <div className={`text-xl font-bold ${metrics.netWorth >= 0 ? 'text-primary' : 'text-destructive'}`}>
                   ${formatCurrency(metrics.netWorth)}
                 </div>
@@ -914,13 +1003,23 @@ function InsightsContent() {
             {metrics.netWorth > 0 && (
               <div className="flex items-center gap-2 text-sm text-primary bg-primary/10 p-3 rounded">
                 <TrendingUp className="h-4 w-4" />
-                <span>Positive net worth! Keep building your financial foundation.</span>
+                <span>
+                  {currentProject?.project_type === 'business' 
+                    ? 'Positive business value! Continue building equity and reducing liabilities.'
+                    : 'Positive net worth! Keep building your financial foundation.'
+                  }
+                </span>
               </div>
             )}
             {metrics.netWorth < 0 && (
               <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded">
                 <TrendingDown className="h-4 w-4" />
-                <span>Focus on debt reduction to improve your net worth.</span>
+                <span>
+                  {currentProject?.project_type === 'business' 
+                    ? 'Focus on increasing assets and reducing debt to improve business value.'
+                    : 'Focus on debt reduction to improve your net worth.'
+                  }
+                </span>
               </div>
             )}
           </CardContent>
