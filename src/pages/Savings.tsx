@@ -314,17 +314,21 @@ function SavingsContent() {
       return;
     }
 
-    const investmentNames: Record<string, string> = {
-      tfsa: 'TFSA',
-      rrsp: 'RRSP',
-      group_retirement: 'Group Retirement Plan',
+    const investmentNames: Record<string, { personal: string; business: string }> = {
+      tfsa: { personal: 'TFSA', business: 'Stocks & Equities' },
+      rrsp: { personal: 'RRSP', business: 'Bonds & Fixed Income' },
+      group_retirement: { personal: 'Group Retirement Plan', business: 'Mutual Funds' },
     };
+
+    const investmentName = currentProject?.project_type === 'business' 
+      ? investmentNames[investmentType].business
+      : investmentNames[investmentType].personal;
 
     try {
       console.log('Saving investment:', { 
         user_id: user.id, 
         type: investmentType, 
-        name: investmentNames[investmentType],
+        name: investmentName,
         value: investmentValue,
         rate: MARKET_INVESTMENT_RATE 
       });
@@ -333,7 +337,7 @@ function SavingsContent() {
         user_id: user.id,
         budget_plan_id: currentProject.id,
         asset_type: investmentType,
-        name: investmentNames[investmentType],
+        name: investmentName,
         current_value: Number(investmentValue),
         appreciation_rate: MARKET_INVESTMENT_RATE,
       }).select();
@@ -866,8 +870,15 @@ function SavingsContent() {
           <div className="flex items-center gap-3">
             <TrendingUp className="h-8 w-8 text-primary" />
             <div>
-              <h2 className="text-3xl font-bold text-foreground">Investments & Assets</h2>
-              <p className="text-muted-foreground mt-1">Track your properties, investments, and other assets</p>
+              <h2 className="text-3xl font-bold text-foreground">
+                {currentProject?.project_type === 'business' ? 'Long-Term Assets' : 'Investments & Assets'}
+              </h2>
+              <p className="text-muted-foreground mt-1">
+                {currentProject?.project_type === 'business' 
+                  ? 'Track commercial properties, business investments, and securities'
+                  : 'Track your properties, investments, and other assets'
+                }
+              </p>
             </div>
           </div>
         </div>
@@ -879,8 +890,15 @@ function SavingsContent() {
               <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent cursor-pointer hover:bg-primary/10 transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="text-left flex-1">
-                    <CardTitle>Portfolio Overview</CardTitle>
-                    <CardDescription>Your total investment and asset value</CardDescription>
+                    <CardTitle>
+                      {currentProject?.project_type === 'business' ? 'Long-Term Assets Overview' : 'Portfolio Overview'}
+                    </CardTitle>
+                    <CardDescription>
+                      {currentProject?.project_type === 'business' 
+                        ? 'Your total long-term business asset value'
+                        : 'Your total investment and asset value'
+                      }
+                    </CardDescription>
                   </div>
                   {!isAssetsOpen && (
                     <div className="flex items-center gap-4 mr-4">
@@ -889,7 +907,9 @@ function SavingsContent() {
                         <div className="bg-background/50 p-3 rounded-lg border border-border/50">
                           <div className="flex items-center gap-1.5 mb-1">
                             <Home className="h-3.5 w-3.5 text-muted-foreground" />
-                            <div className="text-xs text-muted-foreground">Properties ({properties.length})</div>
+                            <div className="text-xs text-muted-foreground">
+                              {currentProject?.project_type === 'business' ? 'Commercial' : 'Properties'} ({properties.length})
+                            </div>
                           </div>
                           <div className="font-bold text-sm">
                             ${formatCurrency(properties.reduce((sum, a) => sum + Number(a.current_value || 0), 0))}
@@ -900,7 +920,9 @@ function SavingsContent() {
                         <div className="bg-background/50 p-3 rounded-lg border border-border/50">
                           <div className="flex items-center gap-1.5 mb-1">
                             <Briefcase className="h-3.5 w-3.5 text-muted-foreground" />
-                            <div className="text-xs text-muted-foreground">Standard ({investments.length})</div>
+                            <div className="text-xs text-muted-foreground">
+                              {currentProject?.project_type === 'business' ? 'Securities' : 'Standard'} ({investments.length})
+                            </div>
                           </div>
                           <div className="font-bold text-sm">
                             ${formatCurrency(investments.reduce((sum, a) => sum + Number(a.current_value || 0), 0))}
@@ -969,7 +991,7 @@ function SavingsContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Home className="h-5 w-5" />
-              Properties (Max 2)
+              {currentProject?.project_type === 'business' ? 'Commercial Real Estate' : 'Properties'} (Max 2)
               <TooltipProvider delayDuration={300}>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -983,7 +1005,12 @@ function SavingsContent() {
                 </Tooltip>
               </TooltipProvider>
             </CardTitle>
-            <CardDescription>Track real estate investments</CardDescription>
+            <CardDescription>
+              {currentProject?.project_type === 'business' 
+                ? 'Track commercial real estate holdings'
+                : 'Track real estate investments'
+              }
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {properties.map((property) => {
@@ -1029,12 +1056,21 @@ function SavingsContent() {
             {properties.length < 2 && (
               <Dialog open={isAddPropertyOpen} onOpenChange={setIsAddPropertyOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full">Add Property</Button>
+                  <Button variant="outline" className="w-full">
+                    {currentProject?.project_type === 'business' ? 'Add Commercial Property' : 'Add Property'}
+                  </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Add Property</DialogTitle>
-                    <DialogDescription>Add a property to track its appreciation over time</DialogDescription>
+                    <DialogTitle>
+                      {currentProject?.project_type === 'business' ? 'Add Commercial Property' : 'Add Property'}
+                    </DialogTitle>
+                    <DialogDescription>
+                      {currentProject?.project_type === 'business' 
+                        ? 'Add a commercial property to track its appreciation over time'
+                        : 'Add a property to track its appreciation over time'
+                      }
+                    </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 pt-4">
                     <div>
@@ -1061,7 +1097,9 @@ function SavingsContent() {
                         placeholder="0.00"
                       />
                     </div>
-                    <Button onClick={saveProperty} className="w-full">Add Property</Button>
+                    <Button onClick={saveProperty} className="w-full">
+                      {currentProject?.project_type === 'business' ? 'Add Commercial Property' : 'Add Property'}
+                    </Button>
                   </div>
                 </DialogContent>
               </Dialog>
@@ -1074,7 +1112,7 @@ function SavingsContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Briefcase className="h-5 w-5" />
-              Standard Investments (Max 3)
+              {currentProject?.project_type === 'business' ? 'Business Investments' : 'Standard Investments'} (Max 3)
               <TooltipProvider delayDuration={300}>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -1088,7 +1126,12 @@ function SavingsContent() {
                 </Tooltip>
               </TooltipProvider>
             </CardTitle>
-            <CardDescription>TFSA, RRSP, and Group Retirement Plans</CardDescription>
+            <CardDescription>
+              {currentProject?.project_type === 'business' 
+                ? 'Stocks, bonds, mutual funds, and other market securities'
+                : 'TFSA, RRSP, and Group Retirement Plans'
+              }
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {investments.map((investment) => {
@@ -1138,8 +1181,15 @@ function SavingsContent() {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Add Standard Investment</DialogTitle>
-                    <DialogDescription>Add a TFSA, RRSP, or Group Retirement Plan</DialogDescription>
+                    <DialogTitle>
+                      {currentProject?.project_type === 'business' ? 'Add Business Investment' : 'Add Standard Investment'}
+                    </DialogTitle>
+                    <DialogDescription>
+                      {currentProject?.project_type === 'business' 
+                        ? 'Add stocks, bonds, or other market securities'
+                        : 'Add a TFSA, RRSP, or Group Retirement Plan'
+                      }
+                    </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 pt-4">
                     <div>
@@ -1149,14 +1199,30 @@ function SavingsContent() {
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                         <SelectContent>
-                          {!investments.some(i => i.asset_type === 'tfsa') && (
-                            <SelectItem value="tfsa">TFSA</SelectItem>
-                          )}
-                          {!investments.some(i => i.asset_type === 'rrsp') && (
-                            <SelectItem value="rrsp">RRSP</SelectItem>
-                          )}
-                          {!investments.some(i => i.asset_type === 'group_retirement') && (
-                            <SelectItem value="group_retirement">Group Retirement Plan</SelectItem>
+                          {currentProject?.project_type === 'business' ? (
+                            <>
+                              {!investments.some(i => i.asset_type === 'tfsa') && (
+                                <SelectItem value="tfsa">Stocks & Equities</SelectItem>
+                              )}
+                              {!investments.some(i => i.asset_type === 'rrsp') && (
+                                <SelectItem value="rrsp">Bonds & Fixed Income</SelectItem>
+                              )}
+                              {!investments.some(i => i.asset_type === 'group_retirement') && (
+                                <SelectItem value="group_retirement">Mutual Funds</SelectItem>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {!investments.some(i => i.asset_type === 'tfsa') && (
+                                <SelectItem value="tfsa">TFSA</SelectItem>
+                              )}
+                              {!investments.some(i => i.asset_type === 'rrsp') && (
+                                <SelectItem value="rrsp">RRSP</SelectItem>
+                              )}
+                              {!investments.some(i => i.asset_type === 'group_retirement') && (
+                                <SelectItem value="group_retirement">Group Retirement Plan</SelectItem>
+                              )}
+                            </>
                           )}
                         </SelectContent>
                       </Select>
