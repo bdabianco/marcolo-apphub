@@ -517,7 +517,7 @@ function CashflowContent() {
                   <div className="p-3 bg-primary/10 rounded-2xl">
                     <Wallet className="h-7 w-7 text-primary" />
                   </div>
-                  <CardTitle className="text-2xl">Debt Tracking</CardTitle>
+                  <CardTitle className="text-2xl">Balance Tracking</CardTitle>
                 </div>
                 <CardDescription>Manage your debts and monthly payments</CardDescription>
               </div>
