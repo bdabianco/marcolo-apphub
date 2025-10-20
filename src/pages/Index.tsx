@@ -109,10 +109,15 @@ const Index = () => {
 
         {/* Footer */}
         <div className="mt-24 pt-8 border-t border-border/50">
-          <div className="flex items-center justify-center gap-2 text-muted-foreground">
-            <Shield className="h-5 w-5 text-primary" />
-            <p className="text-sm font-medium">
-              Your Data is Safe - Protected by enterprise-grade encryption
+          <div className="max-w-3xl mx-auto text-center space-y-3">
+            <div className="flex items-center justify-center gap-2 text-foreground">
+              <Shield className="h-6 w-6 text-primary" />
+              <h3 className="text-lg font-semibold">Your Data is Safe</h3>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              All financial data is protected with enterprise-grade encryption and isolated per user with Row-Level Security. 
+              Your information is never shared and only accessible to you. We use industry-standard security practices 
+              to ensure your financial privacy is maintained at all times.
             </p>
           </div>
         </div>
