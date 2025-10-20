@@ -468,6 +468,21 @@ function DashboardContent() {
             </TooltipProvider>
           </CardContent>
         </Card>
+
+        {/* Security Footer */}
+        <div className="mt-16 pt-8 border-t border-border/30">
+          <div className="max-w-3xl mx-auto text-center space-y-3">
+            <div className="flex items-center justify-center gap-2 text-foreground">
+              <Shield className="h-6 w-6 text-primary" />
+              <h3 className="text-lg font-semibold">Your Data is Safe</h3>
+            </div>
+            <p className="text-sm text-foreground/70 leading-relaxed">
+              All financial data is protected with enterprise-grade encryption and isolated per user with Row-Level Security. 
+              Your information is never shared and only accessible to you. We use industry-standard security practices 
+              to ensure your financial privacy is maintained at all times.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
