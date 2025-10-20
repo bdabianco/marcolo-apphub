@@ -50,6 +50,13 @@ interface Expense {
   startDate?: Date;
   duration?: number; // number of months
   expenseType?: 'standard' | 'employee'; // for business expenses
+  weighting?: 'equal' | 'quarterly';
+  quarterlyWeights?: {
+    q1: number;
+    q2: number;
+    q3: number;
+    q4: number;
+  };
 }
 
 function BudgetContent() {
@@ -77,6 +84,8 @@ function BudgetContent() {
   const [newExpenseStartDate, setNewExpenseStartDate] = useState<Date>();
   const [newExpenseDuration, setNewExpenseDuration] = useState('');
   const [newExpenseType, setNewExpenseType] = useState<'standard' | 'employee'>('standard');
+  const [newExpenseWeighting, setNewExpenseWeighting] = useState<'equal' | 'quarterly'>('equal');
+  const [newExpenseQuarterlyWeights, setNewExpenseQuarterlyWeights] = useState({ q1: 25, q2: 25, q3: 25, q4: 25 });
   const [newSubscriptionName, setNewSubscriptionName] = useState('');
   const [newSubscriptionAmount, setNewSubscriptionAmount] = useState('');
   const [newSubscriptionBillingCycle, setNewSubscriptionBillingCycle] = useState<'monthly' | 'quarterly' | 'annual'>('monthly');
@@ -290,6 +299,15 @@ function BudgetContent() {
 
   const addExpense = () => {
     if (newExpenseName && newExpenseAmount) {
+      // Validate quarterly weights if quarterly weighting is selected
+      if (isBusinessProject && newExpenseType === 'standard' && newExpenseWeighting === 'quarterly') {
+        const totalWeight = newExpenseQuarterlyWeights.q1 + newExpenseQuarterlyWeights.q2 + newExpenseQuarterlyWeights.q3 + newExpenseQuarterlyWeights.q4;
+        if (totalWeight !== 100) {
+          toast.error('Quarterly weights must total 100%');
+          return;
+        }
+      }
+
       setExpenses([
         ...expenses,
         {
@@ -299,6 +317,8 @@ function BudgetContent() {
           startDate: newExpenseStartDate,
           duration: newExpenseDuration ? parseFloat(newExpenseDuration) : undefined,
           expenseType: isBusinessProject ? newExpenseType : undefined,
+          weighting: isBusinessProject && newExpenseType === 'standard' ? newExpenseWeighting : undefined,
+          quarterlyWeights: isBusinessProject && newExpenseType === 'standard' && newExpenseWeighting === 'quarterly' ? newExpenseQuarterlyWeights : undefined,
         },
       ]);
       setNewExpenseName('');
@@ -306,6 +326,8 @@ function BudgetContent() {
       setNewExpenseStartDate(undefined);
       setNewExpenseDuration('');
       setNewExpenseType('standard');
+      setNewExpenseWeighting('equal');
+      setNewExpenseQuarterlyWeights({ q1: 25, q2: 25, q3: 25, q4: 25 });
     }
   };
 
@@ -809,62 +831,139 @@ function BudgetContent() {
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-4">
                   {isBusinessProject ? (
-                    <div className="grid grid-cols-1 md:grid-cols-6 gap-2">
-                      <Input
-                        placeholder="Expense name"
-                        value={newExpenseName}
-                        onChange={(e) => setNewExpenseName(e.target.value)}
-                      />
-                      <Input
-                        type="number"
-                        placeholder="Amount"
-                        value={newExpenseAmount}
-                        onChange={(e) => setNewExpenseAmount(e.target.value)}
-                      />
-                      <Select value={newExpenseType} onValueChange={(val: 'standard' | 'employee') => setNewExpenseType(val)}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="standard">Standard</SelectItem>
-                          <SelectItem value="employee">Employee</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "justify-start text-left font-normal",
-                              !newExpenseStartDate && "text-muted-foreground"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {newExpenseStartDate ? format(newExpenseStartDate, "MM/dd/yyyy") : "Start date"}
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-6 gap-2">
+                        <Input
+                          placeholder="Expense name"
+                          value={newExpenseName}
+                          onChange={(e) => setNewExpenseName(e.target.value)}
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Amount"
+                          value={newExpenseAmount}
+                          onChange={(e) => setNewExpenseAmount(e.target.value)}
+                        />
+                        <Select value={newExpenseType} onValueChange={(val: 'standard' | 'employee') => setNewExpenseType(val)}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="standard">Standard</SelectItem>
+                            <SelectItem value="employee">Employee</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "justify-start text-left font-normal",
+                                !newExpenseStartDate && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {newExpenseStartDate ? format(newExpenseStartDate, "MM/dd/yyyy") : "Start date"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={newExpenseStartDate}
+                              onSelect={setNewExpenseStartDate}
+                              initialFocus
+                              className={cn("p-3 pointer-events-auto")}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <Input
+                          type="number"
+                          placeholder="Duration"
+                          value={newExpenseDuration}
+                          onChange={(e) => setNewExpenseDuration(e.target.value)}
+                          min="1"
+                          max="12"
+                        />
+                        {newExpenseType === 'standard' ? (
+                          <Select value={newExpenseWeighting} onValueChange={(val: 'equal' | 'quarterly') => setNewExpenseWeighting(val)}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="equal">Equal</SelectItem>
+                              <SelectItem value="quarterly">Quarterly</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Button onClick={addExpense} className="hover:scale-105 transition-transform">
+                            <Plus className="h-4 w-4" />
                           </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={newExpenseStartDate}
-                            onSelect={setNewExpenseStartDate}
-                            initialFocus
-                            className={cn("p-3 pointer-events-auto")}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <Input
-                        type="number"
-                        placeholder="Duration"
-                        value={newExpenseDuration}
-                        onChange={(e) => setNewExpenseDuration(e.target.value)}
-                        min="1"
-                        max="12"
-                      />
-                      <Button onClick={addExpense} className="hover:scale-105 transition-transform">
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
+                        )}
+                      </div>
+                      {newExpenseType === 'standard' && (
+                        <>
+                          {newExpenseWeighting === 'quarterly' && (
+                            <div className="grid grid-cols-4 gap-2 p-4 bg-muted/50 rounded-lg">
+                              <div>
+                                <Label className="text-xs">Q1 Weight (%)</Label>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  value={newExpenseQuarterlyWeights.q1}
+                                  onChange={(e) => setNewExpenseQuarterlyWeights({ ...newExpenseQuarterlyWeights, q1: parseFloat(e.target.value) || 0 })}
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs">Q2 Weight (%)</Label>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  value={newExpenseQuarterlyWeights.q2}
+                                  onChange={(e) => setNewExpenseQuarterlyWeights({ ...newExpenseQuarterlyWeights, q2: parseFloat(e.target.value) || 0 })}
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs">Q3 Weight (%)</Label>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  value={newExpenseQuarterlyWeights.q3}
+                                  onChange={(e) => setNewExpenseQuarterlyWeights({ ...newExpenseQuarterlyWeights, q3: parseFloat(e.target.value) || 0 })}
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs">Q4 Weight (%)</Label>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  value={newExpenseQuarterlyWeights.q4}
+                                  onChange={(e) => setNewExpenseQuarterlyWeights({ ...newExpenseQuarterlyWeights, q4: parseFloat(e.target.value) || 0 })}
+                                />
+                              </div>
+                              <div className="col-span-4 text-sm">
+                                <span className={cn(
+                                  "font-medium",
+                                  (newExpenseQuarterlyWeights.q1 + newExpenseQuarterlyWeights.q2 + newExpenseQuarterlyWeights.q3 + newExpenseQuarterlyWeights.q4) === 100 
+                                    ? "text-green-600 dark:text-green-400" 
+                                    : "text-destructive"
+                                )}>
+                                  Total: {newExpenseQuarterlyWeights.q1 + newExpenseQuarterlyWeights.q2 + newExpenseQuarterlyWeights.q3 + newExpenseQuarterlyWeights.q4}% 
+                                  {(newExpenseQuarterlyWeights.q1 + newExpenseQuarterlyWeights.q2 + newExpenseQuarterlyWeights.q3 + newExpenseQuarterlyWeights.q4) === 100 ? ' ✓' : ' (must equal 100%)'}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                          <Button onClick={addExpense} className="hover:scale-105 transition-transform w-full">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Expense
+                          </Button>
+                        </>
+                      )}
+                    </>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
                       <Input
@@ -1013,6 +1112,7 @@ function BudgetContent() {
                               {isBusinessProject && expense.expenseType === 'standard' && 'Standard • '}
                               {expense.startDate && format(expense.startDate, "MM/dd/yyyy")}
                               {expense.duration && ` • ${expense.duration} months`}
+                              {expense.weighting && ` • ${expense.weighting === 'equal' ? 'Equally weighted' : 'Quarterly weighted'}`}
                               {employerRemittances > 0 && ` • +$${formatCurrency(employerRemittances)} payroll`}
                             </span>
                           </div>
