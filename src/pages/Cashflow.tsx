@@ -7,12 +7,19 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Plus, Trash2, Home, DollarSign, TrendingUp, Wallet, ChevronRight, Sparkles, Calculator, PiggyBank, Info } from 'lucide-react';
+import { Plus, Trash2, Home, DollarSign, TrendingUp, Wallet, ChevronRight, Sparkles, Calculator, PiggyBank, Info, Coins, Building2, Landmark } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AppHeader } from '@/components/AppHeader';
 import { formatCurrency } from '@/lib/utils';
 import { useProject } from '@/contexts/ProjectContext';
+
+interface Asset {
+  id: string;
+  name: string;
+  type: 'cash' | 'receivables' | 'inventory' | 'equipment' | 'other';
+  value: number;
+}
 
 interface Debt {
   id: string;
@@ -67,6 +74,13 @@ function CashflowContent() {
   const [newDebtPayment, setNewDebtPayment] = useState('');
   const [newDebtInterest, setNewDebtInterest] = useState('');
   const [newDebtTaxDeductible, setNewDebtTaxDeductible] = useState(false);
+  
+  // Assets states
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [newAssetName, setNewAssetName] = useState('');
+  const [newAssetType, setNewAssetType] = useState<'cash' | 'receivables' | 'inventory' | 'equipment' | 'other'>('cash');
+  const [newAssetValue, setNewAssetValue] = useState('');
+  
   const [monthlyExpenses, setMonthlyExpenses] = useState(0);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
@@ -233,6 +247,14 @@ function CashflowContent() {
         } else {
           console.log('No debt consolidation data found in database');
         }
+      }
+      
+      // Load assets
+      if (data && data.assets) {
+        const parsedAssets = typeof data.assets === 'string'
+          ? JSON.parse(data.assets)
+          : data.assets;
+        setAssets(parsedAssets || []);
       }
     } catch (error: any) {
       console.error('Error loading cashflow data:', error);
