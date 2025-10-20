@@ -469,11 +469,22 @@ function SavingsContent() {
         <div className="mb-8">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-accent/10 rounded-2xl">
-              <PiggyBank className="h-9 w-9 text-accent" />
+              {currentProject?.project_type === 'business' ? (
+                <Briefcase className="h-9 w-9 text-accent" />
+              ) : (
+                <PiggyBank className="h-9 w-9 text-accent" />
+              )}
             </div>
             <div>
-              <h2 className="text-4xl font-bold bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">Savings Goals</h2>
-              <p className="text-muted-foreground mt-1 text-lg">Set and track your savings targets</p>
+              <h2 className="text-4xl font-bold bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">
+                {currentProject?.project_type === 'business' ? 'Capital Planning' : 'Savings Goals'}
+              </h2>
+              <p className="text-muted-foreground mt-1 text-lg">
+                {currentProject?.project_type === 'business' 
+                  ? 'Strategically allocate capital for business growth and stability'
+                  : 'Set and track your savings targets'
+                }
+              </p>
             </div>
           </div>
         </div>
@@ -481,11 +492,18 @@ function SavingsContent() {
         {/* Available Surplus Card */}
         <Card className="mb-6 border-2 border-accent/20 rounded-[2rem] [box-shadow:var(--shadow-leaf)]">
           <CardHeader className="bg-gradient-to-br from-accent/10 via-accent/5 to-transparent rounded-t-[2rem]">
-            <CardTitle>Available Surplus</CardTitle>
+            <CardTitle>
+              {currentProject?.project_type === 'business' ? 'Available Capital' : 'Available Surplus'}
+            </CardTitle>
             <CardDescription>
               {availableSurplus > 0 
-                ? 'Monthly surplus available for savings after income, expenses, and debt payments'
-                : 'No surplus available. Create a budget and manage cashflow to generate surplus for savings.'}
+                ? (currentProject?.project_type === 'business' 
+                    ? 'Monthly capital available for strategic allocation after operating expenses and debt obligations'
+                    : 'Monthly surplus available for savings after income, expenses, and debt payments')
+                : (currentProject?.project_type === 'business'
+                    ? 'No capital available. Optimize revenue and manage expenses to generate surplus for strategic allocation.'
+                    : 'No surplus available. Create a budget and manage cashflow to generate surplus for savings.')
+              }
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
@@ -503,8 +521,15 @@ function SavingsContent() {
               <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent cursor-pointer hover:bg-primary/10 transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="text-left">
-                    <CardTitle>Create Savings Goal</CardTitle>
-                    <CardDescription>Set a target and track your progress</CardDescription>
+                    <CardTitle>
+                      {currentProject?.project_type === 'business' ? 'Create Capital Allocation' : 'Create Savings Goal'}
+                    </CardTitle>
+                    <CardDescription>
+                      {currentProject?.project_type === 'business' 
+                        ? 'Allocate capital for strategic business initiatives'
+                        : 'Set a target and track your progress'
+                      }
+                    </CardDescription>
                   </div>
                   <ChevronDown className={`h-5 w-5 transition-transform ${isCreateGoalOpen ? 'rotate-180' : ''}`} />
                 </div>
@@ -513,12 +538,18 @@ function SavingsContent() {
             <CollapsibleContent>
               <CardContent className="space-y-4 pt-6">
                 <div>
-                  <Label htmlFor="goalName">Goal Name</Label>
+                  <Label htmlFor="goalName">
+                    {currentProject?.project_type === 'business' ? 'Capital Fund Name' : 'Goal Name'}
+                  </Label>
                   <Input
                     id="goalName"
                     value={goalName}
                     onChange={(e) => setGoalName(e.target.value)}
-                    placeholder="e.g., Emergency Fund, Vacation, New Car"
+                    placeholder={
+                      currentProject?.project_type === 'business'
+                        ? 'e.g., Cash Reserves, Tax Fund, Equipment Purchase, Expansion Fund'
+                        : 'e.g., Emergency Fund, Vacation, New Car'
+                    }
                   />
                 </div>
 
@@ -660,7 +691,7 @@ function SavingsContent() {
           size="lg"
           disabled={availableSurplus <= 0}
         >
-          Create Savings Goal
+          {currentProject?.project_type === 'business' ? 'Create Capital Allocation' : 'Create Savings Goal'}
         </Button>
 
         {/* Existing Savings Goals */}
@@ -679,8 +710,15 @@ function SavingsContent() {
                   <CardHeader className="bg-gradient-to-r from-accent/5 via-accent/3 to-transparent cursor-pointer hover:bg-accent/10 transition-colors">
                     <div className="flex items-center justify-between">
                       <div className="text-left flex-1">
-                        <CardTitle>Your Savings Goals</CardTitle>
-                        <CardDescription>Track and manage your savings progress</CardDescription>
+                        <CardTitle>
+                          {currentProject?.project_type === 'business' ? 'Your Capital Allocations' : 'Your Savings Goals'}
+                        </CardTitle>
+                        <CardDescription>
+                          {currentProject?.project_type === 'business' 
+                            ? 'Track and manage your strategic capital planning'
+                            : 'Track and manage your savings progress'
+                          }
+                        </CardDescription>
                         
                         {/* Summary when collapsed */}
                         {!isGoalsOpen && (
