@@ -70,6 +70,8 @@ function BudgetContent() {
   const [newQuarterlyWeights, setNewQuarterlyWeights] = useState({ q1: 25, q2: 25, q3: 25, q4: 25 });
   const [editingIncome, setEditingIncome] = useState<Income | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [editExpenseDialogOpen, setEditExpenseDialogOpen] = useState(false);
   const [newExpenseName, setNewExpenseName] = useState('');
   const [newExpenseAmount, setNewExpenseAmount] = useState('');
   const [newExpenseStartDate, setNewExpenseStartDate] = useState<Date>();
@@ -309,6 +311,20 @@ function BudgetContent() {
 
   const removeExpense = (id: string) => {
     setExpenses(expenses.filter((exp) => exp.id !== id));
+  };
+
+  const updateExpense = () => {
+    if (!editingExpense) return;
+
+    setExpenses(expenses.map(exp => exp.id === editingExpense.id ? editingExpense : exp));
+    setEditExpenseDialogOpen(false);
+    setEditingExpense(null);
+    toast.success('Expense updated successfully');
+  };
+
+  const startEditExpense = (expense: Expense) => {
+    setEditingExpense({ ...expense });
+    setEditExpenseDialogOpen(true);
   };
 
   const addSubscription = () => {
@@ -1005,6 +1021,13 @@ function BudgetContent() {
                             <Button
                               variant="ghost"
                               size="icon"
+                              onClick={() => startEditExpense(expense)}
+                            >
+                              <Pencil className="h-4 w-4 text-primary" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               onClick={() => removeExpense(expense.id)}
                             >
                               <Trash2 className="h-4 w-4 text-destructive" />
@@ -1318,6 +1341,96 @@ function BudgetContent() {
                     Update Income
                   </Button>
                   <Button onClick={() => setEditDialogOpen(false)} variant="outline" className="flex-1">
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Expense Dialog */}
+        <Dialog open={editExpenseDialogOpen} onOpenChange={setEditExpenseDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Expense</DialogTitle>
+              <DialogDescription>Update the expense details below</DialogDescription>
+            </DialogHeader>
+            {editingExpense && (
+              <div className="space-y-4">
+                <div>
+                  <Label>Name</Label>
+                  <Input
+                    value={editingExpense.name}
+                    onChange={(e) => setEditingExpense({ ...editingExpense, name: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label>Amount</Label>
+                  <Input
+                    type="number"
+                    value={editingExpense.amount}
+                    onChange={(e) => setEditingExpense({ ...editingExpense, amount: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+                {isBusinessProject && (
+                  <div>
+                    <Label>Type</Label>
+                    <Select 
+                      value={editingExpense.expenseType || 'standard'} 
+                      onValueChange={(val: 'standard' | 'employee') => setEditingExpense({ ...editingExpense, expenseType: val })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="standard">Standard</SelectItem>
+                        <SelectItem value="employee">Employee</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+                <div>
+                  <Label>Start Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !editingExpense.startDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {editingExpense.startDate ? format(new Date(editingExpense.startDate), "MM/dd/yyyy") : "Select date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={editingExpense.startDate ? new Date(editingExpense.startDate) : undefined}
+                        onSelect={(date) => setEditingExpense({ ...editingExpense, startDate: date })}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div>
+                  <Label>Duration (months)</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="12"
+                    value={editingExpense.duration || ''}
+                    onChange={(e) => setEditingExpense({ ...editingExpense, duration: parseFloat(e.target.value) || undefined })}
+                  />
+                </div>
+                <div className="flex gap-2 pt-4">
+                  <Button onClick={updateExpense} className="flex-1">
+                    Update Expense
+                  </Button>
+                  <Button onClick={() => setEditExpenseDialogOpen(false)} variant="outline" className="flex-1">
                     Cancel
                   </Button>
                 </div>
