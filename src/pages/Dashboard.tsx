@@ -233,42 +233,54 @@ function DashboardContent() {
           <Card className="relative overflow-hidden group hover:[box-shadow:var(--shadow-leaf)] transition-all duration-500 rounded-[2rem] border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[image:var(--gradient-leaf)] opacity-10 rounded-bl-full" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-semibold text-foreground/80">Net Income</CardTitle>
+              <CardTitle className="text-sm font-semibold text-foreground/80">
+                {currentProject?.project_type === 'business' ? 'Net Revenue' : 'Net Income'}
+              </CardTitle>
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                 <DollarSign className="h-6 w-6 text-primary" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-primary">${formatCurrency(stats.totalIncome)}</div>
-              <p className="text-sm text-muted-foreground mt-1">Growing monthly</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {currentProject?.project_type === 'business' ? 'Monthly revenue' : 'Growing monthly'}
+              </p>
             </CardContent>
           </Card>
 
           <Card className="relative overflow-hidden group hover:[box-shadow:var(--shadow-leaf)] transition-all duration-500 rounded-[2rem] border-2 border-secondary/20 bg-gradient-to-br from-card to-secondary/5">
             <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/10 opacity-20 rounded-bl-full" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-semibold text-foreground/80">Expenses</CardTitle>
+              <CardTitle className="text-sm font-semibold text-foreground/80">
+                {currentProject?.project_type === 'business' ? 'Operating Expenses' : 'Expenses'}
+              </CardTitle>
               <div className="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                 <TrendingUp className="h-6 w-6 text-secondary" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-secondary">${formatCurrency(stats.totalExpenses)}</div>
-              <p className="text-sm text-muted-foreground mt-1">Tracked flow</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {currentProject?.project_type === 'business' ? 'Monthly costs' : 'Tracked flow'}
+              </p>
             </CardContent>
           </Card>
 
           <Card className="relative overflow-hidden group hover:[box-shadow:var(--shadow-leaf)] transition-all duration-500 rounded-[2rem] border-2 border-accent/20 bg-gradient-to-br from-card to-accent/5">
             <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 opacity-20 rounded-bl-full" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-semibold text-foreground/80">Savings Goals</CardTitle>
+              <CardTitle className="text-sm font-semibold text-foreground/80">
+                {currentProject?.project_type === 'business' ? 'Reserve Targets' : 'Savings Goals'}
+              </CardTitle>
               <div className="h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                 <PiggyBank className="h-6 w-6 text-accent" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-accent">{stats.savingsGoals}</div>
-              <p className="text-sm text-muted-foreground mt-1">Nurturing goals</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {currentProject?.project_type === 'business' ? 'Active targets' : 'Nurturing goals'}
+              </p>
             </CardContent>
           </Card>
         </div>
