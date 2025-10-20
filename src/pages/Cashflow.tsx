@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Plus, Trash2, Home, DollarSign, TrendingUp, Wallet, ChevronRight, Sparkles, Calculator, PiggyBank } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Plus, Trash2, Home, DollarSign, TrendingUp, Wallet, ChevronRight, Sparkles, Calculator, PiggyBank, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AppHeader } from '@/components/AppHeader';
@@ -698,84 +699,145 @@ function CashflowContent() {
               </div>
             )}
 
-            {/* Business Debt Summary Cards */}
+            {/* Business Debt Summary Cards - Expandable */}
             {currentProject?.project_type === 'business' && (primaryMortgageBalanceNum > 0 || secondaryMortgageBalanceNum > 0 || debts.length > 0) && (
-              <div className="mt-6 space-y-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Calculator className="h-5 w-5 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-semibold">Debt Metrics Dashboard</h3>
-                </div>
-                
-                {/* Primary Metrics Row */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Total Debt Balance Card */}
-                  <div className="relative overflow-hidden bg-gradient-to-br from-red-50 via-red-100 to-orange-50 dark:from-red-950/40 dark:to-orange-950/30 p-5 rounded-2xl border-2 border-red-200 dark:border-red-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-300/20 dark:bg-red-700/20 rounded-full -mr-16 -mt-16"></div>
-                    <div className="relative">
-                      <div className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">Total Debt Balance</div>
-                      <div className="text-3xl font-bold text-red-900 dark:text-red-100">${formatCurrency(totalDebt + primaryMortgageBalanceNum + secondaryMortgageBalanceNum)}</div>
-                      <div className="text-xs text-red-600 dark:text-red-400 mt-2">Outstanding principal</div>
+              <Accordion type="multiple" className="w-full mt-6">
+                <AccordionItem value="debt-metrics" className="border rounded-lg px-4">
+                  <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-primary/10 rounded-lg">
+                        <Calculator className="h-5 w-5 text-primary" />
+                      </div>
+                      <span>Debt Metrics Dashboard</span>
                     </div>
-                  </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-4">
+                    {/* Primary Metrics Row */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Total Debt Balance Card */}
+                      <div className="relative overflow-hidden bg-gradient-to-br from-red-50 via-red-100 to-orange-50 dark:from-red-950/40 dark:to-orange-950/30 p-5 rounded-2xl border-2 border-red-200 dark:border-red-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 animate-fade-in">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-red-300/20 dark:bg-red-700/20 rounded-full -mr-16 -mt-16"></div>
+                        <div className="relative">
+                          <div className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">Total Debt Balance</div>
+                          <div className="text-3xl font-bold text-red-900 dark:text-red-100">${formatCurrency(totalDebt + primaryMortgageBalanceNum + secondaryMortgageBalanceNum)}</div>
+                          <div className="text-xs text-red-600 dark:text-red-400 mt-2">Outstanding principal</div>
+                        </div>
+                      </div>
 
-                  {/* Monthly Principal Payment Card */}
-                  <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/30 p-5 rounded-2xl border-2 border-blue-200 dark:border-blue-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-300/20 dark:bg-blue-700/20 rounded-full -mr-16 -mt-16"></div>
-                    <div className="relative">
-                      <div className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Monthly Principal</div>
-                      <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">${formatCurrency(totalMonthlyPayment - totalMonthlyInterest)}</div>
-                      <div className="text-xs text-blue-600 dark:text-blue-400 mt-2">Debt reduction per month</div>
+                      {/* Monthly Principal Payment Card */}
+                      <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/30 p-5 rounded-2xl border-2 border-blue-200 dark:border-blue-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-300/20 dark:bg-blue-700/20 rounded-full -mr-16 -mt-16"></div>
+                        <div className="relative">
+                          <div className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Monthly Principal</div>
+                          <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">${formatCurrency(totalMonthlyPayment - totalMonthlyInterest)}</div>
+                          <div className="text-xs text-blue-600 dark:text-blue-400 mt-2">Debt reduction per month</div>
+                        </div>
+                      </div>
+
+                      {/* Monthly Interest Payment Card */}
+                      <div className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-purple-100 to-pink-50 dark:from-purple-950/40 dark:to-pink-950/30 p-5 rounded-2xl border-2 border-purple-200 dark:border-purple-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-purple-300/20 dark:bg-purple-700/20 rounded-full -mr-16 -mt-16"></div>
+                        <div className="relative">
+                          <div className="text-sm font-medium text-purple-800 dark:text-purple-300 mb-1">Monthly Interest</div>
+                          <div className="text-3xl font-bold text-purple-900 dark:text-purple-100">${formatCurrency(totalMonthlyInterest)}</div>
+                          <div className="text-xs text-purple-600 dark:text-purple-400 mt-2">Cost of borrowing per month</div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Monthly Interest Payment Card */}
-                  <div className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-purple-100 to-pink-50 dark:from-purple-950/40 dark:to-pink-950/30 p-5 rounded-2xl border-2 border-purple-200 dark:border-purple-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-300/20 dark:bg-purple-700/20 rounded-full -mr-16 -mt-16"></div>
-                    <div className="relative">
-                      <div className="text-sm font-medium text-purple-800 dark:text-purple-300 mb-1">Monthly Interest</div>
-                      <div className="text-3xl font-bold text-purple-900 dark:text-purple-100">${formatCurrency(totalMonthlyInterest)}</div>
-                      <div className="text-xs text-purple-600 dark:text-purple-400 mt-2">Cost of borrowing per month</div>
+                    {/* Secondary Metrics Row */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      {/* Average Interest Rate Card */}
+                      <TooltipProvider delayDuration={300}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/20 p-4 rounded-xl border border-amber-200 dark:border-amber-800 shadow-md hover:shadow-lg transition-all duration-300 cursor-help animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                              <div className="flex items-center gap-1 text-xs font-medium text-amber-800 dark:text-amber-300 mb-1">
+                                <span>Avg Interest Rate</span>
+                                <Info className="h-3 w-3" />
+                              </div>
+                              <div className="text-2xl font-bold text-amber-900 dark:text-amber-100">
+                                {(totalDebt + primaryMortgageBalanceNum + secondaryMortgageBalanceNum) > 0 
+                                  ? ((totalAnnualInterest / (totalDebt + primaryMortgageBalanceNum + secondaryMortgageBalanceNum)) * 100).toFixed(2)
+                                  : '0.00'}%
+                              </div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs bg-popover border z-50">
+                            <p className="text-sm font-semibold mb-1">Average Interest Rate</p>
+                            <p className="text-xs">Formula: (Total Annual Interest / Total Debt) × 100</p>
+                            <p className="text-xs mt-1 text-muted-foreground">Weighted average of all debt interest rates based on outstanding balances.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      {/* Tax Deductible Interest Card */}
+                      <TooltipProvider delayDuration={300}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/20 p-4 rounded-xl border border-green-200 dark:border-green-800 shadow-md hover:shadow-lg transition-all duration-300 cursor-help animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                              <div className="flex items-center gap-1 text-xs font-medium text-green-800 dark:text-green-300 mb-1">
+                                <span>Tax Ded. Interest/yr</span>
+                                <Info className="h-3 w-3" />
+                              </div>
+                              <div className="text-2xl font-bold text-green-900 dark:text-green-100">${formatCurrency(taxDeductibleAnnualInterest)}</div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs bg-popover border z-50">
+                            <p className="text-sm font-semibold mb-1">Tax Deductible Interest</p>
+                            <p className="text-xs">Annual interest on debts marked as tax deductible.</p>
+                            <p className="text-xs mt-1 text-muted-foreground">This amount can potentially reduce your taxable business income. Consult your accountant for specifics.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      {/* Debt Service Ratio Card */}
+                      <TooltipProvider delayDuration={300}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/30 dark:to-teal-950/20 p-4 rounded-xl border border-cyan-200 dark:border-cyan-800 shadow-md hover:shadow-lg transition-all duration-300 cursor-help animate-fade-in" style={{ animationDelay: '0.5s' }}>
+                              <div className="flex items-center gap-1 text-xs font-medium text-cyan-800 dark:text-cyan-300 mb-1">
+                                <span>Debt Service Ratio</span>
+                                <Info className="h-3 w-3" />
+                              </div>
+                              <div className="text-2xl font-bold text-cyan-900 dark:text-cyan-100">
+                                {monthlyNetIncome > 0 
+                                  ? ((totalMonthlyPayment / monthlyNetIncome) * 100).toFixed(1)
+                                  : '0.0'}%
+                              </div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs bg-popover border z-50">
+                            <p className="text-sm font-semibold mb-1">Debt Service Coverage Ratio</p>
+                            <p className="text-xs">Formula: (Total Monthly Debt Payment / Monthly Net Income) × 100</p>
+                            <p className="text-xs mt-1 text-muted-foreground">Percentage of income going toward debt. Lower is better. Ideally under 36% for healthy finances.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      {/* Annual Interest Cost Card */}
+                      <TooltipProvider delayDuration={300}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-950/30 dark:to-pink-950/20 p-4 rounded-xl border border-rose-200 dark:border-rose-800 shadow-md hover:shadow-lg transition-all duration-300 cursor-help animate-fade-in" style={{ animationDelay: '0.6s' }}>
+                              <div className="flex items-center gap-1 text-xs font-medium text-rose-800 dark:text-rose-300 mb-1">
+                                <span>Annual Interest Cost</span>
+                                <Info className="h-3 w-3" />
+                              </div>
+                              <div className="text-2xl font-bold text-rose-900 dark:text-rose-100">${formatCurrency(totalAnnualInterest)}</div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs bg-popover border z-50">
+                            <p className="text-sm font-semibold mb-1">Annual Interest Cost</p>
+                            <p className="text-xs">Total interest you'll pay over 12 months at current rates.</p>
+                            <p className="text-xs mt-1 text-muted-foreground">This is "dead money" that doesn't reduce your principal balance.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
-                  </div>
-                </div>
-
-                {/* Secondary Metrics Row */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {/* Average Interest Rate Card */}
-                  <div className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/20 p-4 rounded-xl border border-amber-200 dark:border-amber-800 shadow-md hover:shadow-lg transition-all duration-300">
-                    <div className="text-xs font-medium text-amber-800 dark:text-amber-300 mb-1">Avg Interest Rate</div>
-                    <div className="text-2xl font-bold text-amber-900 dark:text-amber-100">
-                      {(totalDebt + primaryMortgageBalanceNum + secondaryMortgageBalanceNum) > 0 
-                        ? ((totalAnnualInterest / (totalDebt + primaryMortgageBalanceNum + secondaryMortgageBalanceNum)) * 100).toFixed(2)
-                        : '0.00'}%
-                    </div>
-                  </div>
-
-                  {/* Tax Deductible Interest Card */}
-                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/20 p-4 rounded-xl border border-green-200 dark:border-green-800 shadow-md hover:shadow-lg transition-all duration-300">
-                    <div className="text-xs font-medium text-green-800 dark:text-green-300 mb-1">Tax Ded. Interest/yr</div>
-                    <div className="text-2xl font-bold text-green-900 dark:text-green-100">${formatCurrency(taxDeductibleAnnualInterest)}</div>
-                  </div>
-
-                  {/* Debt Service Ratio Card */}
-                  <div className="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-950/30 dark:to-teal-950/20 p-4 rounded-xl border border-cyan-200 dark:border-cyan-800 shadow-md hover:shadow-lg transition-all duration-300">
-                    <div className="text-xs font-medium text-cyan-800 dark:text-cyan-300 mb-1">Debt Service Ratio</div>
-                    <div className="text-2xl font-bold text-cyan-900 dark:text-cyan-100">
-                      {monthlyNetIncome > 0 
-                        ? ((totalMonthlyPayment / monthlyNetIncome) * 100).toFixed(1)
-                        : '0.0'}%
-                    </div>
-                  </div>
-
-                  {/* Annual Interest Cost Card */}
-                  <div className="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-950/30 dark:to-pink-950/20 p-4 rounded-xl border border-rose-200 dark:border-rose-800 shadow-md hover:shadow-lg transition-all duration-300">
-                    <div className="text-xs font-medium text-rose-800 dark:text-rose-300 mb-1">Annual Interest Cost</div>
-                    <div className="text-2xl font-bold text-rose-900 dark:text-rose-100">${formatCurrency(totalAnnualInterest)}</div>
-                  </div>
-                </div>
-              </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             )}
           </CardContent>
         </Card>
