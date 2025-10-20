@@ -761,7 +761,7 @@ function CashflowContent() {
                 <AccordionItem value="total">
                     <AccordionTrigger className="text-lg font-semibold hover:no-underline bg-primary/5 px-4 py-3 rounded-lg">
                       {currentProject?.project_type === 'business' ? (
-                        <div className="grid grid-cols-8 gap-3 w-full pr-4 text-sm">
+                        <div className="grid grid-cols-9 gap-3 w-full pr-4 text-sm">
                           <div className="font-bold text-primary">Annual Totals</div>
                           <div className="text-right">
                             <div className="text-xs text-muted-foreground mb-1">Net Income</div>
@@ -788,9 +788,15 @@ function CashflowContent() {
                             <div className="font-bold">${formatCurrency((totalMonthlyPayment - totalMonthlyInterest) * 12)}</div>
                           </div>
                           <div className="text-right">
-                            <div className="text-xs text-muted-foreground mb-1">Surplus</div>
+                            <div className="text-xs text-muted-foreground mb-1">Earnings</div>
                             <div className={`font-bold ${(monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 >= 0 ? 'text-primary' : 'text-destructive'}`}>
                               ${formatCurrency((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12)}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-muted-foreground mb-1">Earnings %</div>
+                            <div className={`font-bold ${(monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) * 12 >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                              {monthlyNetIncome > 0 ? (((monthlyNetIncome - monthlyExpenses - totalMonthlyPayment) / monthlyNetIncome) * 100).toFixed(1) : '0.0'}%
                             </div>
                           </div>
                         </div>
@@ -838,7 +844,7 @@ function CashflowContent() {
                       <div className="space-y-2 bg-muted/30 p-4 rounded-lg">
                         {/* Header Row */}
                         {currentProject?.project_type === 'business' ? (
-                          <div className="grid grid-cols-8 gap-3 text-sm font-semibold border-b-2 border-primary/20 pb-3 mb-2">
+                          <div className="grid grid-cols-9 gap-3 text-sm font-semibold border-b-2 border-primary/20 pb-3 mb-2">
                             <div className="text-primary">Month</div>
                             <div className="text-right">Net Income</div>
                             <div className="text-right">Expenses</div>
@@ -846,7 +852,8 @@ function CashflowContent() {
                             <div className="text-right">Interest</div>
                             <div className="text-right">Tax Ded. Int</div>
                             <div className="text-right">Debt Pmt</div>
-                            <div className="text-right">Surplus</div>
+                            <div className="text-right">Earnings</div>
+                            <div className="text-right">Earnings %</div>
                           </div>
                         ) : (
                           <div className="grid grid-cols-8 gap-3 text-sm font-semibold border-b-2 border-primary/20 pb-3 mb-2">
@@ -868,10 +875,11 @@ function CashflowContent() {
                           const monthlyInterest = totalMonthlyInterest;
                           const ebitda = monthlyNetIncome - expenses;
                           const surplus = monthlyNetIncome - expenses - totalMonthlyPayment;
+                          const earningsPercent = monthlyNetIncome > 0 ? ((surplus / monthlyNetIncome) * 100).toFixed(1) : '0.0';
                           const adjustedSurplus = surplus + monthlyAdjustment;
                           
                           return currentProject?.project_type === 'business' ? (
-                            <div key={month} className="grid grid-cols-8 gap-3 text-sm py-3 hover:bg-primary/5 rounded-lg px-3 transition-colors border-b border-muted">
+                            <div key={month} className="grid grid-cols-9 gap-3 text-sm py-3 hover:bg-primary/5 rounded-lg px-3 transition-colors border-b border-muted">
                               <div className="font-medium">{month}</div>
                               <div className="text-right">${formatCurrency(monthlyNetIncome)}</div>
                               <div className="text-right text-destructive">${formatCurrency(expenses)}</div>
@@ -881,6 +889,9 @@ function CashflowContent() {
                               <div className="text-right">${formatCurrency(monthlyDebtPrincipal)}</div>
                               <div className={`text-right font-semibold ${surplus >= 0 ? 'text-primary' : 'text-destructive'}`}>
                                 ${formatCurrency(surplus)}
+                              </div>
+                              <div className={`text-right font-semibold ${surplus >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                                {earningsPercent}%
                               </div>
                             </div>
                           ) : (
