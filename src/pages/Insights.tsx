@@ -325,7 +325,9 @@ function InsightsContent() {
                 <Lightbulb className="h-9 w-9 text-secondary" />
               </div>
               <div>
-                <h2 className="text-4xl font-bold bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">Financial Insights</h2>
+                <h2 className="text-4xl font-bold bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">
+                  {currentProject?.project_type === 'business' ? 'Business Performance' : 'Financial Insights'}
+                </h2>
                 <p className="text-muted-foreground mt-1 text-lg">
                   {currentProject ? `Analysis for ${currentProject.project_name}` : 'Comprehensive analysis across all your budget plans'}
                 </p>
@@ -339,21 +341,25 @@ function InsightsContent() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
           <Card className="border-2">
             <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
-              <CardTitle className="text-sm font-medium">Annual Net Income</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {currentProject?.project_type === 'business' ? 'Annual Revenue' : 'Annual Net Income'}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary">
                 ${formatCurrency(metrics.totalAnnualIncome)}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                After-tax income
+                {currentProject?.project_type === 'business' ? 'Gross annual revenue' : 'After-tax income'}
               </p>
             </CardContent>
           </Card>
 
           <Card className="border-2 border-secondary/20 rounded-[2rem] hover:[box-shadow:var(--shadow-leaf)] transition-all duration-500">
             <CardHeader className="pb-3 bg-gradient-to-br from-secondary/10 to-transparent rounded-t-[2rem]">
-              <CardTitle className="text-sm font-semibold">Annual Expenses</CardTitle>
+              <CardTitle className="text-sm font-semibold">
+                {currentProject?.project_type === 'business' ? 'Operating Expenses' : 'Annual Expenses'}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -364,7 +370,9 @@ function InsightsContent() {
 
           <Card className="border-2 border-accent/20 rounded-[2rem] hover:[box-shadow:var(--shadow-leaf)] transition-all duration-500">
             <CardHeader className="pb-3 bg-gradient-to-br from-accent/10 to-transparent rounded-t-[2rem]">
-              <CardTitle className="text-sm font-semibold">Annual Surplus</CardTitle>
+              <CardTitle className="text-sm font-semibold">
+                {currentProject?.project_type === 'business' ? 'Net Profit' : 'Annual Surplus'}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className={`text-2xl font-bold ${metrics.annualSurplus >= 0 ? 'text-primary' : 'text-destructive'}`}>
@@ -375,12 +383,17 @@ function InsightsContent() {
 
           <Card className="border-2 border-primary/20 rounded-[2rem] hover:[box-shadow:var(--shadow-leaf)] transition-all duration-500">
             <CardHeader className="pb-3 bg-gradient-to-br from-primary/10 to-transparent rounded-t-[2rem]">
-              <CardTitle className="text-sm font-semibold">Savings Rate</CardTitle>
+              <CardTitle className="text-sm font-semibold">
+                {currentProject?.project_type === 'business' ? 'Profit Margin' : 'Savings Rate'}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary">
                 {metrics.savingsRate.toFixed(1)}%
               </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {currentProject?.project_type === 'business' ? 'Net profit / revenue' : 'Surplus / income'}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -388,32 +401,39 @@ function InsightsContent() {
         {/* Financial Ratios */}
         <Card className="mb-6 border-2 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
-            <CardTitle>Financial Ratios</CardTitle>
-            <CardDescription>Key indicators of your financial health</CardDescription>
+            <CardTitle>
+              {currentProject?.project_type === 'business' ? 'Business Performance Ratios' : 'Financial Ratios'}
+            </CardTitle>
+            <CardDescription>
+              {currentProject?.project_type === 'business' 
+                ? 'Key indicators of business health and efficiency'
+                : 'Key indicators of your financial health'
+              }
+            </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <ResponsiveContainer width="100%" height={140}>
-              <BarChart
+               <BarChart
                 data={[
                   {
-                    name: 'Debt-to-Income',
+                    name: currentProject?.project_type === 'business' ? 'Debt Service Coverage' : 'Debt-to-Income',
                     value: Number(metrics.debtToIncomeRatio.toFixed(1)),
-                    target: 28,
+                    target: currentProject?.project_type === 'business' ? 1.25 : 28,
                     max: 100,
                     unit: '%',
-                    excellent: 28,
-                    good: 36,
-                    fair: 43,
+                    excellent: currentProject?.project_type === 'business' ? 1.5 : 28,
+                    good: currentProject?.project_type === 'business' ? 1.25 : 36,
+                    fair: currentProject?.project_type === 'business' ? 1.0 : 43,
                   },
                   {
-                    name: 'Savings Rate',
+                    name: currentProject?.project_type === 'business' ? 'Profit Margin' : 'Savings Rate',
                     value: Number(metrics.savingsRate.toFixed(1)),
-                    target: 20,
+                    target: currentProject?.project_type === 'business' ? 15 : 20,
                     max: 100,
                     unit: '%',
-                    excellent: 20,
-                    good: 15,
-                    fair: 10,
+                    excellent: currentProject?.project_type === 'business' ? 15 : 20,
+                    good: currentProject?.project_type === 'business' ? 10 : 15,
+                    fair: currentProject?.project_type === 'business' ? 5 : 10,
                   },
                 ]}
                 layout="vertical"
@@ -614,8 +634,15 @@ function InsightsContent() {
         {/* Additional Financial Ratios */}
         <Card className="mb-6 border-2 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/3 to-transparent">
-            <CardTitle>Additional Financial Metrics</CardTitle>
-            <CardDescription>More indicators of your financial health</CardDescription>
+            <CardTitle>
+              {currentProject?.project_type === 'business' ? 'Additional Business Metrics' : 'Additional Financial Metrics'}
+            </CardTitle>
+            <CardDescription>
+              {currentProject?.project_type === 'business' 
+                ? 'Financial position and operational efficiency'
+                : 'More indicators of your financial health'
+              }
+            </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-6 md:grid-cols-2">
             {/* Debt-to-Asset Ratio */}
@@ -652,37 +679,63 @@ function InsightsContent() {
               </div>
             </div>
 
-            {/* Net Worth to Income Ratio */}
+            {/* Net Worth to Income Ratio / Asset Turnover */}
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Net Worth to Income</span>
+                  <span className="text-sm font-medium">
+                    {currentProject?.project_type === 'business' ? 'Asset Efficiency' : 'Net Worth to Income'}
+                  </span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
                         <Info className="h-4 w-4 text-muted-foreground" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
-                        <p className="font-semibold mb-1">Target by Age:</p>
-                        <ul className="text-xs space-y-1">
-                          <li>• <strong>Age 30:</strong> 1x annual income</li>
-                          <li>• <strong>Age 40:</strong> 3x annual income</li>
-                          <li>• <strong>Age 50:</strong> 6x annual income</li>
-                          <li>• <strong>Age 60:</strong> 8x annual income</li>
-                        </ul>
-                        <p className="text-xs mt-2 text-muted-foreground">
-                          Measures wealth accumulation relative to income. Higher is better.
-                        </p>
+                        {currentProject?.project_type === 'business' ? (
+                          <>
+                            <p className="font-semibold mb-1">Asset Efficiency Standards:</p>
+                            <ul className="text-xs space-y-1">
+                              <li>• <strong>Excellent:</strong> Revenue / Assets &gt; 1.5x</li>
+                              <li>• <strong>Good:</strong> 1.0-1.5x</li>
+                              <li>• <strong>Fair:</strong> 0.5-1.0x</li>
+                              <li>• <strong>Poor:</strong> Below 0.5x</li>
+                            </ul>
+                            <p className="text-xs mt-2 text-muted-foreground">
+                              Measures how efficiently assets generate revenue. Higher is better.
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="font-semibold mb-1">Target by Age:</p>
+                            <ul className="text-xs space-y-1">
+                              <li>• <strong>Age 30:</strong> 1x annual income</li>
+                              <li>• <strong>Age 40:</strong> 3x annual income</li>
+                              <li>• <strong>Age 50:</strong> 6x annual income</li>
+                              <li>• <strong>Age 60:</strong> 8x annual income</li>
+                            </ul>
+                            <p className="text-xs mt-2 text-muted-foreground">
+                              Measures wealth accumulation relative to income. Higher is better.
+                            </p>
+                          </>
+                        )}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
                 <span className="font-bold text-primary">
-                  {metrics.totalAnnualIncome > 0 ? ((metrics.netWorth / metrics.totalAnnualIncome)).toFixed(1) : '0.0'}x
+                  {metrics.totalAnnualIncome > 0 ? (
+                    currentProject?.project_type === 'business' 
+                      ? ((metrics.totalAnnualIncome / (metrics.totalAssets || 1))).toFixed(1)
+                      : ((metrics.netWorth / metrics.totalAnnualIncome)).toFixed(1)
+                  ) : '0.0'}x
                 </span>
               </div>
               <div className="text-xs text-muted-foreground">
-                ${formatCurrency(metrics.netWorth)} net worth / ${formatCurrency(metrics.totalAnnualIncome)} income
+                {currentProject?.project_type === 'business' 
+                  ? `$${formatCurrency(metrics.totalAnnualIncome)} revenue / $${formatCurrency(metrics.totalAssets)} assets`
+                  : `$${formatCurrency(metrics.netWorth)} net worth / $${formatCurrency(metrics.totalAnnualIncome)} income`
+                }
               </div>
             </div>
           </CardContent>
