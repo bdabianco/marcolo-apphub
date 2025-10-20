@@ -471,7 +471,7 @@ function DashboardContent() {
 
         {/* Security Footer */}
         <div className="mt-16 pt-8 border-t border-border/30">
-          <div className="max-w-3xl mx-auto text-center space-y-3">
+          <div className="max-w-3xl mx-auto text-center space-y-4">
             <div className="flex items-center justify-center gap-2 text-foreground">
               <Shield className="h-6 w-6 text-primary" />
               <h3 className="text-lg font-semibold">Your Data is Safe</h3>
@@ -481,6 +481,12 @@ function DashboardContent() {
               Your information is never shared and only accessible to you. We use industry-standard security practices 
               to ensure your financial privacy is maintained at all times.
             </p>
+            <div className="flex items-center justify-center gap-2 pt-2">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+                <Shield className="h-4 w-4 text-primary" />
+                <span className="text-xs font-medium text-primary">SSL/TLS Encrypted</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
