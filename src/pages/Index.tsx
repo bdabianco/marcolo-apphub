@@ -11,7 +11,7 @@ const Index = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate('/app-hub');
     }
   }, [user, navigate]);
 
