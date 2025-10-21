@@ -59,6 +59,14 @@ export const AppHeader = () => {
             <Button
               variant="ghost"
               size="sm"
+              onClick={() => window.location.href = 'https://marcoloai.com#biz-tools'}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Biz Tools
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => window.location.href = 'https://marcoloai.com#about'}
               className="text-muted-foreground hover:text-foreground"
             >
