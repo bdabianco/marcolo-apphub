@@ -225,7 +225,7 @@ const AppHubContent = () => {
                   We're constantly developing new applications to meet your business needs. Let us know what tools would help your business thrive.
                 </p>
                 <Button
-                  onClick={() => navigate('/settings')}
+                  onClick={() => navigate('/request-app')}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground transition-all"
                 >
                   <Icons.Settings className="mr-2 h-4 w-4" />
