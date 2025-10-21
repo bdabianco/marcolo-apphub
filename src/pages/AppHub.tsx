@@ -116,7 +116,7 @@ const AppHubContent = () => {
           {/* Hero Section */}
           <div className="text-center mb-16">
             <Badge variant="outline" className="mb-4 border-primary/20 bg-primary/5 text-primary">
-              Business Tools & Resources
+              Growth Apps & Resources
             </Badge>
             <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
               App Hub
