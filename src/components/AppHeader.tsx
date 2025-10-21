@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { Button } from '@/components/ui/button';
-import { Settings, LogOut, Building2 } from 'lucide-react';
+import { Settings, LogOut, Building2, Home, ArrowLeft } from 'lucide-react';
 import marcoloLogo from '@/assets/marcolo-logo.png';
 import {
   DropdownMenu,
@@ -26,14 +26,53 @@ export const AppHeader = () => {
   return (
     <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div
-          onClick={() => navigate('/app-hub')}
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
-        >
-          <img src={marcoloLogo} alt="Marcolo" className="h-8 w-8" />
-          <span className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Marcolo App Hub
-          </span>
+        <div className="flex items-center gap-6">
+          <div
+            onClick={() => navigate('/app-hub')}
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
+          >
+            <img src={marcoloLogo} alt="Marcolo" className="h-8 w-8" />
+            <span className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Marcolo App Hub
+            </span>
+          </div>
+
+          {/* Navigation to Main Site */}
+          <nav className="hidden md:flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.href = 'https://marcoloai.com'}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Home className="mr-2 h-4 w-4" />
+              Main Site
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.href = 'https://marcoloai.com#services'}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Services
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.href = 'https://marcoloai.com#about'}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              About
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.href = 'https://marcoloai.com#contact'}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Contact
+            </Button>
+          </nav>
         </div>
 
         <div className="flex items-center gap-4">
@@ -65,6 +104,10 @@ export const AppHeader = () => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => window.location.href = 'https://marcoloai.com'}>
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to Main Site
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/settings')}>
                   <Settings className="mr-2 h-4 w-4" />
                   Settings
