@@ -221,8 +221,8 @@ const AppHubContent = () => {
             <Card className="inline-block rounded-2xl border border-primary/30 bg-[image:var(--gradient-hero)]">
               <CardContent className="p-8">
                 <h3 className="text-2xl font-semibold mb-2 text-foreground">Looking for Something Specific?</h3>
-                <p className="text-muted-foreground mb-6 max-w-2xl">
-                  We're constantly developing new applications to meet your business needs. Let us know what tools would help your business thrive.
+                <p className="text-foreground/80 mb-6 max-w-2xl">
+                  We're committed to providing valuable easy to use AI powered tool, coaching and resources that help you grow your business succeed
                 </p>
                 <Button
                   onClick={() => navigate('/request-app')}
