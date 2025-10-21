@@ -115,10 +115,10 @@ const AppHubContent = () => {
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-16">
-            <Badge variant="outline" className="mb-4 border-primary/20 bg-primary/5 text-primary">
+            <Badge variant="outline" className="mb-4 border-primary/30 bg-primary/10 text-primary">
               Growth Apps & Resources
             </Badge>
-            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold mb-6 bg-[image:var(--gradient-leaf)] bg-clip-text text-transparent">
               App Hub
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -144,25 +144,25 @@ const AppHubContent = () => {
               {apps.map((app) => (
                 <Card
                   key={app.id}
-                  className="group relative overflow-hidden hover:[box-shadow:0_10px_30px_-10px_hsl(var(--primary)/0.3)] transition-all duration-500 rounded-[2rem] border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 cursor-pointer"
+                  className="group relative overflow-hidden hover:[box-shadow:0_10px_30px_-10px_hsl(var(--primary)/0.4)] transition-all duration-500 rounded-[2rem] border-2 border-primary/30 bg-gradient-to-br from-card via-primary/5 to-accent/5 cursor-pointer"
                   onClick={() => handleAppClick(app)}
                 >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 opacity-20 rounded-bl-full" />
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[image:var(--gradient-leaf)] opacity-10 rounded-bl-full" />
                   
                   <CardHeader className="space-y-4">
                     <div className="flex items-start justify-between">
-                      <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-primary">
+                      <div className="h-16 w-16 rounded-full bg-[image:var(--gradient-primary)] flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-primary-foreground">
                         {getIconComponent(app.icon)}
                       </div>
                       {app.category && (
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/30">
                           {app.category}
                         </Badge>
                       )}
                     </div>
                     
                     <div>
-                      <CardTitle className="text-2xl mb-2 group-hover:text-primary transition-colors">
+                      <CardTitle className="text-2xl mb-2 group-hover:bg-[image:var(--gradient-leaf)] group-hover:bg-clip-text group-hover:text-transparent transition-all">
                         {app.name}
                       </CardTitle>
                       <CardDescription className="text-sm">
@@ -174,7 +174,7 @@ const AppHubContent = () => {
                   <CardContent>
                     <Button 
                       variant="outline" 
-                      className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors border-primary/20"
+                      className="w-full group-hover:bg-[image:var(--gradient-primary)] group-hover:text-primary-foreground group-hover:border-transparent transition-all border-primary/30"
                     >
                       <span>Launch App</span>
                       <Icons.ExternalLink className="ml-2 h-4 w-4" />
@@ -187,7 +187,7 @@ const AppHubContent = () => {
 
           {/* Settings CTA */}
           <div className="mt-16 text-center">
-            <Card className="inline-block rounded-[2rem] border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5">
+            <Card className="inline-block rounded-[2rem] border-2 border-primary/30 bg-gradient-to-br from-card via-primary/5 to-accent/5">
               <CardContent className="p-8">
                 <h3 className="text-xl font-semibold mb-2">Need Custom Solutions?</h3>
                 <p className="text-muted-foreground mb-4">
@@ -196,7 +196,7 @@ const AppHubContent = () => {
                 <Button
                   variant="outline"
                   onClick={() => navigate('/settings')}
-                  className="border-primary/20"
+                  className="border-primary/30 hover:bg-[image:var(--gradient-primary)] hover:text-primary-foreground hover:border-transparent transition-all"
                 >
                   <Icons.Settings className="mr-2 h-4 w-4" />
                   Organization Settings
