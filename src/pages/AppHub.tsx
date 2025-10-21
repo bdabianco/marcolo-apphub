@@ -222,7 +222,7 @@ const AppHubContent = () => {
               <CardContent className="p-8">
                 <h3 className="text-2xl font-semibold mb-2 text-foreground">Looking for Something Specific?</h3>
                 <p className="text-foreground/80 mb-6 max-w-2xl">
-                  We're committed to providing valuable easy to use AI powered tool, coaching and resources that help you grow your business succeed
+                  We're committed to providing valuable easy to use AI powered tool, coaching and resources that help you grow your business succeed. Let us know what tools would help your business thrive.
                 </p>
                 <Button
                   onClick={() => navigate('/request-app')}
