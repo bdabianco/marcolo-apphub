@@ -115,9 +115,6 @@ const AppHubContent = () => {
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-16">
-            <Badge variant="outline" className="mb-4 border-primary/40 bg-primary/10 text-primary">
-              Growth Apps & Resources
-            </Badge>
             <h1 className="text-5xl font-bold mb-6 bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">
               App Hub
             </h1>
@@ -133,57 +130,91 @@ const AppHubContent = () => {
           </div>
 
           {/* Apps Grid */}
-          {apps.length === 0 ? (
-            <div className="text-center py-12">
-              <Icons.Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2 text-foreground">No apps available</h3>
-              <p className="text-muted-foreground">Check back soon for new apps!</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {apps.map((app) => (
-                <Card
-                  key={app.id}
-                  className="group relative overflow-hidden hover:shadow-[var(--shadow-medium)] transition-all duration-500 rounded-2xl border-border bg-card cursor-pointer"
-                  onClick={() => handleAppClick(app)}
-                >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-[image:var(--gradient-glow)] rounded-bl-full" />
-                  
-                  <CardHeader className="space-y-4">
-                    <div className="flex items-start justify-between">
-                      <div className="h-16 w-16 rounded-full bg-[image:var(--gradient-primary)] flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-primary-foreground">
-                        {getIconComponent(app.icon)}
-                      </div>
-                      {app.category && (
-                        <Badge variant="secondary" className="text-xs">
-                          {app.category}
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    <div>
-                      <CardTitle className="text-2xl mb-2 text-card-foreground group-hover:text-primary transition-colors">
-                        {app.name}
-                      </CardTitle>
-                      <CardDescription className="text-sm">
-                        {app.description}
-                      </CardDescription>
-                    </div>
-                  </CardHeader>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Mycrm App - Coming Soon Placeholder */}
+            <Card className="group relative overflow-hidden rounded-2xl border-border bg-card opacity-75">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[image:var(--gradient-glow)] rounded-bl-full" />
+              <div className="absolute inset-0 flex items-center justify-center z-10">
+                <Badge className="bg-secondary text-secondary-foreground text-sm font-semibold px-4 py-2">
+                  Coming Soon
+                </Badge>
+              </div>
+              
+              <CardHeader className="space-y-4">
+                <div className="flex items-start justify-between">
+                  <div className="h-16 w-16 rounded-full bg-[image:var(--gradient-primary)] flex items-center justify-center text-primary-foreground">
+                    <Icons.Users className="h-8 w-8" />
+                  </div>
+                  <Badge variant="secondary" className="text-xs">
+                    CRM
+                  </Badge>
+                </div>
+                
+                <div>
+                  <CardTitle className="text-2xl mb-2 text-card-foreground">
+                    Mycrm
+                  </CardTitle>
+                  <CardDescription className="text-sm">
+                    Customer First App - Your complete CRM solution for managing customer relationships
+                  </CardDescription>
+                </div>
+              </CardHeader>
 
-                  <CardContent>
-                    <Button 
-                      variant="outline" 
-                      className="w-full hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
-                    >
-                      <span>Launch App</span>
-                      <Icons.ExternalLink className="ml-2 h-4 w-4" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+              <CardContent>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  disabled
+                >
+                  <span>Coming Soon</span>
+                  <Icons.Clock className="ml-2 h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Active Apps */}
+            {apps.map((app) => (
+              <Card
+                key={app.id}
+                className="group relative overflow-hidden hover:shadow-[var(--shadow-medium)] transition-all duration-500 rounded-2xl border-border bg-card cursor-pointer"
+                onClick={() => handleAppClick(app)}
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[image:var(--gradient-glow)] rounded-bl-full" />
+                
+                <CardHeader className="space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div className="h-16 w-16 rounded-full bg-[image:var(--gradient-primary)] flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-primary-foreground">
+                      {getIconComponent(app.icon)}
+                    </div>
+                    {app.category && (
+                      <Badge variant="secondary" className="text-xs">
+                        {app.category}
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <CardTitle className="text-2xl mb-2 text-card-foreground group-hover:text-primary transition-colors">
+                      {app.name}
+                    </CardTitle>
+                    <CardDescription className="text-sm">
+                      {app.description}
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+
+                <CardContent>
+                  <Button 
+                    variant="outline" 
+                    className="w-full hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
+                  >
+                    <span>Launch App</span>
+                    <Icons.ExternalLink className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
           {/* Settings CTA */}
           <div className="mt-16 text-center">
