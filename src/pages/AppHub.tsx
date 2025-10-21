@@ -131,6 +131,49 @@ const AppHubContent = () => {
 
           {/* Apps Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Active Apps - Finance first if available */}
+            {apps.filter(app => app.category === 'Finance').map((app) => (
+              <Card
+                key={app.id}
+                className="group relative overflow-hidden hover:shadow-[var(--shadow-medium)] transition-all duration-500 rounded-2xl border-border bg-card cursor-pointer"
+                onClick={() => handleAppClick(app)}
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[image:var(--gradient-glow)] rounded-bl-full" />
+                
+                <CardHeader className="space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div className="h-16 w-16 rounded-full bg-[image:var(--gradient-primary)] flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-primary-foreground">
+                      {getIconComponent(app.icon)}
+                    </div>
+                    {app.category && (
+                      <Badge variant="secondary" className="text-xs">
+                        {app.category}
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <CardTitle className="text-2xl mb-2 text-card-foreground group-hover:text-primary transition-colors">
+                      {app.name}
+                    </CardTitle>
+                    <CardDescription className="text-sm">
+                      {app.description}
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+
+                <CardContent>
+                  <Button 
+                    variant="outline" 
+                    className="w-full hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
+                  >
+                    <span>Launch App</span>
+                    <Icons.ExternalLink className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+
             {/* Mycrm App - Coming Soon Placeholder */}
             <Card className="group relative overflow-hidden rounded-2xl border-border bg-card opacity-75">
               <div className="absolute top-0 right-0 w-32 h-32 bg-[image:var(--gradient-glow)] rounded-bl-full" />
@@ -172,8 +215,8 @@ const AppHubContent = () => {
               </CardContent>
             </Card>
 
-            {/* Active Apps */}
-            {apps.map((app) => (
+            {/* Rest of Active Apps (excluding Finance) */}
+            {apps.filter(app => app.category !== 'Finance').map((app) => (
               <Card
                 key={app.id}
                 className="group relative overflow-hidden hover:shadow-[var(--shadow-medium)] transition-all duration-500 rounded-2xl border-border bg-card cursor-pointer"
