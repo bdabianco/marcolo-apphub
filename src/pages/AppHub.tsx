@@ -228,8 +228,8 @@ const AppHubContent = () => {
                   onClick={() => navigate('/request-app')}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground transition-all"
                 >
-                  <Icons.Settings className="mr-2 h-4 w-4" />
-                  Request an App
+                  <Icons.Lightbulb className="mr-2 h-4 w-4" />
+                  Share Your Insights for Growth
                 </Button>
               </CardContent>
             </Card>
