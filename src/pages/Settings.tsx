@@ -10,7 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from '@/hooks/use-toast';
 import * as Icons from 'lucide-react';
 import { AppHeader } from '@/components/AppHeader';
 import {
@@ -22,12 +23,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface OrgMember {
   id: string;
@@ -48,10 +48,63 @@ const SettingsContent = () => {
   
   const [newOrgName, setNewOrgName] = useState('');
   const [newOrgSlug, setNewOrgSlug] = useState('');
+  const [slugError, setSlugError] = useState('');
   const [creating, setCreating] = useState(false);
   
   const [members, setMembers] = useState<OrgMember[]>([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
+
+  // Auto-generate slug from organization name
+  const generateSlug = (name: string) => {
+    return name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+      .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+  };
+
+  // Validate slug
+  const validateSlug = (slug: string) => {
+    if (!slug) {
+      setSlugError('Slug is required');
+      return false;
+    }
+    if (slug.length < 3) {
+      setSlugError('Slug must be at least 3 characters');
+      return false;
+    }
+    if (slug.length > 50) {
+      setSlugError('Slug must be less than 50 characters');
+      return false;
+    }
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      setSlugError('Slug can only contain lowercase letters, numbers, and hyphens');
+      return false;
+    }
+    if (slug.startsWith('-') || slug.endsWith('-')) {
+      setSlugError('Slug cannot start or end with a hyphen');
+      return false;
+    }
+    setSlugError('');
+    return true;
+  };
+
+  // Handle org name change and auto-generate slug
+  const handleNewOrgNameChange = (name: string) => {
+    setNewOrgName(name);
+    const generatedSlug = generateSlug(name);
+    setNewOrgSlug(generatedSlug);
+    validateSlug(generatedSlug);
+  };
+
+  // Handle manual slug change
+  const handleNewOrgSlugChange = (slug: string) => {
+    const cleanedSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    setNewOrgSlug(cleanedSlug);
+    validateSlug(cleanedSlug);
+  };
 
   useEffect(() => {
     if (currentOrganization) {
@@ -95,26 +148,60 @@ const SettingsContent = () => {
       }
     } catch (error) {
       console.error('Error loading members:', error);
-      toast.error('Failed to load members');
+      toast({
+        title: "Error",
+        description: "Failed to load members",
+        variant: "destructive",
+      });
     } finally {
       setLoadingMembers(false);
     }
   };
 
   const handleCreateOrganization = async () => {
-    if (!newOrgName.trim() || !newOrgSlug.trim()) {
-      toast.error('Please fill in all fields');
+    if (!newOrgName.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter an organization name",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!validateSlug(newOrgSlug)) {
+      toast({
+        title: "Error",
+        description: slugError || "Please fix the slug errors",
+        variant: "destructive",
+      });
       return;
     }
 
     setCreating(true);
     try {
+      // Check if slug already exists
+      const { data: existingOrg } = await supabase
+        .from('organizations')
+        .select('id')
+        .eq('slug', newOrgSlug)
+        .single();
+
+      if (existingOrg) {
+        toast({
+          title: "Error",
+          description: "This slug is already taken. Please choose a different one.",
+          variant: "destructive",
+        });
+        setCreating(false);
+        return;
+      }
+
       // Create organization
       const { data: org, error: orgError } = await supabase
         .from('organizations')
         .insert({
           name: newOrgName,
-          slug: newOrgSlug.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+          slug: newOrgSlug,
         })
         .select()
         .single();
@@ -132,13 +219,21 @@ const SettingsContent = () => {
 
       if (memberError) throw memberError;
 
-      toast.success('Organization created successfully');
+      toast({
+        title: "Success",
+        description: "Organization created successfully",
+      });
       await refreshOrganizations();
       setNewOrgName('');
       setNewOrgSlug('');
+      setSlugError('');
     } catch (error: any) {
       console.error('Error creating organization:', error);
-      toast.error(error.message || 'Failed to create organization');
+      toast({
+        title: "Error",
+        description: error.message || 'Failed to create organization',
+        variant: "destructive",
+      });
     } finally {
       setCreating(false);
     }
@@ -160,11 +255,18 @@ const SettingsContent = () => {
 
       if (error) throw error;
 
-      toast.success('Organization updated successfully');
+      toast({
+        title: "Success",
+        description: "Organization updated successfully",
+      });
       await refreshOrganizations();
     } catch (error: any) {
       console.error('Error updating organization:', error);
-      toast.error(error.message || 'Failed to update organization');
+      toast({
+        title: "Error",
+        description: error.message || 'Failed to update organization',
+        variant: "destructive",
+      });
     } finally {
       setSaving(false);
     }
@@ -207,34 +309,104 @@ const SettingsContent = () => {
               <CardHeader>
                 <CardTitle>Create Your Organization</CardTitle>
                 <CardDescription>
-                  Get started by creating your first organization
+                  Get started by creating your organization. Don't have a company? Use your name or a personal identifier.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
+                <Alert className="bg-primary/5 border-primary/20">
+                  <Icons.Info className="h-4 w-4 text-primary" />
+                  <AlertDescription className="text-sm">
+                    <strong>For individuals:</strong> You can use your name (e.g., "John Smith Consulting") or a personal brand. 
+                    This helps organize your apps and settings.
+                  </AlertDescription>
+                </Alert>
+
                 <div className="space-y-2">
-                  <Label htmlFor="newOrgName">Organization Name</Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="newOrgName">Organization Name</Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Icons.HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p>Your company name, personal brand, or full name. This will be displayed throughout the App Hub.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <Input
                     id="newOrgName"
                     value={newOrgName}
-                    onChange={(e) => setNewOrgName(e.target.value)}
-                    placeholder="Acme Inc."
+                    onChange={(e) => handleNewOrgNameChange(e.target.value)}
+                    placeholder="e.g., Acme Inc. or John Smith"
+                    maxLength={100}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Examples: "Acme Inc.", "Jane Doe Consulting", "Smith Family"
+                  </p>
                 </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="newOrgSlug">Slug (URL-friendly)</Label>
-                  <Input
-                    id="newOrgSlug"
-                    value={newOrgSlug}
-                    onChange={(e) => setNewOrgSlug(e.target.value)}
-                    placeholder="acme-inc"
-                  />
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="newOrgSlug">Slug (URL-friendly identifier)</Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Icons.HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="font-semibold mb-2">What is a slug?</p>
+                          <p className="mb-2">A URL-friendly version of your organization name used in web addresses.</p>
+                          <p className="mb-2"><strong>Rules:</strong></p>
+                          <ul className="list-disc list-inside space-y-1 text-xs">
+                            <li>Lowercase letters only</li>
+                            <li>Numbers and hyphens allowed</li>
+                            <li>No spaces or special characters</li>
+                            <li>3-50 characters long</li>
+                          </ul>
+                          <p className="mt-2 text-xs italic">Example: "Acme Inc." becomes "acme-inc"</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <div className="relative">
+                    <Input
+                      id="newOrgSlug"
+                      value={newOrgSlug}
+                      onChange={(e) => handleNewOrgSlugChange(e.target.value)}
+                      placeholder="e.g., acme-inc or john-smith"
+                      maxLength={50}
+                      className={slugError ? 'border-destructive' : ''}
+                    />
+                    {newOrgSlug && !slugError && (
+                      <Icons.CheckCircle2 className="absolute right-3 top-3 h-4 w-4 text-green-500" />
+                    )}
+                  </div>
+                  {slugError && (
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <Icons.AlertCircle className="h-3 w-3" />
+                      {slugError}
+                    </p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Auto-generated from your name. Can be customized but cannot be changed later.
+                  </p>
                 </div>
+
                 <Button
                   onClick={handleCreateOrganization}
-                  disabled={creating}
+                  disabled={creating || !newOrgName.trim() || !newOrgSlug.trim() || !!slugError}
                   className="w-full"
                 >
-                  {creating ? 'Creating...' : 'Create Organization'}
+                  {creating ? (
+                    <>
+                      <Icons.Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    'Create Organization'
+                  )}
                 </Button>
               </CardContent>
             </Card>
