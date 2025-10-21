@@ -119,7 +119,7 @@ const AppHubContent = () => {
               App Hub
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Premium apps and resources to accelerate your business growth
+              AI powered app for business efficiency and sales growth
             </p>
             {currentOrganization && (
               <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
