@@ -179,12 +179,26 @@ const SettingsContent = () => {
 
     setCreating(true);
     try {
+      // Debug: Check if user is authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('Current session:', session?.user?.id);
+      
+      if (!session?.user) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to create an organization",
+          variant: "destructive",
+        });
+        setCreating(false);
+        return;
+      }
+
       // Check if slug already exists
       const { data: existingOrg } = await supabase
         .from('organizations')
         .select('id')
         .eq('slug', newOrgSlug)
-        .single();
+        .maybeSingle();
 
       if (existingOrg) {
         toast({
@@ -196,6 +210,8 @@ const SettingsContent = () => {
         return;
       }
 
+      console.log('Creating organization:', { name: newOrgName, slug: newOrgSlug });
+
       // Create organization
       const { data: org, error: orgError } = await supabase
         .from('organizations')
@@ -206,18 +222,28 @@ const SettingsContent = () => {
         .select()
         .single();
 
-      if (orgError) throw orgError;
+      if (orgError) {
+        console.error('Organization insert error:', orgError);
+        throw orgError;
+      }
+
+      console.log('Organization created:', org);
 
       // Add current user as owner
       const { error: memberError } = await supabase
         .from('organization_members')
         .insert({
           organization_id: org.id,
-          user_id: user?.id,
+          user_id: session.user.id,
           role: 'owner',
         });
 
-      if (memberError) throw memberError;
+      if (memberError) {
+        console.error('Member insert error:', memberError);
+        throw memberError;
+      }
+
+      console.log('Member added successfully');
 
       toast({
         title: "Success",
