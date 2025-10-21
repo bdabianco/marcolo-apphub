@@ -26,12 +26,12 @@ const Index = () => {
           
           <h1 className="mb-6 text-5xl md:text-6xl font-bold">
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Mycashflow
+              Marcolo App Hub
             </span>
           </h1>
           
           <p className="mb-8 text-xl text-muted-foreground max-w-2xl mx-auto">
-            Take control of your finances with powerful budget planning, cashflow analysis, savings optimization, and AI insights tools.
+            Premium apps and resources to accelerate your business growth. Access powerful tools for financial planning, analytics, and business optimization.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -55,14 +55,14 @@ const Index = () => {
         </div>
 
         {/* Features Grid */}
-        <div className="mt-24 grid gap-8 md:grid-cols-2 lg:grid-cols-5 max-w-7xl mx-auto">
+        <div className="mt-24 grid gap-8 md:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
           <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border hover:shadow-lg transition-shadow">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <DollarSign className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold">Budget Planning</h3>
+            <h3 className="mb-2 text-lg font-semibold">Budget App</h3>
             <p className="text-sm text-muted-foreground">
-              Create detailed budgets with automatic Canadian tax calculations
+              Comprehensive financial planning for personal and business budgets with AI insights
             </p>
           </div>
 
@@ -70,29 +70,19 @@ const Index = () => {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-secondary/10">
               <TrendingUp className="h-8 w-8 text-secondary" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold">Cashflow Analysis</h3>
+            <h3 className="mb-2 text-lg font-semibold">Growth Tools</h3>
             <p className="text-sm text-muted-foreground">
-              Track debts and analyze your monthly cashflow with precision
+              Data-driven insights and analytics to accelerate your business growth
             </p>
           </div>
 
           <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border hover:shadow-lg transition-shadow">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10">
-              <PiggyBank className="h-8 w-8 text-accent" />
+              <Sparkles className="h-8 w-8 text-accent" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold">Savings Goals</h3>
+            <h3 className="mb-2 text-lg font-semibold">AI-Powered</h3>
             <p className="text-sm text-muted-foreground">
-              Set and track savings goals with automated progress monitoring
-            </p>
-          </div>
-
-          <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border hover:shadow-lg transition-shadow">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-secondary/10">
-              <Sparkles className="h-8 w-8 text-secondary" />
-            </div>
-            <h3 className="mb-2 text-lg font-semibold">AI Insights</h3>
-            <p className="text-sm text-muted-foreground">
-              Get intelligent recommendations and insights powered by AI
+              Intelligent recommendations and automation powered by advanced AI
             </p>
           </div>
 
@@ -100,9 +90,9 @@ const Index = () => {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <Shield className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold">Secure & Private</h3>
+            <h3 className="mb-2 text-lg font-semibold">Enterprise Security</h3>
             <p className="text-sm text-muted-foreground">
-              Your financial data is encrypted and accessible only to you
+              Bank-level encryption and multi-tenant isolation for your data
             </p>
           </div>
         </div>
@@ -110,7 +100,7 @@ const Index = () => {
         {/* Footer */}
         <div className="mt-24 pt-8 border-t border-border/50">
           <div className="max-w-3xl mx-auto text-center space-y-4">
-            <h3 className="text-lg font-semibold text-foreground">Your Data is Safe</h3>
+            <h3 className="text-lg font-semibold text-foreground">Enterprise-Grade Security</h3>
             <div className="flex items-center justify-center gap-2">
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
                 <Shield className="h-4 w-4 text-primary" />
@@ -118,9 +108,9 @@ const Index = () => {
               </div>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              All financial data is protected with enterprise-grade encryption and isolated per user with Row-Level Security. 
-              Your information is never shared and only accessible to you. We use industry-standard security practices 
-              to ensure your financial privacy is maintained at all times.
+              All data is protected with enterprise-grade encryption and multi-tenant isolation. 
+              Your organization's information is secured with Row-Level Security and never shared. 
+              We follow industry-standard security practices to ensure your business data remains private and secure.
             </p>
           </div>
         </div>
