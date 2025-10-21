@@ -50,6 +50,7 @@ const SettingsContent = () => {
   const [newOrgSlug, setNewOrgSlug] = useState('');
   const [slugError, setSlugError] = useState('');
   const [creating, setCreating] = useState(false);
+  const [justCreated, setJustCreated] = useState(false);
   
   const [members, setMembers] = useState<OrgMember[]>([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
@@ -253,6 +254,7 @@ const SettingsContent = () => {
       setNewOrgName('');
       setNewOrgSlug('');
       setSlugError('');
+      setJustCreated(true);
     } catch (error: any) {
       console.error('Error creating organization:', error);
       toast({
@@ -328,6 +330,56 @@ const SettingsContent = () => {
               Manage your organization and team settings
             </p>
           </div>
+
+          {/* Success Card - Show after organization creation */}
+          {justCreated && currentOrganization && (
+            <Card className="mb-8 rounded-[2rem] border-2 border-primary bg-gradient-to-br from-primary/5 to-primary/10">
+              <CardContent className="pt-6">
+                <div className="text-center space-y-6">
+                  <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mx-auto">
+                    <Icons.CheckCircle2 className="h-10 w-10 text-primary" />
+                  </div>
+                  
+                  <div>
+                    <h2 className="text-3xl font-bold mb-2">
+                      🎉 You're All Set!
+                    </h2>
+                    <p className="text-lg text-muted-foreground mb-1">
+                      <strong>{currentOrganization.name}</strong> is ready to go
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Your apps are waiting for you in the App Hub
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+                    <Button
+                      size="lg"
+                      onClick={() => navigate('/app-hub')}
+                      className="flex-1"
+                    >
+                      <Icons.Rocket className="mr-2 h-5 w-5" />
+                      Go to App Hub
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      onClick={() => setJustCreated(false)}
+                      className="flex-1"
+                    >
+                      Continue Setup
+                    </Button>
+                  </div>
+
+                  <div className="pt-4 border-t border-primary/20">
+                    <p className="text-xs text-muted-foreground">
+                      You can always return to settings to manage your organization and team
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Create Organization */}
           {!currentOrganization && userOrganizations.length === 0 && (
