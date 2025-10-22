@@ -31,7 +31,7 @@ const Index = () => {
           </h1>
           
           <p className="mb-8 text-xl text-muted-foreground max-w-2xl mx-auto">
-            Premium apps and resources to accelerate your business growth. Access powerful tools for financial planning, analytics, and business optimization.
+            Curated business apps and resources driven by AI for accelerated sales efficiency and business growth. Access AI powered tools for financial planning, sales optimization, analytics, customer experience, business growth and more.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -60,7 +60,7 @@ const Index = () => {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <DollarSign className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold">Budget App</h3>
+            <h3 className="mb-2 text-lg font-semibold">Financial Planning</h3>
             <p className="text-sm text-muted-foreground">
               Comprehensive financial planning for personal and business budgets with AI insights
             </p>
