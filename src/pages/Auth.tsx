@@ -64,11 +64,7 @@ export default function Auth() {
           </CardTitle>
           <CardDescription className="text-base">
             {isLogin ? (
-              <>
-                Sign in to access your{' '}
-                <span className="font-semibold text-primary">Mycashflow</span>{' '}
-                dashboard
-              </>
+              'Sign in to access your Marcolo business accelerator apps'
             ) : (
               'Start managing your finances today'
             )}
