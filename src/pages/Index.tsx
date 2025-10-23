@@ -20,9 +20,14 @@ const Index = () => {
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="text-center max-w-4xl mx-auto">
-          <div className="mx-auto mb-8 flex h-32 w-32 items-center justify-center">
+          <a
+            href="https://www.marcoloai.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mx-auto mb-8 flex h-32 w-32 items-center justify-center hover:opacity-80 transition-opacity cursor-pointer"
+          >
             <img src={marcoloLogo} alt="Marcolo" className="h-full w-full object-contain" />
-          </div>
+          </a>
           
           <h1 className="mb-6 text-5xl md:text-6xl font-bold">
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
