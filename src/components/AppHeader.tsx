@@ -27,15 +27,17 @@ export const AppHeader = () => {
     <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-6">
-          <div
-            onClick={() => navigate('/app-hub')}
+          <a
+            href="https://www.marcoloai.com"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
           >
             <img src={marcoloLogo} alt="Marcolo" className="h-8 w-8" />
             <span className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               Marcolo App Hub
             </span>
-          </div>
+          </a>
 
           {/* Navigation to Main Site */}
           <nav className="hidden md:flex items-center gap-1">
