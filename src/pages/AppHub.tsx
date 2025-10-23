@@ -34,15 +34,24 @@ const AppHubContent = () => {
   }, [currentOrganization]);
 
   const loadApps = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('apps')
-        .select('*')
-        .eq('is_active', true)
-        .order('sort_order');
+    if (!currentOrganization) {
+      setLoading(false);
+      return;
+    }
 
-      if (error) throw error;
-      setApps(data || []);
+    try {
+      // Get apps that the organization has access to
+      const { data: accessData, error: accessError } = await supabase
+        .from('app_access')
+        .select('app_id, is_enabled, apps(*)')
+        .eq('organization_id', currentOrganization.id)
+        .eq('is_enabled', true);
+
+      if (accessError) throw accessError;
+
+      // Extract the apps from the access data
+      const enabledApps = accessData?.map(access => access.apps).filter(Boolean) || [];
+      setApps(enabledApps as App[]);
     } catch (error) {
       console.error('Error loading apps:', error);
       toast.error('Failed to load apps');

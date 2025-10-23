@@ -36,6 +36,21 @@ interface OrgMember {
   full_name?: string;
 }
 
+interface App {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: string;
+}
+
+interface AppAccess {
+  id: string;
+  app_id: string;
+  is_enabled: boolean;
+  apps: App;
+}
+
 const SettingsContent = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -54,6 +69,15 @@ const SettingsContent = () => {
   
   const [members, setMembers] = useState<OrgMember[]>([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
+  
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<'member' | 'admin' | 'viewer'>('member');
+  const [inviting, setInviting] = useState(false);
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  
+  const [appAccess, setAppAccess] = useState<AppAccess[]>([]);
+  const [loadingApps, setLoadingApps] = useState(false);
+  const [updatingApp, setUpdatingApp] = useState<string | null>(null);
 
   // Auto-generate slug from organization name
   const generateSlug = (name: string) => {
@@ -113,6 +137,7 @@ const SettingsContent = () => {
       setOrgSlug(currentOrganization.slug);
       setOrgDescription(currentOrganization.description || '');
       loadMembers();
+      loadAppAccess();
     }
   }, [currentOrganization]);
 
@@ -298,6 +323,191 @@ const SettingsContent = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const loadAppAccess = async () => {
+    if (!currentOrganization) return;
+    
+    setLoadingApps(true);
+    try {
+      const { data, error } = await supabase
+        .from('app_access')
+        .select('*, apps(*)')
+        .eq('organization_id', currentOrganization.id);
+
+      if (error) throw error;
+      setAppAccess(data || []);
+    } catch (error) {
+      console.error('Error loading app access:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load app subscriptions",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingApps(false);
+    }
+  };
+
+  const handleInviteMember = async () => {
+    if (!currentOrganization || !inviteEmail.trim()) return;
+
+    setInviting(true);
+    try {
+      // Check if user exists by email
+      const { data: profiles, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', inviteEmail); // Note: In production, you'd need a proper email lookup
+
+      if (profileError) throw profileError;
+
+      if (!profiles || profiles.length === 0) {
+        toast({
+          title: "User not found",
+          description: "No user exists with this email. They need to sign up first.",
+          variant: "destructive",
+        });
+        setInviting(false);
+        return;
+      }
+
+      const userId = profiles[0].id;
+
+      // Check if already a member
+      const { data: existingMember } = await supabase
+        .from('organization_members')
+        .select('id')
+        .eq('organization_id', currentOrganization.id)
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (existingMember) {
+        toast({
+          title: "Already a member",
+          description: "This user is already a member of your organization.",
+          variant: "destructive",
+        });
+        setInviting(false);
+        return;
+      }
+
+      // Add member
+      const { error } = await supabase
+        .from('organization_members')
+        .insert({
+          organization_id: currentOrganization.id,
+          user_id: userId,
+          role: inviteRole,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Team member added successfully",
+      });
+      
+      setInviteEmail('');
+      setInviteRole('member');
+      setInviteDialogOpen(false);
+      loadMembers();
+    } catch (error: any) {
+      console.error('Error inviting member:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add team member",
+        variant: "destructive",
+      });
+    } finally {
+      setInviting(false);
+    }
+  };
+
+  const handleRemoveMember = async (memberId: string, memberUserId: string) => {
+    if (!currentOrganization || memberUserId === user?.id) return;
+
+    try {
+      const { error } = await supabase
+        .from('organization_members')
+        .delete()
+        .eq('id', memberId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Team member removed",
+      });
+      loadMembers();
+    } catch (error: any) {
+      console.error('Error removing member:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to remove member",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdateMemberRole = async (memberId: string, newRole: 'owner' | 'admin' | 'member' | 'viewer') => {
+    if (!currentOrganization) return;
+
+    try {
+      const { error } = await supabase
+        .from('organization_members')
+        .update({ role: newRole })
+        .eq('id', memberId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Member role updated",
+      });
+      loadMembers();
+    } catch (error: any) {
+      console.error('Error updating role:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update role",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleToggleAppAccess = async (accessId: string, appId: string, currentState: boolean) => {
+    if (!currentOrganization) return;
+
+    setUpdatingApp(appId);
+    try {
+      const { error } = await supabase
+        .from('app_access')
+        .update({ is_enabled: !currentState })
+        .eq('id', accessId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `App ${!currentState ? 'enabled' : 'disabled'}`,
+      });
+      loadAppAccess();
+    } catch (error: any) {
+      console.error('Error updating app access:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update app access",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingApp(null);
+    }
+  };
+
+  const getIconComponent = (iconName: string) => {
+    const Icon = Icons[iconName as keyof typeof Icons] as any;
+    return Icon ? <Icon className="h-6 w-6" /> : <Icons.AppWindow className="h-6 w-6" />;
   };
 
   const getRoleBadge = (role: string) => {
@@ -549,15 +759,74 @@ const SettingsContent = () => {
               </Card>
 
               {/* Team Members */}
-              <Card className="rounded-[2rem] border-2 border-primary/20">
+              <Card className="mb-8 rounded-[2rem] border-2 border-primary/20">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle>Team Members</CardTitle>
                       <CardDescription>
-                        Manage your organization members
+                        Manage your organization members and their roles
                       </CardDescription>
                     </div>
+                    {(memberRole === 'owner' || memberRole === 'admin') && (
+                      <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button size="sm">
+                            <Icons.UserPlus className="mr-2 h-4 w-4" />
+                            Add Member
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Add Team Member</DialogTitle>
+                            <DialogDescription>
+                              Add a new member to your organization. They must have an account first.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="inviteEmail">User ID</Label>
+                              <Input
+                                id="inviteEmail"
+                                placeholder="Enter user ID"
+                                value={inviteEmail}
+                                onChange={(e) => setInviteEmail(e.target.value)}
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                Note: User must sign up first before they can be added
+                              </p>
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="inviteRole">Role</Label>
+                              <select
+                                id="inviteRole"
+                                value={inviteRole}
+                                onChange={(e) => setInviteRole(e.target.value as any)}
+                                className="w-full rounded-md border border-input bg-background px-3 py-2"
+                              >
+                                <option value="viewer">Viewer - Can only view apps</option>
+                                <option value="member">Member - Can use apps</option>
+                                <option value="admin">Admin - Can manage team and apps</option>
+                              </select>
+                            </div>
+                            <Button
+                              onClick={handleInviteMember}
+                              disabled={inviting || !inviteEmail.trim()}
+                              className="w-full"
+                            >
+                              {inviting ? (
+                                <>
+                                  <Icons.Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  Adding...
+                                </>
+                              ) : (
+                                'Add Member'
+                              )}
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -589,9 +858,100 @@ const SettingsContent = () => {
                               </p>
                             </div>
                           </div>
-                          <Badge className={getRoleBadge(member.role)}>
-                            {member.role.toUpperCase()}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            {(memberRole === 'owner' || memberRole === 'admin') && member.user_id !== user?.id ? (
+                              <>
+                                <select
+                                  value={member.role}
+                                  onChange={(e) => handleUpdateMemberRole(member.id, e.target.value as 'owner' | 'admin' | 'member' | 'viewer')}
+                                  className="rounded-md border border-input bg-background px-2 py-1 text-sm"
+                                >
+                                  <option value="viewer">Viewer</option>
+                                  <option value="member">Member</option>
+                                  <option value="admin">Admin</option>
+                                  {memberRole === 'owner' && <option value="owner">Owner</option>}
+                                </select>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleRemoveMember(member.id, member.user_id)}
+                                >
+                                  <Icons.Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </>
+                            ) : (
+                              <Badge className={getRoleBadge(member.role)}>
+                                {member.role.toUpperCase()}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* App Subscriptions */}
+              <Card className="rounded-[2rem] border-2 border-primary/20">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>App Subscriptions</CardTitle>
+                      <CardDescription>
+                        Manage which apps your organization can access
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {loadingApps ? (
+                    <div className="text-center py-8">
+                      <Icons.Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+                    </div>
+                  ) : appAccess.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No apps available
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {appAccess.map((access) => (
+                        <div
+                          key={access.id}
+                          className="flex items-center justify-between p-4 rounded-lg border"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                              {getIconComponent(access.apps.icon)}
+                            </div>
+                            <div>
+                              <p className="font-medium">{access.apps.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {access.apps.description}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Badge variant={access.is_enabled ? "default" : "secondary"}>
+                              {access.is_enabled ? 'Enabled' : 'Disabled'}
+                            </Badge>
+                            {(memberRole === 'owner' || memberRole === 'admin') && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleToggleAppAccess(access.id, access.app_id, access.is_enabled)}
+                                disabled={updatingApp === access.app_id}
+                              >
+                                {updatingApp === access.app_id ? (
+                                  <Icons.Loader2 className="h-4 w-4 animate-spin" />
+                                ) : access.is_enabled ? (
+                                  'Disable'
+                                ) : (
+                                  'Enable'
+                                )}
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
