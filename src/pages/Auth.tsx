@@ -19,7 +19,7 @@ export default function Auth() {
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate('/app-hub');
     }
   }, [user, navigate]);
 
@@ -34,7 +34,7 @@ export default function Auth() {
           toast.error(error.message || 'Failed to sign in');
         } else {
           toast.success('Signed in successfully!');
-          navigate('/dashboard');
+          navigate('/app-hub');
         }
       } else {
         const { error } = await signUp(email, password, fullName);
