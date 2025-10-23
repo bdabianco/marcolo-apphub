@@ -79,6 +79,22 @@ const SettingsContent = () => {
   const [loadingApps, setLoadingApps] = useState(false);
   const [updatingApp, setUpdatingApp] = useState<string | null>(null);
 
+  // Admin app management
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [allApps, setAllApps] = useState<App[]>([]);
+  const [loadingAllApps, setLoadingAllApps] = useState(false);
+  const [editingApp, setEditingApp] = useState<App | null>(null);
+  const [appDialogOpen, setAppDialogOpen] = useState(false);
+  const [appFormData, setAppFormData] = useState({
+    name: '',
+    slug: '',
+    description: '',
+    icon: '',
+    category: '',
+    url: '',
+    is_active: true,
+  });
+
   // Auto-generate slug from organization name
   const generateSlug = (name: string) => {
     return name
@@ -140,6 +156,16 @@ const SettingsContent = () => {
       loadAppAccess();
     }
   }, [currentOrganization]);
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, [user]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      loadAllApps();
+    }
+  }, [isAdmin]);
 
   const loadMembers = async () => {
     if (!currentOrganization) return;
@@ -347,6 +373,148 @@ const SettingsContent = () => {
     } finally {
       setLoadingApps(false);
     }
+  };
+
+  // Check if user is admin
+  const checkAdminStatus = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+
+      if (error) throw error;
+      setIsAdmin(!!data);
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+    }
+  };
+
+  // Load all apps (admin only)
+  const loadAllApps = async () => {
+    if (!isAdmin) return;
+    
+    setLoadingAllApps(true);
+    try {
+      const { data, error } = await supabase
+        .from('apps')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      setAllApps(data || []);
+    } catch (error) {
+      console.error('Error loading all apps:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load apps",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingAllApps(false);
+    }
+  };
+
+  // Handle app create/update
+  const handleSaveApp = async () => {
+    if (!isAdmin) return;
+
+    try {
+      if (editingApp) {
+        // Update existing app
+        const { error } = await supabase
+          .from('apps')
+          .update({
+            name: appFormData.name,
+            slug: appFormData.slug,
+            description: appFormData.description,
+            icon: appFormData.icon,
+            category: appFormData.category,
+            url: appFormData.url,
+            is_active: appFormData.is_active,
+          })
+          .eq('id', editingApp.id);
+
+        if (error) throw error;
+        toast({
+          title: "Success",
+          description: "App updated successfully",
+        });
+      } else {
+        // Create new app
+        const { error } = await supabase
+          .from('apps')
+          .insert({
+            name: appFormData.name,
+            slug: appFormData.slug,
+            description: appFormData.description,
+            icon: appFormData.icon,
+            category: appFormData.category,
+            url: appFormData.url,
+            is_active: appFormData.is_active,
+          });
+
+        if (error) throw error;
+        toast({
+          title: "Success",
+          description: "App created successfully",
+        });
+      }
+
+      setAppDialogOpen(false);
+      setEditingApp(null);
+      setAppFormData({
+        name: '',
+        slug: '',
+        description: '',
+        icon: '',
+        category: '',
+        url: '',
+        is_active: true,
+      });
+      loadAllApps();
+    } catch (error: any) {
+      console.error('Error saving app:', error);
+      toast({
+        title: "Error",
+        description: error.message || 'Failed to save app',
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle app edit
+  const handleEditApp = (app: App) => {
+    setEditingApp(app);
+    setAppFormData({
+      name: app.name,
+      slug: (app as any).slug || '',
+      description: app.description,
+      icon: app.icon,
+      category: app.category,
+      url: (app as any).url || '',
+      is_active: (app as any).is_active ?? true,
+    });
+    setAppDialogOpen(true);
+  };
+
+  // Handle new app
+  const handleNewApp = () => {
+    setEditingApp(null);
+    setAppFormData({
+      name: '',
+      slug: '',
+      description: '',
+      icon: '',
+      category: '',
+      url: '',
+      is_active: true,
+    });
+    setAppDialogOpen(true);
   };
 
   const handleInviteMember = async () => {
@@ -958,8 +1126,178 @@ const SettingsContent = () => {
                   )}
                 </CardContent>
               </Card>
+
+              {/* App Management (Admin Only) */}
+              {isAdmin && (
+                <Card className="mt-8 rounded-[2rem] border-2 border-destructive/20">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <Icons.Shield className="h-5 w-5 text-destructive" />
+                          App Management (Admin)
+                        </CardTitle>
+                        <CardDescription>
+                          Manage all apps in the system
+                        </CardDescription>
+                      </div>
+                      <Button onClick={handleNewApp} size="sm">
+                        <Icons.Plus className="mr-2 h-4 w-4" />
+                        Add App
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {loadingAllApps ? (
+                      <div className="text-center py-8">
+                        <Icons.Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+                      </div>
+                    ) : allApps.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        No apps in the system
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {allApps.map((app) => (
+                          <div
+                            key={app.id}
+                            className="flex items-center justify-between p-4 rounded-lg border"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                {getIconComponent(app.icon)}
+                              </div>
+                              <div>
+                                <p className="font-medium">{app.name}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {app.description}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  Category: {app.category}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <Badge variant={(app as any).is_active ? "default" : "secondary"}>
+                                {(app as any).is_active ? 'Active' : 'Inactive'}
+                              </Badge>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEditApp(app)}
+                              >
+                                <Icons.Edit className="mr-2 h-4 w-4" />
+                                Edit
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
             </>
           )}
+
+          {/* App Create/Edit Dialog */}
+          <Dialog open={appDialogOpen} onOpenChange={setAppDialogOpen}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingApp ? 'Edit App' : 'Add New App'}
+                </DialogTitle>
+                <DialogDescription>
+                  {editingApp ? 'Update the app details below' : 'Create a new app in the system'}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="appName">App Name</Label>
+                    <Input
+                      id="appName"
+                      placeholder="e.g., Portfolio Builder"
+                      value={appFormData.name}
+                      onChange={(e) => setAppFormData({ ...appFormData, name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="appSlug">Slug</Label>
+                    <Input
+                      id="appSlug"
+                      placeholder="e.g., portfolio-builder"
+                      value={appFormData.slug}
+                      onChange={(e) => setAppFormData({ ...appFormData, slug: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="appDescription">Description</Label>
+                  <Textarea
+                    id="appDescription"
+                    placeholder="Brief description of the app"
+                    value={appFormData.description}
+                    onChange={(e) => setAppFormData({ ...appFormData, description: e.target.value })}
+                    rows={3}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="appIcon">Icon (Lucide name)</Label>
+                    <Input
+                      id="appIcon"
+                      placeholder="e.g., Briefcase"
+                      value={appFormData.icon}
+                      onChange={(e) => setAppFormData({ ...appFormData, icon: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="appCategory">Category</Label>
+                    <Input
+                      id="appCategory"
+                      placeholder="e.g., Professional"
+                      value={appFormData.category}
+                      onChange={(e) => setAppFormData({ ...appFormData, category: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="appUrl">App URL</Label>
+                  <Input
+                    id="appUrl"
+                    placeholder="https://example.com"
+                    value={appFormData.url}
+                    onChange={(e) => setAppFormData({ ...appFormData, url: e.target.value })}
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="appActive"
+                    checked={appFormData.is_active}
+                    onChange={(e) => setAppFormData({ ...appFormData, is_active: e.target.checked })}
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor="appActive">Active (visible to users)</Label>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setAppDialogOpen(false);
+                    setEditingApp(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveApp}>
+                  {editingApp ? 'Update App' : 'Create App'}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
