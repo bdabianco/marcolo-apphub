@@ -31,7 +31,7 @@ const App = () => {
           <AuthProvider>
             <OrganizationProvider>
               <Routes>
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<AppHub />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/app-hub" element={<AppHub />} />
                 <Route path="/request-app" element={<RequestApp />} />

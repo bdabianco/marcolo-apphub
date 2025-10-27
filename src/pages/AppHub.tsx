@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth, ProtectedRoute } from '@/lib/auth';
+import { useAuth } from '@/lib/auth';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,36 +22,29 @@ interface App {
   is_active: boolean;
 }
 
-const AppHubContent = () => {
+const AppHub = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { currentOrganization, userOrganizations, loading: orgLoading } = useOrganization();
+  const { currentOrganization } = useOrganization();
   const [apps, setApps] = useState<App[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadApps();
-  }, [currentOrganization]);
+  }, []);
 
   const loadApps = async () => {
-    if (!currentOrganization) {
-      setLoading(false);
-      return;
-    }
-
     try {
-      // Get apps that the organization has access to
-      const { data: accessData, error: accessError } = await supabase
-        .from('app_access')
-        .select('app_id, is_enabled, apps(*)')
-        .eq('organization_id', currentOrganization.id)
-        .eq('is_enabled', true);
+      // Get all active apps to display to everyone
+      const { data: appsData, error: appsError } = await supabase
+        .from('apps')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order');
 
-      if (accessError) throw accessError;
+      if (appsError) throw appsError;
 
-      // Extract the apps from the access data
-      const enabledApps = accessData?.map(access => access.apps).filter(Boolean) || [];
-      setApps(enabledApps as App[]);
+      setApps(appsData || []);
     } catch (error) {
       console.error('Error loading apps:', error);
       toast.error('Failed to load apps');
@@ -66,10 +59,16 @@ const AppHubContent = () => {
   };
 
   const handleAppClick = (app: App) => {
+    // Check if user is authenticated and has an organization
+    if (!user || !currentOrganization) {
+      toast.error('Please sign in to access apps');
+      navigate('/auth');
+      return;
+    }
     window.open(app.url, '_blank');
   };
 
-  if (orgLoading || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader />
@@ -81,34 +80,6 @@ const AppHubContent = () => {
               {[1, 2, 3].map(i => (
                 <Skeleton key={i} className="h-64 rounded-[2rem] bg-muted" />
               ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!currentOrganization && userOrganizations.length === 0) {
-    return (
-      <div className="min-h-screen bg-background">
-        <AppHeader />
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="mb-8">
-              <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 mb-6">
-                <Icons.Building2 className="h-10 w-10 text-primary" />
-              </div>
-              <h1 className="text-4xl font-bold mb-4 text-foreground">Welcome to Marcolo App Hub</h1>
-              <p className="text-xl text-muted-foreground mb-8">
-                To get started, you need to create or join an organization.
-              </p>
-              <Button
-                size="lg"
-                onClick={() => navigate('/settings')}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
-              >
-                Create Organization
-              </Button>
             </div>
           </div>
         </div>
@@ -130,7 +101,17 @@ const AppHubContent = () => {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               AI powered app for business efficiency and sales growth
             </p>
-            {currentOrganization && (
+            {!user && (
+              <div className="mt-6">
+                <Button
+                  onClick={() => navigate('/auth')}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  Sign in to access apps
+                </Button>
+              </div>
+            )}
+            {user && currentOrganization && (
               <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
                 <Icons.Building2 className="h-4 w-4" />
                 <span>{currentOrganization.name}</span>
@@ -289,14 +270,6 @@ const AppHubContent = () => {
         </div>
       </div>
     </div>
-  );
-};
-
-const AppHub = () => {
-  return (
-    <ProtectedRoute>
-      <AppHubContent />
-    </ProtectedRoute>
   );
 };
 
