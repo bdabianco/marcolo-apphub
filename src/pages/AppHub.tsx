@@ -164,7 +164,7 @@ const AppHub = () => {
               </Card>
             ))}
 
-            {/* Mycrm App - Coming Soon Placeholder */}
+            {/* MyaiCRO App - Coming Soon Placeholder */}
             <Card className="group relative overflow-hidden rounded-2xl border-border bg-card opacity-75">
               <div className="absolute top-0 right-0 w-32 h-32 bg-[image:var(--gradient-glow)] rounded-bl-full" />
               <div className="absolute inset-0 flex items-center justify-center z-10">
@@ -179,16 +179,16 @@ const AppHub = () => {
                     <Icons.Users className="h-8 w-8" />
                   </div>
                   <Badge variant="secondary" className="text-xs">
-                    CRM
+                    Sales
                   </Badge>
                 </div>
                 
                 <div>
                   <CardTitle className="text-2xl mb-2 text-card-foreground">
-                    Mycrm
+                    MyaiCRO
                   </CardTitle>
                   <CardDescription className="text-sm">
-                    Customer First App - Your complete CRM solution for managing customer relationships
+                    AI-powered customer relationship management built for sales teams and business owners who need to track leads, automate follow-ups, and close more deals without the complexity of traditional CRM systems.
                   </CardDescription>
                 </div>
               </CardHeader>
