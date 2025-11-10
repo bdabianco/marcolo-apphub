@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import AppHub from "./pages/AppHub";
 import RequestApp from "./pages/RequestApp";
+import AdminRequests from "./pages/AdminRequests";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +36,7 @@ const App = () => {
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/app-hub" element={<AppHub />} />
                 <Route path="/request-app" element={<RequestApp />} />
+                <Route path="/admin/requests" element={<AdminRequests />} />
                 <Route path="/settings" element={<Settings />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

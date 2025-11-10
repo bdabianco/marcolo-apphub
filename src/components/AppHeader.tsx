@@ -2,8 +2,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { Button } from '@/components/ui/button';
-import { Settings, LogOut, Building2, Home, ArrowLeft } from 'lucide-react';
+import { Settings, LogOut, Building2, Home, ArrowLeft, Shield } from 'lucide-react';
 import marcoloLogo from '@/assets/marcolo-logo.png';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +19,30 @@ export const AppHeader = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { currentOrganization } = useOrganization();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, [user]);
+
+  const checkAdminStatus = async () => {
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .single();
+
+      setIsAdmin(data?.role === 'admin');
+    } catch (error) {
+      setIsAdmin(false);
+    }
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -102,6 +128,12 @@ export const AppHeader = () => {
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back to Main Site
                 </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate('/admin/requests')}>
+                    <Shield className="mr-2 h-4 w-4" />
+                    Admin: App Requests
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={() => navigate('/settings')}>
                   <Settings className="mr-2 h-4 w-4" />
                   Settings

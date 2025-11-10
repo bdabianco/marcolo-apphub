@@ -53,6 +53,45 @@ export type Database = {
           },
         ]
       }
+      app_requests: {
+        Row: {
+          app_name: string
+          created_at: string
+          description: string
+          email: string
+          id: string
+          name: string
+          organization: string
+          status: string
+          updated_at: string
+          use_cases: string | null
+        }
+        Insert: {
+          app_name: string
+          created_at?: string
+          description: string
+          email: string
+          id?: string
+          name: string
+          organization: string
+          status?: string
+          updated_at?: string
+          use_cases?: string | null
+        }
+        Update: {
+          app_name?: string
+          created_at?: string
+          description?: string
+          email?: string
+          id?: string
+          name?: string
+          organization?: string
+          status?: string
+          updated_at?: string
+          use_cases?: string | null
+        }
+        Relationships: []
+      }
       apps: {
         Row: {
           category: string | null

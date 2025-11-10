@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.0';
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
@@ -35,6 +36,33 @@ const handler = async (req: Request): Promise<Response> => {
         }
       );
     }
+
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Save to database
+    const { data: dbData, error: dbError } = await supabase
+      .from('app_requests')
+      .insert({
+        name,
+        email,
+        organization,
+        app_name: appName,
+        description,
+        use_cases: useCases || null,
+        status: 'pending'
+      })
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error("Database error:", dbError);
+      throw dbError;
+    }
+
+    console.log("App request saved to database:", dbData.id);
 
     // Send notification email to Marcolo team
     const teamEmailResponse = await fetch("https://api.resend.com/emails", {
@@ -74,7 +102,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (!teamEmailResponse.ok) {
       const error = await teamEmailResponse.text();
-      throw new Error(`Failed to send team email: ${error}`);
+      console.error("Failed to send team email:", error);
+      // Don't throw - email is optional, database save is what matters
     }
 
     // Send confirmation email to user
@@ -112,12 +141,14 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (!userEmailResponse.ok) {
       const error = await userEmailResponse.text();
-      throw new Error(`Failed to send user email: ${error}`);
+      console.error("Failed to send user email:", error);
+      // Don't throw - email is optional, database save is what matters
     }
 
     return new Response(
       JSON.stringify({ 
-        success: true
+        success: true,
+        id: dbData.id
       }),
       {
         status: 200,
