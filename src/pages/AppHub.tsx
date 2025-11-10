@@ -182,9 +182,10 @@ const AppHub = () => {
                         Beta
                       </Badge>
                     </div>
-                    <CardDescription className="text-sm">
-                      {app.description}
-                    </CardDescription>
+                    <CardDescription 
+                      className="text-sm leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: app.description }}
+                    />
                   </div>
                 </CardHeader>
 
@@ -268,9 +269,10 @@ const AppHub = () => {
                     <CardTitle className="text-2xl mb-2 text-card-foreground group-hover:text-primary transition-colors">
                       {app.name}
                     </CardTitle>
-                    <CardDescription className="text-sm">
-                      {app.description}
-                    </CardDescription>
+                    <CardDescription 
+                      className="text-sm leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: app.description }}
+                    />
                   </div>
                 </CardHeader>
 
