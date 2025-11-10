@@ -296,6 +296,7 @@ const AppHub = () => {
                   We're committed to providing valuable easy to use AI powered tool, coaching and resources that help you grow your business succeed. Let us know what tools would help your business thrive.
                 </p>
                 <Button
+                  type="button"
                   onClick={() => setIsRequestDialogOpen(true)}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground transition-all"
                 >
