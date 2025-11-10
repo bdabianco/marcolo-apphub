@@ -59,12 +59,6 @@ const AppHub = () => {
   };
 
   const handleAppClick = (app: App) => {
-    // Check if user is authenticated and has an organization
-    if (!user || !currentOrganization) {
-      toast.error('Please sign in to access apps');
-      navigate('/auth');
-      return;
-    }
     window.open(app.url, '_blank');
   };
 
@@ -101,22 +95,6 @@ const AppHub = () => {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               AI powered app for business efficiency and sales growth
             </p>
-            {!user && (
-              <div className="mt-6">
-                <Button
-                  onClick={() => navigate('/auth')}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                >
-                  Sign in to access apps
-                </Button>
-              </div>
-            )}
-            {user && currentOrganization && (
-              <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <Icons.Building2 className="h-4 w-4" />
-                <span>{currentOrganization.name}</span>
-              </div>
-            )}
           </div>
 
           {/* Apps Grid */}
