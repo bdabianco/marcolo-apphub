@@ -183,7 +183,7 @@ const AppHub = () => {
                       </Badge>
                     </div>
                     {app.category === 'Finance' && (
-                      <p className="text-sm font-semibold text-muted-foreground mb-3">
+                      <p className="text-sm font-bold bg-[image:var(--gradient-primary)] bg-clip-text text-transparent mb-3 tracking-wide">
                         Plan smarter. Grow faster. Sleep better
                       </p>
                     )}
