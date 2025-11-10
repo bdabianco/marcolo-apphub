@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { useOrganization } from '@/contexts/OrganizationContext';
@@ -7,9 +10,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import * as Icons from 'lucide-react';
 import { AppHeader } from '@/components/AppHeader';
+
+const requestSchema = z.object({
+  name: z.string().trim().min(1, { message: "Name is required" }).max(100),
+  email: z.string().trim().email({ message: "Invalid email address" }).max(255),
+  organization: z.string().trim().min(1, { message: "Organization is required" }).max(100),
+  appName: z.string().trim().min(1, { message: "App name is required" }).max(100),
+  description: z.string().trim().min(1, { message: "Description is required" }).max(1000),
+  useCases: z.string().trim().max(1000).optional(),
+});
+
+type RequestFormData = z.infer<typeof requestSchema>;
 
 interface App {
   id: string;
@@ -28,6 +46,20 @@ const AppHub = () => {
   const { currentOrganization } = useOrganization();
   const [apps, setApps] = useState<App[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<RequestFormData>({
+    resolver: zodResolver(requestSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      organization: '',
+      appName: '',
+      description: '',
+      useCases: '',
+    },
+  });
 
   useEffect(() => {
     loadApps();
@@ -60,6 +92,27 @@ const AppHub = () => {
 
   const handleAppClick = (app: App) => {
     window.open(app.url, '_blank');
+  };
+
+  const onSubmit = async (data: RequestFormData) => {
+    setIsSubmitting(true);
+    
+    try {
+      const { error } = await supabase.functions.invoke('send-app-request', {
+        body: data,
+      });
+
+      if (error) throw error;
+
+      toast.success('Request submitted successfully! We\'ll get back to you soon.');
+      form.reset();
+      setIsRequestDialogOpen(false);
+    } catch (error) {
+      console.error('Error submitting request:', error);
+      toast.error('Failed to submit request. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -236,7 +289,7 @@ const AppHub = () => {
                   We're committed to providing valuable easy to use AI powered tool, coaching and resources that help you grow your business succeed. Let us know what tools would help your business thrive.
                 </p>
                 <Button
-                  onClick={() => navigate('/request-app')}
+                  onClick={() => setIsRequestDialogOpen(true)}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground transition-all"
                 >
                   <Icons.Lightbulb className="mr-2 h-4 w-4" />
@@ -247,6 +300,131 @@ const AppHub = () => {
           </div>
         </div>
       </div>
+
+      {/* Request App Dialog */}
+      <Dialog open={isRequestDialogOpen} onOpenChange={setIsRequestDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Share Your Thoughts</DialogTitle>
+            <DialogDescription>
+              Tell us about the application you need and we'll work on making it a reality
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Your Name *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address *</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="john@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="organization"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Organization *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your company name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="appName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>App Name/Type *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Invoice Manager, Lead Tracker" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description *</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe what this app should do and what problems it should solve..."
+                        className="min-h-[100px] resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="useCases"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Use Cases (Optional)</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe specific scenarios where you would use this app..."
+                        className="min-h-[80px] resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                type="submit"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>Submitting...</>
+                ) : (
+                  <>
+                    <Icons.Send className="mr-2 h-4 w-4" />
+                    Submit Request
+                  </>
+                )}
+              </Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
