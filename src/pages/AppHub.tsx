@@ -226,8 +226,15 @@ const AppHub = () => {
                       Beta
                     </Badge>
                   </div>
-                  <CardDescription className="text-sm">
-                    AI-powered customer relationship management built for sales teams and business owners who need to track leads, automate follow-ups, and close more deals without the complexity of traditional CRM systems.
+                  <CardDescription className="text-sm leading-relaxed">
+                    MyaiCFO isn't accounting software — it's your intelligent financial strategist.
+                    No ledgers. No invoices. No bookkeeping clutter.
+                    <br /><br />
+                    Instead, MyaiCFO uses AI to transform your financial data into strategic clarity and action. It helps business owners and operators understand where they stand, where they're heading, and what moves will drive the most impact — whether that's increasing profit, managing cash flow, or planning capital for growth.
+                    <br /><br />
+                    It learns how your business works — your revenue streams, margins, goals, and risks — then delivers personalized insights, forecasts, and step-by-step guidance to help you scale with confidence.
+                    <br /><br />
+                    Think of it as the AI-powered CFO that helps you make smarter decisions every day, not just balance the books.
                   </CardDescription>
                 </div>
               </CardHeader>
