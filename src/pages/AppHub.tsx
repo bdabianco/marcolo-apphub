@@ -182,6 +182,11 @@ const AppHub = () => {
                         Beta
                       </Badge>
                     </div>
+                    {app.category === 'Finance' && (
+                      <p className="text-sm font-semibold text-muted-foreground mb-3">
+                        Plan smarter. Grow faster. Sleep better
+                      </p>
+                    )}
                     <CardDescription 
                       className="text-sm leading-relaxed"
                       dangerouslySetInnerHTML={{ __html: app.description }}
