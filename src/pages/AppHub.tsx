@@ -174,9 +174,14 @@ const AppHub = () => {
                   </div>
                   
                   <div>
-                    <CardTitle className="text-2xl mb-2 text-card-foreground group-hover:text-primary transition-colors">
-                      {app.name}
-                    </CardTitle>
+                    <div className="flex items-center gap-2 mb-2">
+                      <CardTitle className="text-2xl text-card-foreground group-hover:text-primary transition-colors">
+                        {app.name}
+                      </CardTitle>
+                      <Badge variant="outline" className="text-xs px-2 py-0.5 bg-primary/10 text-primary border-primary/20">
+                        Beta
+                      </Badge>
+                    </div>
                     <CardDescription className="text-sm">
                       {app.description}
                     </CardDescription>
@@ -195,18 +200,16 @@ const AppHub = () => {
               </Card>
             ))}
 
-            {/* MyaiCRO App - Coming Soon Placeholder */}
-            <Card className="group relative overflow-hidden rounded-2xl border-border bg-card opacity-75">
+            {/* MyaiCRO App */}
+            <Card 
+              className="group relative overflow-hidden hover:shadow-[var(--shadow-medium)] transition-all duration-500 rounded-2xl border-border bg-card cursor-pointer"
+              onClick={() => window.open('https://mycrm.marcoloai.com', '_blank')}
+            >
               <div className="absolute top-0 right-0 w-32 h-32 bg-[image:var(--gradient-glow)] rounded-bl-full" />
-              <div className="absolute inset-0 flex items-center justify-center z-10">
-                <Badge className="bg-secondary text-secondary-foreground text-sm font-semibold px-4 py-2">
-                  Coming Soon
-                </Badge>
-              </div>
               
               <CardHeader className="space-y-4">
                 <div className="flex items-start justify-between">
-                  <div className="h-16 w-16 rounded-full bg-[image:var(--gradient-primary)] flex items-center justify-center text-primary-foreground">
+                  <div className="h-16 w-16 rounded-full bg-[image:var(--gradient-primary)] flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-primary-foreground">
                     <Icons.Users className="h-8 w-8" />
                   </div>
                   <Badge variant="secondary" className="text-xs">
@@ -215,9 +218,14 @@ const AppHub = () => {
                 </div>
                 
                 <div>
-                  <CardTitle className="text-2xl mb-2 text-card-foreground">
-                    MyaiCRO
-                  </CardTitle>
+                  <div className="flex items-center gap-2 mb-2">
+                    <CardTitle className="text-2xl text-card-foreground group-hover:text-primary transition-colors">
+                      MyaiCRO
+                    </CardTitle>
+                    <Badge variant="outline" className="text-xs px-2 py-0.5 bg-primary/10 text-primary border-primary/20">
+                      Beta
+                    </Badge>
+                  </div>
                   <CardDescription className="text-sm">
                     AI-powered customer relationship management built for sales teams and business owners who need to track leads, automate follow-ups, and close more deals without the complexity of traditional CRM systems.
                   </CardDescription>
@@ -227,11 +235,10 @@ const AppHub = () => {
               <CardContent>
                 <Button 
                   variant="outline" 
-                  className="w-full"
-                  disabled
+                  className="w-full hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
                 >
-                  <span>Coming Soon</span>
-                  <Icons.Clock className="ml-2 h-4 w-4" />
+                  <span>Launch App</span>
+                  <Icons.ExternalLink className="ml-2 h-4 w-4" />
                 </Button>
               </CardContent>
             </Card>
