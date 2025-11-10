@@ -1,19 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, DollarSign, TrendingUp, PiggyBank, Shield, Sparkles } from 'lucide-react';
+import { ArrowRight, DollarSign, TrendingUp, Shield, Sparkles, BarChart3 } from 'lucide-react';
 import marcoloLogo from '@/assets/marcolo-logo.png';
-import { useEffect } from 'react';
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-
-  useEffect(() => {
-    if (user) {
-      navigate('/app-hub');
-    }
-  }, [user, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10">
@@ -31,74 +22,60 @@ const Index = () => {
           
           <h1 className="mb-6 text-5xl md:text-6xl font-bold">
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Marcolo App Hub
+              Marcolo Growth Partners
             </span>
           </h1>
           
-          <p className="mb-8 text-xl text-muted-foreground max-w-2xl mx-auto">
-            Curated business apps and resources driven by AI for accelerated sales efficiency and business growth. Access AI powered tools for financial planning, sales optimization, analytics, customer experience, business growth and more.
+          <p className="mb-4 text-xl text-muted-foreground max-w-3xl mx-auto">
+            Empowering businesses with AI-powered tools designed to streamline operations, optimize growth, and drive success.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <p className="mb-8 text-lg text-muted-foreground max-w-2xl mx-auto">
+            Our suite of intelligent applications helps entrepreneurs and business owners make data-driven decisions, manage finances effortlessly, and accelerate customer relationships—all without the complexity of traditional enterprise software.
+          </p>
+          
+          <div className="flex justify-center">
             <Button 
               size="lg" 
-              onClick={() => navigate('/auth')}
-              className="text-lg h-12 px-8"
+              onClick={() => navigate('/app-hub')}
+              className="text-lg h-14 px-12"
             >
-              Get Started
+              Enter App Hub
               <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              onClick={() => navigate('/auth')}
-              className="text-lg h-12 px-8"
-            >
-              Sign In
             </Button>
           </div>
         </div>
 
-        {/* Features Grid */}
-        <div className="mt-24 grid gap-8 md:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
-          <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border hover:shadow-lg transition-shadow">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-              <DollarSign className="h-8 w-8 text-primary" />
+        {/* Apps Section */}
+        <div className="mt-24">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Our Applications
+            </span>
+          </h2>
+          <div className="grid gap-8 md:grid-cols-2 max-w-5xl mx-auto">
+            <div className="text-left p-8 rounded-xl bg-card/50 backdrop-blur-sm border hover:shadow-xl transition-shadow">
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                <TrendingUp className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="mb-4 text-2xl font-bold">MyaiCFO</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                AI-powered financial planning tool built for entrepreneurs and business owners who need real-time insights into cash flow, budgeting, and financial decision-making without complex accounting software.
+              </p>
             </div>
-            <h3 className="mb-2 text-lg font-semibold">Financial Planning</h3>
-            <p className="text-sm text-muted-foreground">
-              Comprehensive financial planning for personal and business budgets with AI insights
-            </p>
-          </div>
 
-          <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border hover:shadow-lg transition-shadow">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-secondary/10">
-              <TrendingUp className="h-8 w-8 text-secondary" />
+            <div className="text-left p-8 rounded-xl bg-card/50 backdrop-blur-sm border hover:shadow-xl transition-shadow opacity-75">
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-secondary/10">
+                <BarChart3 className="h-8 w-8 text-secondary" />
+              </div>
+              <div className="flex items-center gap-3 mb-4">
+                <h3 className="text-2xl font-bold">MyaiCRO</h3>
+                <span className="text-xs bg-primary/20 text-primary px-3 py-1 rounded-full font-semibold">Coming Soon</span>
+              </div>
+              <p className="text-muted-foreground leading-relaxed">
+                AI-powered customer relationship management built for sales teams and business owners who need to track leads, automate follow-ups, and close more deals without the complexity of traditional CRM systems.
+              </p>
             </div>
-            <h3 className="mb-2 text-lg font-semibold">Growth Tools</h3>
-            <p className="text-sm text-muted-foreground">
-              Data-driven insights and analytics to accelerate your business growth
-            </p>
-          </div>
-
-          <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border hover:shadow-lg transition-shadow">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10">
-              <Sparkles className="h-8 w-8 text-accent" />
-            </div>
-            <h3 className="mb-2 text-lg font-semibold">AI-Powered</h3>
-            <p className="text-sm text-muted-foreground">
-              Intelligent recommendations and automation powered by advanced AI
-            </p>
-          </div>
-
-          <div className="text-center p-6 rounded-lg bg-card/50 backdrop-blur-sm border hover:shadow-lg transition-shadow">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-              <Shield className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="mb-2 text-lg font-semibold">Enterprise Security</h3>
-            <p className="text-sm text-muted-foreground">
-              Bank-level encryption and multi-tenant isolation for your data
-            </p>
           </div>
         </div>
 
