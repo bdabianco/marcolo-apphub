@@ -232,8 +232,8 @@ const AppHub = () => {
                       Beta
                     </Badge>
                   </div>
-                  <CardDescription className="text-sm">
-                    AI-powered customer relationship management built for sales teams and business owners who need to track leads, automate follow-ups, and close more deals without the complexity of traditional CRM systems.
+                  <CardDescription className="text-sm leading-relaxed">
+                    <strong>MyaiCRO is not a CRM — it's an AI-powered selling engine</strong> that analyzes your entire revenue motion from first touch to closed deal. It evaluates prospects, funnels, and deals through the lens of your company's offerings, ICP, value props, and buyer objectives.<br/><br/>From prospect intelligence to deal management, MyaiCRO ensures prospects become accounts and accounts generate revenue. AI sales agents and coaches highlight risks, surface opportunities, and recommend the next best action — empowering growth-focused organizations to sell smarter, faster, and with complete clarity.
                   </CardDescription>
                 </div>
               </CardHeader>
