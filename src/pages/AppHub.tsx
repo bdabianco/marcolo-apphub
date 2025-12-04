@@ -232,6 +232,9 @@ const AppHub = () => {
                       Beta
                     </Badge>
                   </div>
+                  <p className="text-sm font-bold bg-[image:var(--gradient-primary)] bg-clip-text text-transparent mb-3 tracking-wide">
+                    Turn prospects into revenue with intelligent precision.
+                  </p>
                   <CardDescription className="text-sm leading-relaxed">
                     <strong>MyaiCRO is not a CRM — it's an AI-powered selling engine</strong> that analyzes your entire revenue motion from first touch to closed deal. It evaluates prospects, funnels, and deals through the lens of your company's offerings, ICP, value props, and buyer objectives.<br/><br/>From prospect intelligence to deal management, MyaiCRO ensures prospects become accounts and accounts generate revenue. AI sales agents and coaches highlight risks, surface opportunities, and recommend the next best action — empowering growth-focused organizations to sell smarter, faster, and with complete clarity.
                   </CardDescription>
