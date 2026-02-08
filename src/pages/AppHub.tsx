@@ -143,7 +143,7 @@ const AppHub = () => {
           {/* Hero Section */}
           <div className="text-center mb-16">
             <h1 className="text-5xl font-bold mb-6 bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">
-              App Hub
+              MyaiApps
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               AI powered app for business efficiency and sales growth

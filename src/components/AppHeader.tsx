@@ -61,7 +61,7 @@ export const AppHeader = () => {
           >
             <img src={marcoloLogo} alt="Marcolo" className="h-8 w-8" />
             <span className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Marcolo App Hub
+              Marcolo MyaiApps
             </span>
           </a>
 
@@ -75,22 +75,6 @@ export const AppHeader = () => {
             >
               <Home className="mr-2 h-4 w-4" />
               Main Site
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.location.href = 'https://marcoloai.com#services'}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Services
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.location.href = 'https://marcoloai.com#biz-tools'}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Biz Tools
             </Button>
           </nav>
         </div>
