@@ -174,8 +174,8 @@ const AppHub = () => {
                 
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <img src={myaiCroLogoLight} alt="MyaiCRO" className="h-8 dark:hidden" />
-                    <img src={myaiCroLogoDark} alt="MyaiCRO" className="h-8 hidden dark:block" />
+                    <img src={myaiCroLogoLight} alt="MyaiCRO" className="h-32 dark:hidden" />
+                    <img src={myaiCroLogoDark} alt="MyaiCRO" className="h-32 hidden dark:block" />
                     <Badge variant="outline" className="text-xs px-2 py-0.5 bg-primary/10 text-primary border-primary/20">
                       Beta
                     </Badge>
