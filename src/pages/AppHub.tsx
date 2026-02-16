@@ -17,6 +17,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import * as Icons from 'lucide-react';
 import { AppHeader } from '@/components/AppHeader';
+import myaiCroLogoLight from '@/assets/myaicro-logo-light.png';
+import myaiCroLogoDark from '@/assets/myaicro-logo-dark.png';
 
 const requestSchema = z.object({
   name: z.string().trim().min(1, { message: "Name is required" }).max(100),
@@ -153,60 +155,6 @@ const AppHub = () => {
 
           {/* Apps Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Active Apps - Finance first if available */}
-            {apps.filter(app => app.category === 'Finance').map((app) => (
-              <Card
-                key={app.id}
-                className="group relative overflow-hidden hover:shadow-[var(--shadow-medium)] transition-all duration-500 rounded-2xl border-border bg-card cursor-pointer"
-                onClick={() => handleAppClick(app)}
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[image:var(--gradient-glow)] rounded-bl-full" />
-                
-                <CardHeader className="space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div className="h-16 w-16 rounded-full bg-[image:var(--gradient-primary)] flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-primary-foreground">
-                      {getIconComponent(app.icon)}
-                    </div>
-                    {app.category && (
-                      <Badge variant="secondary" className="text-xs">
-                        {app.category}
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <CardTitle className="text-2xl text-card-foreground group-hover:text-primary transition-colors">
-                        {app.name}
-                      </CardTitle>
-                      <Badge variant="outline" className="text-xs px-2 py-0.5 bg-primary/10 text-primary border-primary/20">
-                        Beta
-                      </Badge>
-                    </div>
-                    {app.category === 'Finance' && (
-                      <p className="text-sm font-bold bg-[image:var(--gradient-primary)] bg-clip-text text-transparent mb-3 tracking-wide">
-                        Plan smarter. Grow faster. Sleep better
-                      </p>
-                    )}
-                    <CardDescription 
-                      className="text-sm leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: app.description }}
-                    />
-                  </div>
-                </CardHeader>
-
-                <CardContent>
-                  <Button 
-                    variant="outline" 
-                    className="w-full hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
-                  >
-                    <span>Launch App</span>
-                    <Icons.ExternalLink className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-
             {/* MyaiCRO App */}
             <Card 
               className="group relative overflow-hidden hover:shadow-[var(--shadow-medium)] transition-all duration-500 rounded-2xl border-border bg-card cursor-pointer"
@@ -226,9 +174,8 @@ const AppHub = () => {
                 
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <CardTitle className="text-2xl text-card-foreground group-hover:text-primary transition-colors">
-                      MyaiCRO
-                    </CardTitle>
+                    <img src={myaiCroLogoLight} alt="MyaiCRO" className="h-8 dark:hidden" />
+                    <img src={myaiCroLogoDark} alt="MyaiCRO" className="h-8 hidden dark:block" />
                     <Badge variant="outline" className="text-xs px-2 py-0.5 bg-primary/10 text-primary border-primary/20">
                       Beta
                     </Badge>
