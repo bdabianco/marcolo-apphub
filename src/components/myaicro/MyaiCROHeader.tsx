@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 import marcoloLogo from '@/assets/marcolo-logo.png';
 
 export const MyaiCROHeader = () => {
