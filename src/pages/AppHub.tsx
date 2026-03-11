@@ -158,7 +158,7 @@ const AppHub = () => {
             {/* MyaiCRO App */}
             <Card 
               className="group relative overflow-hidden hover:shadow-[var(--shadow-medium)] transition-all duration-500 rounded-2xl border-border bg-card cursor-pointer"
-              onClick={() => window.open('https://myaicro.marcoloai.com', '_blank')}
+              onClick={() => navigate('/myaicro')}
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-[image:var(--gradient-glow)] rounded-bl-full" />
               
@@ -194,8 +194,8 @@ const AppHub = () => {
                   variant="outline" 
                   className="w-full hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
                 >
-                  <span>Launch App</span>
-                  <Icons.ExternalLink className="ml-2 h-4 w-4" />
+                   <span>Learn More</span>
+                   <Icons.ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </CardContent>
             </Card>
