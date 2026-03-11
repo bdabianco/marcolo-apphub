@@ -16,18 +16,17 @@ export const FinalCTA = () => {
           <div className="absolute inset-0 bg-[image:var(--gradient-radial)] opacity-30" />
           <div className="relative z-10">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-              Build Your AI Revenue Engine
+              Start Your Free Trial Today
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto">
-              Modern revenue teams rely on intelligent systems — not manual processes — to grow
-              predictably. Start by designing the right AI sales stack for your business.
+              Experience the power of an AI Chief Revenue Officer working for your business. No credit card required — see results in your first week.
             </p>
             <Button
               size="lg"
               className="bg-primary text-primary-foreground hover:bg-primary/90 text-base px-8 h-12 shadow-[var(--shadow-soft)]"
               onClick={() => window.open('https://myaicro.marcoloai.com', '_blank')}
             >
-              Build Your AI Sales Stack
+              Start Your Free Trial Today
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
