@@ -165,7 +165,7 @@ const Index = () => {
                 {/* ── Stack Visualization ── */}
                 <div className="relative z-10 mx-8 mt-5 rounded-xl border border-primary/15 bg-background/60 backdrop-blur-sm overflow-hidden">
                   <div className="flex items-center gap-2 px-5 py-2.5 border-b border-border/40 bg-muted/20">
-                    <Layers className="h-3.5 w-3.5 text-primary/70" />
+                    <Rows3 className="h-3.5 w-3.5 text-primary/70" />
                     <span className="text-[10px] font-semibold text-foreground/80 uppercase tracking-wide">AI Sales Stack Architecture</span>
                   </div>
                   <div className="p-4 space-y-2">
