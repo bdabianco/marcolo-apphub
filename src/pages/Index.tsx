@@ -16,7 +16,7 @@ import {
   Users,
   Activity,
   Lock,
-  Layers,
+  Rows3,
 } from 'lucide-react';
 import marcoloLogo from '@/assets/marcolo-logo.png';
 
