@@ -12,6 +12,7 @@ import RequestApp from "./pages/RequestApp";
 import AdminRequests from "./pages/AdminRequests";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import MyaiCROHome from "./pages/MyaiCROHome";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,6 +39,7 @@ const App = () => {
                 <Route path="/request-app" element={<RequestApp />} />
                 <Route path="/admin/requests" element={<AdminRequests />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/myaicro" element={<MyaiCROHome />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
