@@ -21,7 +21,7 @@ export const MyaiCROHeader = () => {
           className="bg-primary text-primary-foreground hover:bg-primary/90"
           onClick={() => window.open('https://myaicro.marcoloai.com', '_blank')}
         >
-          Build Your AI Sales Stack
+          Start Your Free Trial
           <ArrowRight className="ml-1 h-4 w-4" />
         </Button>
       </div>

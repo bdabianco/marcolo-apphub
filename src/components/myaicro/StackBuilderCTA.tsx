@@ -41,7 +41,7 @@ export const StackBuilderCTA = () => {
             className="bg-primary text-primary-foreground hover:bg-primary/90 text-base px-8 h-12 shadow-[var(--shadow-soft)]"
             onClick={() => window.open('https://myaicro.marcoloai.com', '_blank')}
           >
-            Build Your AI Sales Stack
+            Start Your Free Trial Today
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </motion.div>
