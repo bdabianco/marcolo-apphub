@@ -39,6 +39,7 @@ const App = () => {
                 <Route path="/request-app" element={<RequestApp />} />
                 <Route path="/admin/requests" element={<AdminRequests />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/myaicro" element={<MyaiCROHome />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
