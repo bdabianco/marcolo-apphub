@@ -193,7 +193,7 @@ export const RevenueStackVisual = () => {
                 <motion.div
                   className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center"
                   animate={phase === 1 ? { rotate: [0, 360] } : {}}
-                  transition={{ duration: 2, repeat: phase === 1 ? Infinity : 0, ease: 'linear' }}
+                  transition={{ duration: 6, repeat: phase === 1 ? Infinity : 0, ease: 'linear' }}
                 >
                   <Brain className="h-4 w-4 text-primary-foreground" />
                 </motion.div>
