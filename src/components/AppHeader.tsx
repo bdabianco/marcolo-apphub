@@ -59,6 +59,7 @@ export const AppHeader = () => {
             rel="noopener noreferrer"
             className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
           >
+            <img src={marcoloLogo} alt="MyaiApps" className="h-8 w-8" />
             <span className="text-lg font-bold">
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Myai</span>
               <span className="text-foreground">Apps</span>
