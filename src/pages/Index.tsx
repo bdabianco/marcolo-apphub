@@ -124,7 +124,7 @@ const Index = () => {
       <section className="relative z-10 pb-24">
         <div className="container mx-auto px-4">
           <div className="grid gap-10 lg:grid-cols-3 max-w-6xl mx-auto">
-            {/* ── MyaiCRO Card ── */}
+            {/* ── MyaiCRO Card – Intelligence Preview ── */}
             <motion.div
               className="lg:col-span-2 group cursor-pointer"
               initial={{ opacity: 0, y: 30 }}
@@ -134,122 +134,108 @@ const Index = () => {
               onMouseLeave={() => setCroHovered(false)}
               onClick={() => navigate('/myaicro')}
             >
-              <div className="relative rounded-2xl border border-primary/20 bg-card/60 backdrop-blur-md p-8 lg:p-10 overflow-hidden transition-all duration-500 group-hover:border-primary/40 group-hover:shadow-[var(--shadow-elevation)] group-hover:scale-[1.01]">
-                {/* Glow */}
-                <div className="absolute -top-20 -right-20 w-60 h-60 bg-primary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <div className="relative rounded-2xl border border-primary/25 bg-card/50 backdrop-blur-xl overflow-hidden transition-all duration-500 group-hover:border-primary/50 group-hover:shadow-[0_0_80px_-20px_hsl(160_70%_50%/0.4)] group-hover:scale-[1.015]">
+                {/* Ambient glow */}
+                <div className="absolute -top-32 -right-32 w-72 h-72 bg-primary/8 rounded-full blur-3xl transition-opacity duration-700 opacity-50 group-hover:opacity-100" />
+                <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-secondary/5 rounded-full blur-3xl" />
 
-                <div className="relative z-10 grid lg:grid-cols-5 gap-8">
-                  {/* Left content – 3 cols */}
-                  <div className="lg:col-span-3">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15">
-                        <BarChart3 className="h-5 w-5 text-primary" />
+                {/* Header bar */}
+                <div className="relative z-10 flex items-center justify-between px-8 pt-7 pb-0">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15 border border-primary/20">
+                      <BarChart3 className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase tracking-[0.15em] text-primary/70 font-semibold">AI Executive</p>
+                      <h3 className="text-xl font-bold text-foreground leading-tight">MyaiCRO</h3>
+                      <p className="text-xs text-muted-foreground font-medium">AI Chief Revenue Officer</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                    <span className="text-[10px] text-primary font-medium uppercase tracking-wider">Live</span>
+                  </div>
+                </div>
+
+                {/* ── Insight Preview Panel ── */}
+                <div className="relative z-10 mx-8 mt-6 rounded-xl border border-primary/15 bg-background/60 backdrop-blur-sm overflow-hidden">
+                  {/* Panel header */}
+                  <div className="flex items-center gap-2 px-5 py-3 border-b border-border/40 bg-muted/20">
+                    <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
+                    <span className="text-xs font-semibold text-foreground/90 uppercase tracking-wide">Revenue Intelligence Alert</span>
+                  </div>
+
+                  <div className="p-5 space-y-4">
+                    <p className="text-sm text-foreground/80 font-medium">
+                      Pipeline coverage risk detected.
+                    </p>
+
+                    {/* Metrics row */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="rounded-lg bg-muted/30 border border-border/30 px-4 py-3">
+                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Current Coverage</p>
+                        <p className="text-2xl font-bold text-amber-400">1.9x</p>
                       </div>
-                      <div>
-                        <h3 className="text-2xl font-bold text-foreground">MyaiCRO</h3>
-                        <p className="text-sm text-primary font-medium">AI Chief Revenue Officer</p>
+                      <div className="rounded-lg bg-muted/30 border border-border/30 px-4 py-3">
+                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Recommended</p>
+                        <p className="text-2xl font-bold text-primary">3x</p>
                       </div>
                     </div>
 
-                    <h4 className="text-lg font-semibold text-foreground/90 mt-5 mb-3">
-                      Turn pipeline chaos into predictable revenue.
-                    </h4>
-
-                    <p className="text-muted-foreground leading-relaxed mb-6 text-sm">
-                      MyaiCRO analyzes your entire revenue system — from prospect intelligence to
-                      closed deals. It detects pipeline gaps, identifies stalled opportunities, and
-                      recommends the next best actions to accelerate revenue.
-                    </p>
-
-                    {/* Capabilities */}
-                    <div className="grid grid-cols-2 gap-2 mb-6">
-                      {[
-                        { icon: Target, label: 'Pipeline Intelligence' },
-                        { icon: AlertTriangle, label: 'Deal Risk Detection' },
-                        { icon: Zap, label: 'Sales Execution Insights' },
-                        { icon: TrendingUp, label: 'Revenue Forecasting' },
-                      ].map((cap) => (
-                        <div key={cap.label} className="flex items-center gap-2 text-sm text-foreground/80">
-                          <cap.icon className="h-3.5 w-3.5 text-primary shrink-0" />
-                          {cap.label}
-                        </div>
-                      ))}
+                    {/* Alert detail */}
+                    <div className="rounded-lg bg-amber-400/5 border border-amber-400/15 px-4 py-3">
+                      <p className="text-xs text-foreground/70 leading-relaxed">
+                        <span className="font-semibold text-amber-400">3 deals</span> are likely to stall based on activity patterns.
+                      </p>
                     </div>
 
-                    {/* Hover capabilities */}
-                    <AnimatePresence>
-                      {crohovered && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="border-t border-border/50 pt-4 mb-6">
-                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3 font-medium">
-                              Additional Capabilities
-                            </p>
-                            <div className="grid grid-cols-2 gap-2">
-                              {hoverCapabilities.map((cap) => (
-                                <div
-                                  key={cap.label}
-                                  className="flex items-center gap-2 text-sm text-primary/80"
-                                >
-                                  <cap.icon className="h-3.5 w-3.5 shrink-0" />
-                                  {cap.label}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    {/* Recommendation */}
+                    <div className="rounded-lg bg-primary/5 border border-primary/15 px-4 py-3">
+                      <p className="text-[10px] uppercase tracking-wider text-primary/70 font-semibold mb-1">Recommended Action</p>
+                      <p className="text-xs text-foreground/80 leading-relaxed">
+                        Increase outbound prospecting targeting mid-market SaaS companies.
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-                    {/* Impact */}
-                    <p className="text-xs text-muted-foreground italic mb-6">
-                      Operate with enterprise-level revenue intelligence — without hiring a RevOps
-                      team.
-                    </p>
-
-                    <Button
-                      size="lg"
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 text-base h-12 px-8 shadow-[var(--shadow-soft)]"
+                {/* ── Hover Capabilities ── */}
+                <AnimatePresence>
+                  {crohovered && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="overflow-hidden relative z-10"
                     >
-                      Explore MyaiCRO
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </div>
-
-                  {/* Right – Architecture Visual – 2 cols */}
-                  <div className="lg:col-span-2 flex items-center">
-                    <div className="w-full space-y-2">
-                      {stackLayers.map((layer, i) => (
-                        <motion.div
-                          key={layer.label}
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.4, delay: 0.7 + i * 0.1 }}
-                          className={`rounded-lg border px-4 py-3 text-center transition-all duration-300 ${
-                            layer.isTop
-                              ? 'border-primary/40 bg-primary/10 shadow-[var(--shadow-soft)]'
-                              : 'border-border/50 bg-muted/30'
-                          }`}
-                        >
-                          <p
-                            className={`text-xs font-semibold uppercase tracking-wider mb-1 ${
-                              layer.isTop ? 'text-primary' : 'text-muted-foreground'
-                            }`}
+                      <div className="mx-8 mt-4 grid grid-cols-2 gap-2">
+                        {hoverCapabilities.map((cap) => (
+                          <div
+                            key={cap.label}
+                            className="flex items-center gap-2 rounded-lg bg-muted/20 border border-border/30 px-3 py-2 text-xs text-primary/90"
                           >
-                            {layer.label}
-                          </p>
-                          <p className="text-xs text-muted-foreground/70">
-                            {layer.tools.join(' • ')}
-                          </p>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
+                            <cap.icon className="h-3.5 w-3.5 shrink-0" />
+                            {cap.label}
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* ── Footer ── */}
+                <div className="relative z-10 px-8 pt-5 pb-7 flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground italic max-w-xs">
+                    Operate with enterprise-level revenue intelligence — without hiring a RevOps team.
+                  </p>
+                  <Button
+                    size="default"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-soft)]"
+                  >
+                    Explore MyaiCRO
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             </motion.div>
