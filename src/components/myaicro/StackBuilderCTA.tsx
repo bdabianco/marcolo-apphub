@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 
 const benefits = [
-  'Discover the best AI sales tools for your business',
-  'Learn how those tools should work together',
-  'Design a scalable revenue engine in minutes',
+  'Get AI-powered pipeline insights from day one',
+  'Identify revenue risks before they cost you deals',
+  'Automate follow-ups and next-best actions instantly',
 ];
 
 export const StackBuilderCTA = () => {
