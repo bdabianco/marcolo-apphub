@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MyaiAppsHeader } from '@/components/myaicro/MyaiAppsHeader';
 import { Button } from '@/components/ui/button';
 import {
   ArrowRight,
