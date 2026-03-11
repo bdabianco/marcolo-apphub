@@ -12,6 +12,7 @@ import RequestApp from "./pages/RequestApp";
 import AdminRequests from "./pages/AdminRequests";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import MyaiCROHome from "./pages/MyaiCROHome";
 
 const queryClient = new QueryClient({
   defaultOptions: {
