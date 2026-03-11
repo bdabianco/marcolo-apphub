@@ -62,19 +62,8 @@ const Index = () => {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[700px] bg-[image:var(--gradient-glow)] opacity-20" />
 
       {/* ───── HERO ───── */}
-      <section className="relative z-10 pt-20 pb-16">
+      <section className="relative z-10 pt-8 pb-16">
         <div className="container mx-auto px-4 text-center max-w-4xl">
-          <motion.a
-            href="https://www.marcoloai.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block mb-8"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <img src={marcoloLogo} alt="Marcolo" className="h-20 w-20 mx-auto" />
-          </motion.a>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
