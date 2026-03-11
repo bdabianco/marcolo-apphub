@@ -59,17 +59,17 @@ export const RevenueStackVisual = () => {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 1500),
-      setTimeout(() => setPhase(2), 3000),
-      setTimeout(() => setPhase(3), 4500),
-      setTimeout(() => setPhase(0), 9000),
+      setTimeout(() => setPhase(1), 2750),
+      setTimeout(() => setPhase(2), 5500),
+      setTimeout(() => setPhase(3), 8250),
+      setTimeout(() => setPhase(0), 14000),
     ];
     const loop = setInterval(() => {
       setPhase(0);
-      setTimeout(() => setPhase(1), 1500);
-      setTimeout(() => setPhase(2), 3000);
-      setTimeout(() => setPhase(3), 4500);
-    }, 9000);
+      setTimeout(() => setPhase(1), 2750);
+      setTimeout(() => setPhase(2), 5500);
+      setTimeout(() => setPhase(3), 8250);
+    }, 14000);
     return () => {
       timers.forEach(clearTimeout);
       clearInterval(loop);
