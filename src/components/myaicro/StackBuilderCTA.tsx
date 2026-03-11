@@ -20,11 +20,11 @@ export const StackBuilderCTA = () => {
           className="max-w-3xl mx-auto text-center"
         >
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-            Start With Your AI Sales Stack
+            Why Start Today?
           </h2>
           <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-            Before intelligence, you need the right system. The AI Sales Stack Builder helps you
-            design the tools and workflows your revenue engine needs.
+            Every day without AI-driven revenue intelligence is a day of missed opportunities.
+            Start your free trial and see the difference in your first week.
           </p>
 
           <div className="flex flex-col items-center gap-3 mb-10">
