@@ -194,8 +194,8 @@ const AppHub = () => {
                   variant="outline" 
                   className="w-full hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
                 >
-                  <span>Launch App</span>
-                  <Icons.ExternalLink className="ml-2 h-4 w-4" />
+                   <span>Learn More</span>
+                   <Icons.ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </CardContent>
             </Card>
