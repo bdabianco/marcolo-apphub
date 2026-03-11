@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import {
   ArrowRight,
   Brain,
-  TrendingUp,
   DollarSign,
   Settings2,
   Shield,
@@ -17,6 +16,7 @@ import {
   Users,
   Activity,
   Lock,
+  Layers,
 } from 'lucide-react';
 import marcoloLogo from '@/assets/marcolo-logo.png';
 
