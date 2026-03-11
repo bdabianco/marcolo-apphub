@@ -17,10 +17,7 @@ export const MyaiCROHeader = () => {
           <div className="h-5 w-px bg-border hidden sm:block" />
           <a href="/myaicro" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <img src={marcoloLogo} alt="MyaiCRO" className="h-8 w-8" />
-            <span className="text-lg font-bold -ml-[9px]">
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Myai</span>
-              <span className="text-foreground">CRO</span>
-            </span>
+            <span className="text-lg font-bold">MyaiCRO</span>
           </a>
         </div>
 
