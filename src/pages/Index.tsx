@@ -157,44 +157,79 @@ const Index = () => {
                   </div>
                 </div>
 
-                {/* ── Insight Preview Panel ── */}
-                <div className="relative z-10 mx-8 mt-6 rounded-xl border border-primary/15 bg-background/60 backdrop-blur-sm overflow-hidden">
-                  {/* Panel header */}
-                  <div className="flex items-center gap-2 px-5 py-3 border-b border-border/40 bg-muted/20">
-                    <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
-                    <span className="text-xs font-semibold text-foreground/90 uppercase tracking-wide">Revenue Intelligence Alert</span>
+                {/* Positioning statement */}
+                <div className="relative z-10 mx-8 mt-4">
+                  <p className="text-sm font-semibold text-primary/90">Sales Operating System + Revenue Intelligence</p>
+                </div>
+
+                {/* ── Stack Visualization ── */}
+                <div className="relative z-10 mx-8 mt-5 rounded-xl border border-primary/15 bg-background/60 backdrop-blur-sm overflow-hidden">
+                  <div className="flex items-center gap-2 px-5 py-2.5 border-b border-border/40 bg-muted/20">
+                    <Layers className="h-3.5 w-3.5 text-primary/70" />
+                    <span className="text-[10px] font-semibold text-foreground/80 uppercase tracking-wide">AI Sales Stack Architecture</span>
                   </div>
+                  <div className="p-4 space-y-2">
+                    {/* Revenue Intelligence Layer */}
+                    <div className="rounded-lg bg-primary/10 border border-primary/30 px-4 py-2.5 flex items-center justify-between">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-wider text-primary font-semibold">Revenue Intelligence Layer</p>
+                        <p className="text-sm font-bold text-foreground">MyaiCRO AI Engine</p>
+                      </div>
+                      <Brain className="h-4 w-4 text-primary" />
+                    </div>
+                    {/* Sales OS */}
+                    <div className="rounded-lg bg-primary/5 border border-primary/20 px-4 py-2.5 flex items-center justify-between">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-wider text-primary/70 font-semibold">Sales Operating System</p>
+                        <p className="text-sm font-bold text-foreground/90">MyaiCRO</p>
+                      </div>
+                      <Target className="h-4 w-4 text-primary/70" />
+                    </div>
+                    {/* Outreach */}
+                    <div className="rounded-lg bg-muted/30 border border-border/30 px-4 py-2 flex items-center justify-between">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Outreach Layer</p>
+                        <p className="text-xs text-foreground/70">Instantly · Lemlist</p>
+                      </div>
+                      <Zap className="h-3.5 w-3.5 text-muted-foreground" />
+                    </div>
+                    {/* Prospecting */}
+                    <div className="rounded-lg bg-muted/30 border border-border/30 px-4 py-2 flex items-center justify-between">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Prospecting Layer</p>
+                        <p className="text-xs text-foreground/70">Apollo · Clay · ZoomInfo</p>
+                      </div>
+                      <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                    </div>
+                  </div>
+                </div>
 
-                  <div className="p-5 space-y-4">
-                    <p className="text-sm text-foreground/80 font-medium">
-                      Pipeline coverage risk detected.
-                    </p>
-
-                    {/* Metrics row */}
+                {/* ── Insight Preview Panel ── */}
+                <div className="relative z-10 mx-8 mt-4 rounded-xl border border-primary/15 bg-background/60 backdrop-blur-sm overflow-hidden">
+                  <div className="flex items-center gap-2 px-5 py-2.5 border-b border-border/40 bg-muted/20">
+                    <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
+                    <span className="text-[10px] font-semibold text-foreground/80 uppercase tracking-wide">Revenue Intelligence Alert</span>
+                  </div>
+                  <div className="p-4 space-y-3">
+                    <p className="text-sm text-foreground/80 font-medium">Pipeline coverage risk detected.</p>
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="rounded-lg bg-muted/30 border border-border/30 px-4 py-3">
-                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Current Coverage</p>
+                      <div className="rounded-lg bg-muted/30 border border-border/30 px-4 py-2.5">
+                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Current Coverage</p>
                         <p className="text-2xl font-bold text-amber-400">1.9x</p>
                       </div>
-                      <div className="rounded-lg bg-muted/30 border border-border/30 px-4 py-3">
-                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Recommended</p>
+                      <div className="rounded-lg bg-muted/30 border border-border/30 px-4 py-2.5">
+                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Recommended</p>
                         <p className="text-2xl font-bold text-primary">3x</p>
                       </div>
                     </div>
-
-                    {/* Alert detail */}
-                    <div className="rounded-lg bg-amber-400/5 border border-amber-400/15 px-4 py-3">
+                    <div className="rounded-lg bg-amber-400/5 border border-amber-400/15 px-4 py-2.5">
                       <p className="text-xs text-foreground/70 leading-relaxed">
-                        <span className="font-semibold text-amber-400">3 deals</span> are likely to stall based on activity patterns.
+                        <span className="font-semibold text-amber-400">3 deals</span> likely to stall this week.
                       </p>
                     </div>
-
-                    {/* Recommendation */}
-                    <div className="rounded-lg bg-primary/5 border border-primary/15 px-4 py-3">
-                      <p className="text-[10px] uppercase tracking-wider text-primary/70 font-semibold mb-1">Recommended Action</p>
-                      <p className="text-xs text-foreground/80 leading-relaxed">
-                        Increase outbound prospecting targeting mid-market SaaS companies.
-                      </p>
+                    <div className="rounded-lg bg-primary/5 border border-primary/15 px-4 py-2.5">
+                      <p className="text-[10px] uppercase tracking-wider text-primary/70 font-semibold mb-0.5">Recommended Action</p>
+                      <p className="text-xs text-foreground/80 leading-relaxed">Increase outbound prospecting targeting your ICP segment.</p>
                     </div>
                   </div>
                 </div>
@@ -227,7 +262,7 @@ const Index = () => {
                 {/* ── Footer ── */}
                 <div className="relative z-10 px-8 pt-5 pb-7 flex items-center justify-between">
                   <p className="text-xs text-muted-foreground italic max-w-xs">
-                    Operate with enterprise-level revenue intelligence — without hiring a RevOps team.
+                    Run your entire sales operation with AI-powered intelligence.
                   </p>
                   <Button
                     size="default"
