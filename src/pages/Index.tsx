@@ -56,6 +56,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
+      <MyaiAppsHeader />
       {/* Background glow effects */}
       <div className="absolute inset-0 bg-[image:var(--gradient-radial)] opacity-30" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[700px] bg-[image:var(--gradient-glow)] opacity-20" />
