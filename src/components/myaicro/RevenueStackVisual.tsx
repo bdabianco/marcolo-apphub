@@ -325,7 +325,7 @@ const AnalysisInsightCycle = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setIdx((prev) => (prev + 1) % analysisInsights.length);
-    }, 2000);
+    }, 1300);
     return () => clearInterval(interval);
   }, []);
 
