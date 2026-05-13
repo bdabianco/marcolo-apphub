@@ -307,9 +307,12 @@ const Index = () => {
                   <Button
                     size="sm"
                     className="bg-primary text-primary-foreground hover:bg-primary/90"
+                    asChild
                   >
-                    Try MyaiCTO
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <a href="https://myaicto.com" target="_blank" rel="noopener noreferrer">
+                      Try MyaiCTO
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </a>
                   </Button>
                 </div>
               </motion.div>
