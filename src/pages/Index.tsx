@@ -18,6 +18,8 @@ import {
   Activity,
   Lock,
   Rows3,
+  Cpu,
+  Sparkles,
 } from 'lucide-react';
 import marcoloLogo from '@/assets/marcolo-logo.png';
 
@@ -268,6 +270,50 @@ const Index = () => {
 
             {/* ── Future Cards Column ── */}
             <div className="flex flex-col gap-6">
+              {/* MyaiCTO - BETA */}
+              <motion.div
+                className="relative rounded-2xl border border-primary/30 bg-card/50 backdrop-blur-sm p-9 overflow-hidden"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+              >
+                <div className="absolute -top-12 -right-12 w-40 h-40 bg-primary/10 rounded-full blur-3xl" />
+                <div className="relative z-10">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/15 border border-primary/20">
+                        <Cpu className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-2xl font-bold text-foreground">MyaiCTO</h3>
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/15 border border-primary/30 rounded px-1.5 py-0.5">
+                            Beta
+                          </span>
+                        </div>
+                        <p className="text-sm text-primary font-medium">AI Chief Technology Officer</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 mb-3 text-xs font-semibold text-primary bg-primary/10 border border-primary/20 rounded-full px-3 py-1">
+                    <Sparkles className="h-3 w-3" />
+                    Free for a limited time
+                  </div>
+                  <p className="text-sm text-foreground/80 leading-relaxed mb-4">
+                    Manage every aspect of your projects with AI readiness scoring, insights, and
+                    coaching to ensure quality delivery on time. AI ingests make it easy to create
+                    development items and manage them in sprints.
+                  </p>
+                  <Button
+                    size="sm"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
+                    Try MyaiCTO
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </motion.div>
+
               {/* MyaiCFO */}
               <motion.div
                 className="relative rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-7 overflow-hidden opacity-70"
