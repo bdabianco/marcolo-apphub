@@ -309,7 +309,7 @@ const Index = () => {
                     className="bg-primary text-primary-foreground hover:bg-primary/90"
                     asChild
                   >
-                    <a href="https://myaicto.com" target="_blank" rel="noopener noreferrer">
+                    <a href="https://myaicto.ai" target="_blank" rel="noopener noreferrer">
                       Try MyaiCTO
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </a>
