@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { MyaiAppsHeader } from '@/components/myaicro/MyaiAppsHeader';
+import constellationImg from '@/assets/apphub-vision-constellation.png';
 import {
   ArrowRight,
   AlertTriangle,
@@ -11,28 +12,6 @@ import {
   Shield,
   Check,
 } from 'lucide-react';
-
-/* ───────── Coming-soon executive cards ───────── */
-const comingSoon = [
-  {
-    name: 'MyaiCTO',
-    role: 'AI Chief Technology Officer',
-    body: 'Run your product and engineering execution with AI. Roadmap planning, sprint quality scoring, and risk coaching for every release. Coming next.',
-    mailto: 'mailto:bruce@marcoloai.com?subject=Notify me when MyaiCTO launches',
-  },
-  {
-    name: 'MyaiCFO',
-    role: 'AI Chief Financial Officer',
-    body: 'Financial intelligence for SMB companies. Real-time cash flow insights, budgeting forecasts, and strategic financial guidance. Coming next.',
-    mailto: 'mailto:bruce@marcoloai.com?subject=Notify me when MyaiCFO launches',
-  },
-  {
-    name: 'MyaiCOO',
-    role: 'AI Chief Operations Officer',
-    body: 'Operational intelligence for scaling organizations. Workflow automation, resource optimization, and performance analytics. Coming next.',
-    mailto: 'mailto:bruce@marcoloai.com?subject=Notify me when MyaiCOO launches',
-  },
-];
 
 /* ───────── Services ───────── */
 const services = [
