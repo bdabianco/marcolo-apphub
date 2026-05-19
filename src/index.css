@@ -2,137 +2,155 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Marcolo Branding Design System - All colors, gradients, shadows, and transitions
-All colors MUST be HSL format for consistency and theming support.
+/*
+  Marcolo AI — Linear-with-Personality Design System
+  Per marcoloai_Visual_Design_Tokens.md
+  All colors in HSL for theming consistency.
 */
 
 @layer base {
   :root {
-    /* Marcolo Brand Colors - Dark Theme */
-    --background: 0 0% 18%;
-    --foreground: 0 0% 95%;
+    /* ── Linear-with-Personality Tokens ───────────────────────────── */
+    /* Backgrounds */
+    --background-base: 220 8% 4%;        /* #08090A */
+    --background-elevated: 220 8% 6%;    /* #0F1011 */
+    --background-overlay: 225 7% 9%;     /* #16171A */
 
-    --card: 0 0% 22%;
-    --card-foreground: 0 0% 95%;
+    /* Text */
+    --text-primary: 40 14% 96%;          /* #F5F5F4 — warm off-white */
+    --text-secondary: 240 5% 65%;        /* #A1A1AA */
+    --text-muted: 240 5% 34%;            /* #52525B */
+    --text-accent: 160 84% 39%;          /* #10B981 — emerald */
 
-    --popover: 0 0% 22%;
-    --popover-foreground: 0 0% 95%;
+    /* Accent — Marcolo Emerald */
+    --accent-base: 160 84% 39%;          /* #10B981 */
+    --accent-hover: 160 84% 32%;         /* #059669 */
+    --accent-pressed: 160 84% 26%;       /* #047857 */
 
-    /* Primary - Teal/Turquoise */
-    --primary: 160 70% 50%;
-    --primary-foreground: 0 0% 18%;
-    --primary-light: 160 65% 60%;
-    --primary-dark: 160 75% 35%;
+    /* Status */
+    --status-warning: 38 92% 50%;        /* #F59E0B */
+    --status-error: 0 84% 60%;           /* #EF4444 */
 
-    /* Secondary - Bright Blue */
-    --secondary: 190 80% 55%;
-    --secondary-foreground: 0 0% 18%;
-    --secondary-light: 190 75% 65%;
+    /* ── shadcn / app-wide mappings (mapped onto the new tokens) ─── */
+    --background: var(--background-base);
+    --foreground: var(--text-primary);
 
-    /* Muted - Gray tones */
-    --muted: 0 0% 25%;
-    --muted-foreground: 0 0% 70%;
+    --card: var(--background-elevated);
+    --card-foreground: var(--text-primary);
 
-    /* Accent */
-    --accent: 160 70% 55%;
-    --accent-foreground: 0 0% 18%;
+    --popover: var(--background-elevated);
+    --popover-foreground: var(--text-primary);
 
-    --destructive: 0 84.2% 60.2%;
+    --primary: var(--accent-base);
+    --primary-foreground: 220 8% 4%;     /* near-black on emerald */
+    --primary-light: 160 84% 45%;
+    --primary-dark: 160 84% 26%;
+
+    --secondary: var(--accent-base);
+    --secondary-foreground: 220 8% 4%;
+    --secondary-light: 160 84% 45%;
+
+    --muted: 225 7% 9%;
+    --muted-foreground: var(--text-secondary);
+
+    --accent: var(--accent-base);
+    --accent-foreground: 220 8% 4%;
+
+    --destructive: var(--status-error);
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 30%;
-    --input: 0 0% 30%;
-    --ring: 160 70% 50%;
+    --border: 0 0% 100%;                 /* paired with opacity in classes */
+    --input: 0 0% 100%;
+    --ring: var(--accent-base);
 
-    --radius: 0.75rem;
+    --radius: 0.75rem;                   /* cards 12px; buttons override to 6px */
 
-    /* Marcolo Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(160 70% 50%) 0%, hsl(190 80% 55%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(190 80% 55%) 0%, hsl(160 70% 50%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(160 75% 35%) 0%, hsl(190 80% 55%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 18%) 0%, hsl(0 0% 22%) 100%);
-    --gradient-radial: radial-gradient(circle at 50% 50%, hsl(160 70% 50% / 0.2) 0%, transparent 70%);
-    --gradient-glow: radial-gradient(ellipse at 50% 0%, hsl(160 70% 50% / 0.3) 0%, transparent 60%);
+    /* Legacy gradient/shadow tokens (kept neutral — no glows per spec) */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--accent-base)) 0%, hsl(var(--accent-hover)) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--accent-base)) 0%, hsl(var(--accent-hover)) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(var(--accent-pressed)) 0%, hsl(var(--accent-base)) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background-base)) 0%, hsl(var(--background-elevated)) 100%);
+    --gradient-radial: radial-gradient(circle at 50% 50%, hsl(var(--accent-base) / 0.08) 0%, transparent 70%);
+    --gradient-glow: radial-gradient(ellipse at 50% 0%, hsl(var(--accent-base) / 0.12) 0%, transparent 60%);
 
-    /* Marcolo Shadows */
-    --shadow-soft: 0 4px 20px -4px hsl(160 70% 50% / 0.3);
-    --shadow-medium: 0 10px 40px -10px hsl(160 70% 50% / 0.4);
-    --shadow-glow: 0 0 60px -15px hsl(160 70% 50% / 0.6);
-    --shadow-elevation: 0 20px 60px -15px hsl(160 70% 50% / 0.5);
+    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.35);
+    --shadow-glow: 0 8px 24px rgba(0, 0, 0, 0.32);
+    --shadow-elevation: 0 8px 24px rgba(0, 0, 0, 0.32);
 
-    /* Marcolo Transitions */
-    --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-smooth: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 0 0% 22%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 160 70% 50%;
-    --sidebar-primary-foreground: 0 0% 18%;
-    --sidebar-accent: 0 0% 25%;
-    --sidebar-accent-foreground: 160 70% 50%;
-    --sidebar-border: 0 0% 30%;
-    --sidebar-ring: 160 70% 50%;
+    --sidebar-background: var(--background-elevated);
+    --sidebar-foreground: var(--text-primary);
+    --sidebar-primary: var(--accent-base);
+    --sidebar-primary-foreground: 220 8% 4%;
+    --sidebar-accent: 225 7% 9%;
+    --sidebar-accent-foreground: var(--accent-base);
+    --sidebar-border: 0 0% 100%;
+    --sidebar-ring: var(--accent-base);
   }
 
   .dark {
-    /* Dark mode uses same values as root for Marcolo brand consistency */
-    --background: 0 0% 18%;
-    --foreground: 0 0% 95%;
-
-    --card: 0 0% 22%;
-    --card-foreground: 0 0% 95%;
-
-    --popover: 0 0% 22%;
-    --popover-foreground: 0 0% 95%;
-
-    --primary: 160 70% 50%;
-    --primary-foreground: 0 0% 18%;
-
-    --secondary: 190 80% 55%;
-    --secondary-foreground: 0 0% 18%;
-
-    --muted: 0 0% 25%;
-    --muted-foreground: 0 0% 70%;
-
-    --accent: 160 70% 55%;
-    --accent-foreground: 0 0% 18%;
-
-    --destructive: 0 84.2% 60.2%;
+    /* Mirror :root — single dark brand */
+    --background: var(--background-base);
+    --foreground: var(--text-primary);
+    --card: var(--background-elevated);
+    --card-foreground: var(--text-primary);
+    --popover: var(--background-elevated);
+    --popover-foreground: var(--text-primary);
+    --primary: var(--accent-base);
+    --primary-foreground: 220 8% 4%;
+    --secondary: var(--accent-base);
+    --secondary-foreground: 220 8% 4%;
+    --muted: 225 7% 9%;
+    --muted-foreground: var(--text-secondary);
+    --accent: var(--accent-base);
+    --accent-foreground: 220 8% 4%;
+    --destructive: var(--status-error);
     --destructive-foreground: 0 0% 100%;
-
-    --border: 0 0% 30%;
-    --input: 0 0% 30%;
-    --ring: 160 70% 50%;
-
-    --gradient-primary: linear-gradient(135deg, hsl(160 70% 50%) 0%, hsl(190 80% 55%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(190 80% 55%) 0%, hsl(160 70% 50%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(160 75% 35%) 0%, hsl(190 80% 55%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 18%) 0%, hsl(0 0% 22%) 100%);
-    --gradient-radial: radial-gradient(circle at 50% 50%, hsl(160 70% 50% / 0.2) 0%, transparent 70%);
-    --gradient-glow: radial-gradient(ellipse at 50% 0%, hsl(160 70% 50% / 0.3) 0%, transparent 60%);
-
-    --shadow-soft: 0 4px 20px -4px hsl(160 70% 50% / 0.3);
-    --shadow-medium: 0 10px 40px -10px hsl(160 70% 50% / 0.4);
-    --shadow-glow: 0 0 60px -15px hsl(160 70% 50% / 0.6);
-    --shadow-elevation: 0 20px 60px -15px hsl(160 70% 50% / 0.5);
-
-    --sidebar-background: 0 0% 22%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 160 70% 50%;
-    --sidebar-primary-foreground: 0 0% 18%;
-    --sidebar-accent: 0 0% 25%;
-    --sidebar-accent-foreground: 160 70% 50%;
-    --sidebar-border: 0 0% 30%;
-    --sidebar-ring: 160 70% 50%;
+    --border: 0 0% 100%;
+    --input: 0 0% 100%;
+    --ring: var(--accent-base);
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(255 255 255 / 0.06);
+  }
+
+  html {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background-base));
+    color: hsl(var(--text-primary));
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer components {
+  /* Eyebrow — tracked uppercase muted labels */
+  .eyebrow {
+    @apply text-[13px] font-semibold uppercase tracking-[0.08em];
+    color: hsl(var(--text-muted));
+  }
+
+  /* Tertiary text link with hover-arrow nudge — personality moment */
+  .link-arrow {
+    @apply inline-flex items-center gap-1.5 text-base font-medium transition-colors;
+    color: hsl(var(--text-secondary));
+  }
+  .link-arrow:hover {
+    color: hsl(var(--text-primary));
+  }
+  .link-arrow > .arrow {
+    @apply inline-block transition-transform;
+  }
+  .link-arrow:hover > .arrow {
+    transform: translateX(3px);
   }
 }
