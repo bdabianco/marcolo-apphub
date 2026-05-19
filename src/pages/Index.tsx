@@ -206,7 +206,7 @@ const Index = () => {
       </section>
 
       {/* ═══════════ VISION / THE THESIS ═══════════ */}
-      <VisionSection />
+      <AppHubVisionSection />
 
 
       {/* ═══════════ IMPLEMENTATION SERVICES ═══════════ */}
