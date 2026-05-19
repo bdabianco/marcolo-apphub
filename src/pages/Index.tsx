@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MyaiAppsHeader } from '@/components/myaicro/MyaiAppsHeader';
-import constellationImg from '@/assets/apphub-vision-constellation.png';
+import { AppHubVisionSection } from '@/components/apphub/AppHubVisionSection';
 import {
   ArrowRight,
   AlertTriangle,
