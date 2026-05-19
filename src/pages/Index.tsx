@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { MyaiAppsHeader } from '@/components/myaicro/MyaiAppsHeader';
+import { AppHubVisionSection } from '@/components/apphub/AppHubVisionSection';
 import {
   ArrowRight,
   AlertTriangle,
@@ -11,28 +11,6 @@ import {
   Shield,
   Check,
 } from 'lucide-react';
-
-/* ───────── Coming-soon executive cards ───────── */
-const comingSoon = [
-  {
-    name: 'MyaiCTO',
-    role: 'AI Chief Technology Officer',
-    body: 'Run your product and engineering execution with AI. Roadmap planning, sprint quality scoring, and risk coaching for every release. Coming next.',
-    mailto: 'mailto:bruce@marcoloai.com?subject=Notify me when MyaiCTO launches',
-  },
-  {
-    name: 'MyaiCFO',
-    role: 'AI Chief Financial Officer',
-    body: 'Financial intelligence for SMB companies. Real-time cash flow insights, budgeting forecasts, and strategic financial guidance. Coming next.',
-    mailto: 'mailto:bruce@marcoloai.com?subject=Notify me when MyaiCFO launches',
-  },
-  {
-    name: 'MyaiCOO',
-    role: 'AI Chief Operations Officer',
-    body: 'Operational intelligence for scaling organizations. Workflow automation, resource optimization, and performance analytics. Coming next.',
-    mailto: 'mailto:bruce@marcoloai.com?subject=Notify me when MyaiCOO launches',
-  },
-];
 
 /* ───────── Services ───────── */
 const services = [
@@ -88,8 +66,7 @@ const Index = () => {
           </p>
 
           <p className="mx-auto mt-4 max-w-[720px] text-[16px] leading-[1.6] text-text-secondary">
-            MyaiCRO is your AI Chief Revenue Officer. Live and selling today. MyaiCTO, MyaiCFO, and
-            MyaiCOO are coming next.
+            MyaiCRO is your AI Chief Revenue Officer. Live and selling today.
           </p>
         </div>
       </section>
@@ -228,39 +205,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ═══════════ COMING SOON ═══════════ */}
-      <section className="relative">
-        <div className="container mx-auto px-6 pb-24 md:pb-32">
-          <div className="mx-auto max-w-[1100px]">
-            <div className="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {comingSoon.map((c, i) => (
-                <motion.div
-                  key={c.name}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 0.65, y: 0 }}
-                  whileHover={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="group rounded-[12px] border border-white/[0.06] bg-bg-elevated p-6 transition-all hover:border-white/[0.12]"
-                >
-                  <span className="inline-flex items-center rounded-[6px] border border-white/[0.06] bg-bg-base px-2 py-1">
-                    <span className="eyebrow">Coming Soon</span>
-                  </span>
-                  <h3 className="mt-4 text-[24px] md:text-[28px] font-semibold leading-[1.25] tracking-[-0.01em]">
-                    {c.name}
-                  </h3>
-                  <p className="mt-1 text-sm font-medium text-text-secondary">{c.role}</p>
-                  <p className="mt-4 text-[15px] leading-[1.6] text-text-primary">{c.body}</p>
-                  <a href={c.mailto} className="link-arrow mt-6">
-                    Get notified when {c.name} launches
-                    <span className="arrow">→</span>
-                  </a>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ═══════════ VISION / THE THESIS ═══════════ */}
+      <VisionSection />
+
 
       {/* ═══════════ IMPLEMENTATION SERVICES ═══════════ */}
       <section className="relative border-t border-white/[0.06]">
