@@ -4,13 +4,42 @@ import { AppHubVisionSection } from '@/components/apphub/AppHubVisionSection';
 import {
   ArrowRight,
   AlertTriangle,
-  Brain,
-  Target,
-  Zap,
-  Users,
   Shield,
   Check,
+  ChevronDown,
+  Database,
+  MailCheck,
+  CreditCard,
+  Mail,
+  Calendar,
+  Megaphone,
+  Linkedin,
+  Zap,
+  Bot,
 } from 'lucide-react';
+
+/* ───────── MyaiCRO native capabilities ───────── */
+const nativeCapabilities = [
+  { label: 'Ingest', sub: 'Lead & prospect capture' },
+  { label: 'Score', sub: 'Sales Readiness Index (SRI)', highlight: true },
+  { label: 'Nurture', sub: 'Agentic AI campaigns' },
+  { label: 'Signal', sub: 'Intent & velocity detection' },
+  { label: 'Deal Health', sub: 'Risk scoring & forecasting' },
+  { label: 'Coach', sub: 'Next Best Actions' },
+];
+
+/* ───────── MyaiCRO integration ecosystem ───────── */
+const integrations = [
+  { name: 'Apollo', category: 'Enrichment', Icon: Database },
+  { name: 'ZeroBounce', category: 'Email validation', Icon: MailCheck },
+  { name: 'Stripe', category: 'Payments', Icon: CreditCard },
+  { name: 'Google Workspace', category: 'Email & calendar', Icon: Mail },
+  { name: 'Calendly', category: 'Scheduling', Icon: Calendar },
+  { name: 'Meta', category: 'Lead ads', Icon: Megaphone },
+  { name: 'LinkedIn', category: 'Network data', Icon: Linkedin },
+  { name: 'Zapier', category: 'Automation', Icon: Zap },
+  { name: 'Manus', category: 'AI agent', Icon: Bot },
+];
 
 /* ───────── Services ───────── */
 const services = [
@@ -103,42 +132,46 @@ const Index = () => {
                 Sales Operating System <span className="text-text-muted">+</span> Revenue Intelligence
               </p>
 
-              {/* Two-column: Architecture + Alert */}
+              {/* Two-column: Native Orchestration + Alert */}
               <div className="mt-8 grid gap-6 lg:grid-cols-2">
-                {/* Architecture */}
+                {/* Native Orchestration */}
                 <div className="rounded-[12px] border border-white/[0.06] bg-bg-base p-5">
-                  <p className="eyebrow mb-4">Architecture</p>
-                  <div className="space-y-2">
-                    {/* Active layer */}
-                    <div
-                      className="flex items-center justify-between rounded-[8px] border px-4 py-3"
-                      style={{ borderColor: 'hsl(var(--accent-base) / 0.3)', background: 'hsl(var(--accent-base) / 0.06)' }}
-                    >
-                      <div>
-                        <p className="eyebrow" style={{ color: 'hsl(var(--accent-base))' }}>
-                          Revenue Intelligence Layer
-                        </p>
-                        <p className="mt-0.5 text-sm font-semibold text-text-primary">
-                          MyaiCRO AI Engine
-                        </p>
-                      </div>
-                      <Brain className="h-4 w-4" style={{ color: 'hsl(var(--accent-base))' }} />
-                    </div>
-                    {/* Other layers */}
-                    {[
-                      { eyebrow: 'Sales Operating System', tool: 'MyaiCRO', Icon: Target },
-                      { eyebrow: 'Outreach Layer', tool: 'Instantly · Lemlist', Icon: Zap },
-                      { eyebrow: 'Prospecting Layer', tool: 'Apollo · Clay · ZoomInfo', Icon: Users },
-                    ].map(({ eyebrow, tool, Icon }) => (
-                      <div
-                        key={eyebrow}
-                        className="flex items-center justify-between rounded-[8px] border border-white/[0.06] bg-bg-elevated px-4 py-3"
-                      >
-                        <div>
-                          <p className="eyebrow">{eyebrow}</p>
-                          <p className="mt-0.5 text-sm font-medium text-text-primary">{tool}</p>
+                  <p className="eyebrow mb-4">Native Orchestration</p>
+                  <div className="space-y-1.5">
+                    {nativeCapabilities.map((cap, i) => (
+                      <div key={cap.label}>
+                        <div
+                          className="flex items-center justify-between rounded-[8px] border px-4 py-2.5"
+                          style={
+                            cap.highlight
+                              ? {
+                                  borderColor: 'hsl(var(--accent-base) / 0.3)',
+                                  background: 'hsl(var(--accent-base) / 0.06)',
+                                }
+                              : { borderColor: 'hsl(0 0% 100% / 0.06)', background: 'hsl(var(--bg-elevated))' }
+                          }
+                        >
+                          <div>
+                            <p
+                              className="text-sm font-semibold"
+                              style={cap.highlight ? { color: 'hsl(var(--accent-base))' } : undefined}
+                            >
+                              {cap.label}
+                            </p>
+                            <p className="mt-0.5 text-xs text-text-secondary">{cap.sub}</p>
+                          </div>
+                          <span
+                            className="text-[10px] font-mono text-text-muted"
+                            aria-hidden="true"
+                          >
+                            {String(i + 1).padStart(2, '0')}
+                          </span>
                         </div>
-                        <Icon className="h-4 w-4 text-text-muted" />
+                        {i < nativeCapabilities.length - 1 && (
+                          <div className="flex justify-center py-0.5" aria-hidden="true">
+                            <ChevronDown className="h-3 w-3 text-text-muted" />
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -181,6 +214,29 @@ const Index = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Growing Integration Ecosystem */}
+              <div className="mt-6 rounded-[12px] border border-white/[0.06] bg-bg-base p-5">
+                <p className="eyebrow">Growing Integration Ecosystem</p>
+                <p className="mt-2 text-xs text-text-secondary">
+                  MyaiCRO connects to the tools you already use. More integrations shipping every month.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {integrations.map(({ name, category, Icon }) => (
+                    <div
+                      key={name}
+                      className="flex items-center gap-2.5 rounded-[8px] border border-white/[0.06] bg-bg-elevated px-3 py-2"
+                    >
+                      <Icon className="h-3.5 w-3.5 text-text-muted shrink-0" />
+                      <div className="leading-tight">
+                        <p className="text-xs font-medium text-text-primary">{name}</p>
+                        <p className="text-[10px] text-text-muted">{category}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
 
               {/* Footer */}
               <div className="mt-8 flex flex-col gap-4 border-t border-white/[0.06] pt-6 md:flex-row md:items-center md:justify-between">
