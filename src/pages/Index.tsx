@@ -4,6 +4,7 @@ import { AppHubVisionSection } from '@/components/apphub/AppHubVisionSection';
 import {
   ArrowRight,
   AlertTriangle,
+  TrendingUp,
   Shield,
   Check,
   ChevronDown,
@@ -211,6 +212,56 @@ const Index = () => {
                     <p className="text-sm text-text-primary">
                       Increase outbound prospecting targeting your ICP segment.
                     </p>
+                  </div>
+
+                  {/* ── Second Intelligence Panel: Signal → Deal Health ── */}
+                  <div className="mt-6 border-t border-white/[0.06] pt-6">
+                    <div className="mb-4 flex items-center gap-2">
+                      <TrendingUp className="h-3.5 w-3.5" style={{ color: 'hsl(var(--accent-base))' }} />
+                      <p className="eyebrow">Signal → Deal Health</p>
+                    </div>
+                    <h3 className="text-[20px] md:text-[22px] font-semibold leading-[1.25] tracking-[-0.01em]">
+                      Intent spike detected. Deal health rising.
+                    </h3>
+
+                    <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+                      <div className="rounded-[8px] border border-white/[0.06] bg-bg-elevated px-4 py-3">
+                        <p className="eyebrow mb-1">Intent Signal</p>
+                        <p className="text-sm font-semibold text-text-primary leading-tight">
+                          Engagement spike
+                        </p>
+                        <p className="mt-0.5 text-xs text-text-secondary">
+                          3 stakeholders active
+                        </p>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-text-muted" aria-hidden="true" />
+                      <div className="rounded-[8px] border border-white/[0.06] bg-bg-elevated px-4 py-3">
+                        <p className="eyebrow mb-1">Deal Health</p>
+                        <p className="text-[22px] font-bold leading-none">
+                          <span className="text-text-secondary">72</span>
+                          <span className="text-text-muted"> → </span>
+                          <span style={{ color: 'hsl(var(--accent-base))' }}>81</span>
+                        </p>
+                        <p
+                          className="mt-1.5 text-xs font-semibold"
+                          style={{ color: 'hsl(var(--accent-base))' }}
+                        >
+                          +9 this week
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className="mt-4 text-sm text-text-secondary">
+                      A surge in buyer engagement raised this deal's health score. MyaiCRO flagged
+                      it for acceleration.
+                    </p>
+
+                    <div className="mt-4 rounded-[8px] border border-white/[0.06] bg-bg-elevated px-4 py-3">
+                      <p className="eyebrow mb-1">Recommended Action</p>
+                      <p className="text-sm text-text-primary">
+                        Advance to proposal while intent is high.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
