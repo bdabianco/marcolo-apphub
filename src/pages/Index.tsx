@@ -129,7 +129,7 @@ const Index = () => {
               </div>
 
               <p className="mt-4 text-sm font-medium text-text-secondary">
-                Sales Operating System <span className="text-text-muted">+</span> Revenue Intelligence
+                Sales Execution Operating System <span className="text-text-muted">+</span> Revenue Intelligence
               </p>
 
               {/* Two-column: Native Orchestration + Alert */}
