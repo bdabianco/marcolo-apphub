@@ -4,13 +4,42 @@ import { AppHubVisionSection } from '@/components/apphub/AppHubVisionSection';
 import {
   ArrowRight,
   AlertTriangle,
-  Brain,
-  Target,
-  Zap,
-  Users,
   Shield,
   Check,
+  ChevronDown,
+  Database,
+  MailCheck,
+  CreditCard,
+  Mail,
+  Calendar,
+  Megaphone,
+  Linkedin,
+  Zap,
+  Bot,
 } from 'lucide-react';
+
+/* ───────── MyaiCRO native capabilities ───────── */
+const nativeCapabilities = [
+  { label: 'Ingest', sub: 'Lead & prospect capture' },
+  { label: 'Score', sub: 'Sales Readiness Index (SRI)', highlight: true },
+  { label: 'Nurture', sub: 'Agentic AI campaigns' },
+  { label: 'Signal', sub: 'Intent & velocity detection' },
+  { label: 'Deal Health', sub: 'Risk scoring & forecasting' },
+  { label: 'Coach', sub: 'Next Best Actions' },
+];
+
+/* ───────── MyaiCRO integration ecosystem ───────── */
+const integrations = [
+  { name: 'Apollo', category: 'Enrichment', Icon: Database },
+  { name: 'ZeroBounce', category: 'Email validation', Icon: MailCheck },
+  { name: 'Stripe', category: 'Payments', Icon: CreditCard },
+  { name: 'Google Workspace', category: 'Email & calendar', Icon: Mail },
+  { name: 'Calendly', category: 'Scheduling', Icon: Calendar },
+  { name: 'Meta', category: 'Lead ads', Icon: Megaphone },
+  { name: 'LinkedIn', category: 'Network data', Icon: Linkedin },
+  { name: 'Zapier', category: 'Automation', Icon: Zap },
+  { name: 'Manus', category: 'AI agent', Icon: Bot },
+];
 
 /* ───────── Services ───────── */
 const services = [
