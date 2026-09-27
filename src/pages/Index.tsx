@@ -5,7 +5,6 @@ import {
   ArrowRight,
   AlertTriangle,
   TrendingUp,
-  Shield,
   Check,
   ChevronDown,
   Database,
@@ -390,20 +389,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ═══════════ ENTERPRISE-GRADE SECURITY ═══════════ */}
-      <section className="border-t border-white/[0.06]">
-        <div className="container mx-auto max-w-[720px] px-6 py-16 text-center">
-          <div className="inline-flex items-center gap-2 rounded-[6px] border border-white/[0.06] bg-bg-elevated px-3 py-1.5">
-            <Shield className="h-4 w-4 text-text-secondary" />
-            <span className="eyebrow">Enterprise-Grade Security</span>
-          </div>
-          <p className="mt-4 text-[16px] leading-[1.6] text-text-secondary">
-            All data is encrypted at rest and in transit, with strict multi-tenant isolation. Your
-            organization's data is separated from every other tenant by Row-Level Security enforced
-            at the database level.
-          </p>
-        </div>
-      </section>
     </div>
   );
 };
