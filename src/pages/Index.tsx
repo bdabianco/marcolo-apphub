@@ -389,6 +389,16 @@ const Index = () => {
         </div>
       </section>
 
+      {/* ═══════════ ENTERPRISE-GRADE SECURITY ═══════════ */}
+      <section className="border-t border-white/[0.06]">
+        <div className="container mx-auto max-w-[720px] px-6 py-16 text-center">
+          <p className="text-[16px] leading-[1.6] text-text-secondary">
+            All data is encrypted at rest and in transit, with strict multi-tenant isolation. Your
+            organization's data is separated from every other tenant by Row-Level Security enforced
+            at the database level.
+          </p>
+        </div>
+      </section>
     </div>
   );
 };
