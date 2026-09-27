@@ -53,20 +53,20 @@ const services = [
       'ICP profile and vertical alignment',
       'Initial scoring rules and signal configuration',
       'Founders Tier feature activation',
+      'Custom nurture campaign setup and 6 assets',
     ],
-    duration: 'TYPICALLY: 1 WEEK',
+    price: '$1,000 PER ENGAGEMENT',
   },
   {
-    eyebrow: 'STANDARD',
+    eyebrow: 'VALUE',
     title: 'Integration & Training',
     body: 'Connect MyaiCRO to your existing stack and train your team to run it. Apollo, ZeroBounce, Stripe, and Google Workspace integrations — plus operator training for your sales leaders.',
     items: [
       'Apollo, ZeroBounce, Stripe integration setup',
       'Google Workspace OAuth and email configuration',
       'Operator and admin user training sessions',
-      'Custom nurture campaign templates',
     ],
-    duration: 'TYPICALLY: 2–3 WEEKS',
+    price: '$500 PER ENGAGEMENT',
   },
 ];
 
@@ -358,7 +358,7 @@ const Index = () => {
                   </ul>
                   <div className="mt-8 flex-1" />
                   <div className="mt-6 border-t border-white/[0.06] pt-4">
-                    <p className="eyebrow">{s.duration}</p>
+                    <p className="eyebrow">{s.price}</p>
                   </div>
                 </div>
               ))}
