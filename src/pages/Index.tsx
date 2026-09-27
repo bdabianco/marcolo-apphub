@@ -5,7 +5,6 @@ import {
   ArrowRight,
   AlertTriangle,
   TrendingUp,
-  Shield,
   Check,
   ChevronDown,
   Database,
