@@ -35,6 +35,7 @@ const integrations = [
   { name: 'ZeroBounce', category: 'Email validation', Icon: MailCheck },
   { name: 'Stripe', category: 'Payments', Icon: CreditCard },
   { name: 'Google Workspace', category: 'Email & calendar', Icon: Mail },
+  { name: 'MS365', category: 'Email & calendar', Icon: Mail },
   { name: 'Calendly', category: 'Scheduling', Icon: Calendar },
   { name: 'Meta', category: 'Lead ads', Icon: Megaphone },
   { name: 'LinkedIn', category: 'Network data', Icon: Linkedin },
