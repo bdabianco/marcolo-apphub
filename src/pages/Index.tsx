@@ -52,7 +52,6 @@ const services = [
       'Tenant setup and admin configuration',
       'ICP profile and vertical alignment',
       'Initial scoring rules and signal configuration',
-      'Founders Tier feature activation',
       'Custom nurture campaign setup and 6 assets',
     ],
     price: '$1,000 PER ENGAGEMENT',
