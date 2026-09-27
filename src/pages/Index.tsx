@@ -398,8 +398,9 @@ const Index = () => {
             <span className="eyebrow">Enterprise-Grade Security</span>
           </div>
           <p className="mt-4 text-[16px] leading-[1.6] text-text-secondary">
-            All data is protected with enterprise-grade encryption and multi-tenant isolation. Your
-            organization's information is secured with Row-Level Security and never shared.
+            All data is encrypted at rest and in transit, with strict multi-tenant isolation. Your
+            organization's data is separated from every other tenant by Row-Level Security enforced
+            at the database level.
           </p>
         </div>
       </section>
