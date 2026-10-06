@@ -7,13 +7,13 @@ import { StackBuilderCTA } from '@/components/myaicro/StackBuilderCTA';
 import { TrustSection } from '@/components/myaicro/TrustSection';
 import { VisionSection } from '@/components/myaicro/VisionSection';
 import { FinalCTA } from '@/components/myaicro/FinalCTA';
-import { MyaiCROHeader } from '@/components/myaicro/MyaiCROHeader';
-import { MyaiCROFooter } from '@/components/myaicro/MyaiCROFooter';
+import { MyaiCroHeader } from '@/components/myaicro/myaiCROHeader';
+import { MyaiCroFooter } from '@/components/myaicro/myaiCROFooter';
 
-const MyaiCROHome = () => {
+const MyaiCroHome = () => {
   return (
     <div className="min-h-screen bg-background">
-      <MyaiCROHeader />
+      <MyaiCroHeader />
       <main>
         <HeroSection />
         <ProblemSection />
@@ -25,9 +25,9 @@ const MyaiCROHome = () => {
         <VisionSection />
         <FinalCTA />
       </main>
-      <MyaiCROFooter />
+      <MyaiCroFooter />
     </div>
   );
 };
 
-export default MyaiCROHome;
+export default MyaiCroHome;

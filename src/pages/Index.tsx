@@ -18,7 +18,7 @@ import {
   Bot,
 } from 'lucide-react';
 
-/* ───────── MyaiCRO native capabilities ───────── */
+/* ───────── myaiCRO native capabilities ───────── */
 const nativeCapabilities = [
   { label: 'Ingest', sub: 'Lead & prospect capture' },
   { label: 'Score', sub: 'Sales Readiness Index (SRI)', highlight: true },
@@ -28,7 +28,7 @@ const nativeCapabilities = [
   { label: 'Coach', sub: 'Next Best Actions' },
 ];
 
-/* ───────── MyaiCRO integration ecosystem ───────── */
+/* ───────── myaiCRO integration ecosystem ───────── */
 const integrations = [
   { name: 'Apollo', category: 'Enrichment', Icon: Database },
   { name: 'ZeroBounce', category: 'Email validation', Icon: MailCheck },
@@ -47,7 +47,7 @@ const services = [
   {
     eyebrow: 'CORE',
     title: 'Onboarding & Configuration',
-    body: 'Get MyaiCRO running for your team. Tenant setup, ICP profile, vertical and region targeting, and basic scoring configuration — ready in days, not weeks.',
+    body: 'Get myaiCRO running for your team. Tenant setup, ICP profile, vertical and region targeting, and basic scoring configuration — ready in days, not weeks.',
     items: [
       'Tenant setup and admin configuration',
       'ICP profile and vertical alignment',
@@ -59,7 +59,7 @@ const services = [
   {
     eyebrow: 'VALUE',
     title: 'Integration & Training',
-    body: 'Connect MyaiCRO to your existing stack and train your team to run it. Apollo, ZeroBounce, Stripe, and Google Workspace integrations — plus operator training for your sales leaders.',
+    body: 'Connect myaiCRO to your existing stack and train your team to run it. Apollo, ZeroBounce, Stripe, and Google Workspace integrations — plus operator training for your sales leaders.',
     items: [
       'Apollo, ZeroBounce, Stripe integration setup',
       'Google Workspace OAuth and email configuration',
@@ -95,12 +95,12 @@ const Index = () => {
           </p>
 
           <p className="mx-auto mt-4 max-w-[720px] text-[16px] leading-[1.6] text-text-secondary">
-            MyaiCRO is your AI Chief Revenue Officer. Live and selling today.
+            myaiCRO is your AI Chief Revenue Officer. Live and selling today.
           </p>
         </div>
       </section>
 
-      {/* ═══════════ MyaiCRO — LIVE CARD ═══════════ */}
+      {/* ═══════════ myaiCRO — LIVE CARD ═══════════ */}
       <section className="relative">
         <div className="container mx-auto px-6 pb-16">
           <div className="mx-auto max-w-[1100px]">
@@ -113,7 +113,7 @@ const Index = () => {
                 <div>
                   <p className="eyebrow mb-2">AI Executive</p>
                   <h2 className="text-[32px] md:text-[40px] font-bold leading-[1.1] tracking-[-0.02em]">
-                    MyaiCRO
+                    myaiCRO
                   </h2>
                   <p className="mt-1 text-[18px] md:text-[20px] font-medium text-text-secondary">
                     AI Chief Revenue Officer
@@ -251,7 +251,7 @@ const Index = () => {
                     </div>
 
                     <p className="mt-4 text-sm text-text-secondary">
-                      A surge in buyer engagement raised this deal's health score. MyaiCRO flagged
+                      A surge in buyer engagement raised this deal's health score. myaiCRO flagged
                       it for acceleration.
                     </p>
 
@@ -269,7 +269,7 @@ const Index = () => {
               <div className="mt-6 rounded-[12px] border border-white/[0.06] bg-bg-base p-5">
                 <p className="eyebrow">Growing Integration Ecosystem</p>
                 <p className="mt-2 text-xs text-text-secondary">
-                  MyaiCRO connects to the tools you already use. More integrations shipping every month.
+                  myaiCRO connects to the tools you already use. More integrations shipping every month.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {integrations.map(({ name, category, Icon }) => (
@@ -302,7 +302,7 @@ const Index = () => {
                   onMouseEnter={(e) => (e.currentTarget.style.background = 'hsl(var(--accent-hover))')}
                   onMouseLeave={(e) => (e.currentTarget.style.background = 'hsl(var(--accent-base))')}
                 >
-                  Explore MyaiCRO
+                  Explore myaiCRO
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-[3px]" />
                 </a>
               </div>
@@ -323,12 +323,12 @@ const Index = () => {
             <div className="text-center">
               <p className="eyebrow">Services</p>
               <h2 className="mx-auto mt-4 max-w-[900px] text-[40px] md:text-[56px] font-bold leading-[1.1] tracking-[-0.02em]">
-                Get MyaiCRO running.
+                Get myaiCRO running.
               </h2>
               <p className="mx-auto mt-6 max-w-[720px] text-[18px] md:text-[20px] leading-[1.6] text-text-secondary">
                 Marcolo AI builds AI executives. We also help SMB sales teams get them running.
                 Onboarding, configuration, integration, and training — handled by the team that
-                built MyaiCRO.
+                built myaiCRO.
               </p>
             </div>
 
@@ -369,7 +369,7 @@ const Index = () => {
                 Ready to map your rollout?
               </h3>
               <p className="mx-auto mt-4 max-w-[640px] text-[16px] leading-[1.6] text-text-secondary">
-                Every MyaiCRO deployment is different. Start with a 30-minute session to align your
+                Every myaiCRO deployment is different. Start with a 30-minute session to align your
                 goals, scope, and integration plan.
               </p>
               <a
@@ -381,7 +381,7 @@ const Index = () => {
                 onMouseEnter={(e) => (e.currentTarget.style.background = 'hsl(var(--accent-hover))')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'hsl(var(--accent-base))')}
               >
-                Map your MyaiCRO Rollout
+                Map your myaiCRO Rollout
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-[3px]" />
               </a>
             </div>

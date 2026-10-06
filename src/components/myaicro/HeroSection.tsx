@@ -36,7 +36,7 @@ export const HeroSection = () => {
             </p>
 
             <p className="text-base text-muted-foreground/80 leading-relaxed mb-8 max-w-xl">
-              MyaiCRO analyzes your pipeline, identifies revenue risks, recommends next actions, and helps your team execute a smarter sales system.
+              myaiCRO analyzes your pipeline, identifies revenue risks, recommends next actions, and helps your team execute a smarter sales system.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -55,7 +55,7 @@ export const HeroSection = () => {
                 onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 <Play className="mr-2 h-4 w-4" />
-                See How MyaiCRO Works
+                See How myaiCRO Works
               </Button>
             </div>
           </motion.div>

@@ -101,7 +101,7 @@ export const AppHubVisionSection = () => {
               real execution work today. Not advice. Not analytics. Execution.
             </p>
             <p className="text-[16px] leading-[1.6] text-text-primary">
-              MyaiCRO is the first. More are coming, built one at a time, in the order our
+              myaiCRO is the first. More are coming, built one at a time, in the order our
               customers tell us they need them most.
             </p>
           </div>

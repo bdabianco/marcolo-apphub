@@ -155,7 +155,7 @@ const AppHub = () => {
 
           {/* Apps Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* MyaiCRO App */}
+            {/* myaiCRO App */}
             <Card 
               className="group relative overflow-hidden hover:shadow-[var(--shadow-medium)] transition-all duration-500 rounded-2xl border-border bg-card cursor-pointer"
               onClick={() => navigate('/myaicro')}
@@ -174,8 +174,8 @@ const AppHub = () => {
                 
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <img src={myaiCroLogoLight} alt="MyaiCRO" className="h-32 dark:hidden" />
-                    <img src={myaiCroLogoDark} alt="MyaiCRO" className="h-32 hidden dark:block" />
+                    <img src={myaiCroLogoLight} alt="myaiCRO" className="h-32 dark:hidden" />
+                    <img src={myaiCroLogoDark} alt="myaiCRO" className="h-32 hidden dark:block" />
                     <Badge variant="outline" className="text-xs px-2 py-0.5 bg-primary/10 text-primary border-primary/20">
                       Beta
                     </Badge>
@@ -184,7 +184,7 @@ const AppHub = () => {
                     Turn prospects into revenue with intelligent precision.
                   </p>
                   <CardDescription className="text-sm leading-relaxed">
-                    <strong>MyaiCRO is not a CRM — it's an AI-powered selling engine</strong> that analyzes your entire revenue motion from first touch to closed deal. It evaluates prospects, funnels, and deals through the lens of your company's offerings, ICP, value props, and buyer objectives.<br/><br/>From prospect intelligence to deal management, MyaiCRO ensures prospects become accounts and accounts generate revenue. AI sales agents and coaches highlight risks, surface opportunities, and recommend the next best action — empowering growth-focused organizations to sell smarter, faster, and with complete clarity.
+                    <strong>myaiCRO is not a CRM — it's an AI-powered selling engine</strong> that analyzes your entire revenue motion from first touch to closed deal. It evaluates prospects, funnels, and deals through the lens of your company's offerings, ICP, value props, and buyer objectives.<br/><br/>From prospect intelligence to deal management, myaiCRO ensures prospects become accounts and accounts generate revenue. AI sales agents and coaches highlight risks, surface opportunities, and recommend the next best action — empowering growth-focused organizations to sell smarter, faster, and with complete clarity.
                   </CardDescription>
                 </div>
               </CardHeader>

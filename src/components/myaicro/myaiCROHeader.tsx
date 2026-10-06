@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import marcoloLogo from '@/assets/marcolo-logo.png';
 
-export const MyaiCROHeader = () => {
+export const MyaiCroHeader = () => {
   return (
     <header className="border-b border-border/50 bg-background/80 backdrop-blur-md sticky top-0 z-50">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -16,8 +16,8 @@ export const MyaiCROHeader = () => {
           </a>
           <div className="h-5 w-px bg-border hidden sm:block" />
           <a href="/myaicro" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src={marcoloLogo} alt="MyaiCRO" className="h-8 w-8" />
-            <span className="text-lg font-bold">MyaiCRO</span>
+            <img src={marcoloLogo} alt="myaiCRO" className="h-8 w-8" />
+            <span className="text-lg font-bold">myaiCRO</span>
           </a>
         </div>
 

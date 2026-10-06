@@ -36,8 +36,8 @@ export const CategorySection = () => {
             },
             {
               icon: Brain,
-              title: 'MyaiCRO Bridges It',
-              desc: 'MyaiCRO continuously analyzes your sales data and surfaces the insights your team needs to execute with precision.',
+              title: 'myaiCRO Bridges It',
+              desc: 'myaiCRO continuously analyzes your sales data and surfaces the insights your team needs to execute with precision.',
             },
           ].map((card, i) => {
             const Icon = card.icon;
