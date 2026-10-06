@@ -23,8 +23,8 @@ const steps = [
   {
     num: '04',
     icon: Brain,
-    title: 'MyaiCRO Analyzes',
-    desc: 'MyaiCRO connects the entire system and surfaces the intelligence your team needs.',
+    title: 'myaiCRO Analyzes',
+    desc: 'myaiCRO connects the entire system and surfaces the intelligence your team needs.',
     highlight: true,
   },
 ];
@@ -41,10 +41,10 @@ export const HowItWorksSection = () => {
           className="max-w-3xl mx-auto text-center mb-14"
         >
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-            How MyaiCRO Works
+            How myaiCRO Works
           </h2>
           <p className="text-lg text-muted-foreground">
-            MyaiCRO does not replace your tools — it connects them with intelligence.
+            myaiCRO does not replace your tools — it connects them with intelligence.
           </p>
         </motion.div>
 

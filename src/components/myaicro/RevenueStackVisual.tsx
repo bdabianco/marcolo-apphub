@@ -95,7 +95,7 @@ export const RevenueStackVisual = () => {
           <div className="flex items-center gap-2">
             <Brain className="h-4 w-4 text-primary" />
             <span className="text-xs font-semibold text-foreground/80 uppercase tracking-wider">
-              MyaiCRO Intelligence System
+              myaiCRO Intelligence System
             </span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -198,7 +198,7 @@ export const RevenueStackVisual = () => {
                   <Brain className="h-4 w-4 text-primary-foreground" />
                 </motion.div>
                 <p className="text-[9px] font-bold text-primary text-center uppercase tracking-wider leading-tight">
-                  MyaiCRO
+                  myaiCRO
                   <br />
                   Engine
                 </p>

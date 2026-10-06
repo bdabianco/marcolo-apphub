@@ -45,7 +45,7 @@ export const CapabilitiesSection = () => {
           className="max-w-3xl mx-auto text-center mb-14"
         >
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-            What MyaiCRO Does
+            What myaiCRO Does
           </h2>
           <p className="text-lg text-muted-foreground">
             Three core intelligence modules that transform how your team manages revenue.
