@@ -43,7 +43,7 @@ export const HeroSection = () => {
               <Button
                 size="lg"
                 className="bg-primary text-primary-foreground hover:bg-primary/90 text-base px-8 h-12 shadow-[var(--shadow-soft)]"
-                onClick={() => window.open('https://myaicro.marcoloai.com', '_blank')}
+                onClick={() => window.open('https://myaicro.marcoloai.com/signup', '_blank')}
               >
                 Start Your Free Trial Today
                 <ArrowRight className="ml-2 h-5 w-5" />

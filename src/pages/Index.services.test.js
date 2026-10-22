@@ -9,14 +9,14 @@ if (!match) throw new Error('Services catalog not found');
 const services = runInNewContext(match[1]);
 
 describe('Services offers', () => {
-  test('Core retains its $1,000 reference price and is free for early adopters', () => {
-    const core = services.find((service) => service.eyebrow === 'CORE');
+  test('Launch Package retains its $1,000 reference price and is free for early adopters', () => {
+    const core = services.find((service) => service.eyebrow === 'LAUNCH PACKAGE');
     expect(core?.price).toBe('$1,000 PER ENGAGEMENT');
     expect(core?.badge).toBe('FREE FOR EARLY ADOPTERS');
   });
 
-  test('Value remains $500 per engagement without an early-adopter offer', () => {
-    const value = services.find((service) => service.eyebrow === 'VALUE');
+  test('Add-on remains $500 per engagement without an early-adopter offer', () => {
+    const value = services.find((service) => service.eyebrow === 'ADD-ON');
     expect(value?.price).toBe('$500 PER ENGAGEMENT');
     expect(value?.badge).toBeUndefined();
   });
