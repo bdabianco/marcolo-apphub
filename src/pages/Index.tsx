@@ -47,22 +47,26 @@ const services = [
   {
     eyebrow: 'CORE',
     title: 'Onboarding & Configuration',
-    body: 'Get myaiCRO running for your team. Tenant setup, ICP profile, vertical and region targeting, and basic scoring configuration — ready in days, not weeks.',
+    body: 'Get myaiCRO running for your team, set up with you over a few working sessions, starting with a 30-minute kickoff. Workspace, email and calendar, your pipeline, company intelligence, ICP, scoring and your first campaign.',
     items: [
-      'Tenant setup and admin configuration',
-      'ICP profile and vertical alignment',
-      'Initial scoring rules and signal configuration',
-      'Custom nurture campaign setup and 6 assets',
+      'Workspace setup and admin configuration',
+      'Google Workspace or Microsoft 365 email and calendar connection',
+      'First contact import, or enrichment connected (Apollo)',
+      'Company and product intelligence, finished with you',
+      'ICP profile, vertical and region targeting',
+      'Scoring rules and signal configuration, tuned to your ICP',
+      'First nurture campaign: 6 assets, ready for your approval',
+      'Priority support and roadmap input',
     ],
+    badge: 'FREE FOR EARLY ADOPTERS',
     price: '$1,000 PER ENGAGEMENT',
   },
   {
     eyebrow: 'VALUE',
     title: 'Integration & Training',
-    body: 'Connect myaiCRO to your existing stack and train your team to run it. Apollo, ZeroBounce, Stripe, and Google Workspace integrations — plus operator training for your sales leaders.',
+    body: 'Connect myaiCRO to the rest of your stack and train your team to run it. Apollo, ZeroBounce and Stripe integrations, plus operator training for your sales leaders.',
     items: [
-      'Apollo, ZeroBounce, Stripe integration setup',
-      'Google Workspace OAuth and email configuration',
+      'Apollo (if not set up in Core), ZeroBounce and Stripe integration setup',
       'Operator and admin user training sessions',
     ],
     price: '$500 PER ENGAGEMENT',
@@ -339,7 +343,19 @@ const Index = () => {
                   key={s.title}
                   className="flex flex-col rounded-[12px] border border-white/[0.06] bg-bg-elevated p-6 md:p-8 transition-colors hover:border-white/[0.12]"
                 >
-                  <p className="eyebrow">{s.eyebrow}</p>
+                  {s.badge ? (
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="eyebrow">{s.eyebrow}</p>
+                      <span
+                        className="rounded-md border px-3 py-1.5 eyebrow text-right"
+                        style={{ borderColor: 'hsl(var(--accent-base))', color: 'hsl(var(--accent-base))' }}
+                      >
+                        {s.badge}
+                      </span>
+                    </div>
+                  ) : (
+                    <p className="eyebrow">{s.eyebrow}</p>
+                  )}
                   <h3 className="mt-3 text-[24px] md:text-[28px] font-semibold leading-[1.25] tracking-[-0.01em]">
                     {s.title}
                   </h3>
@@ -357,7 +373,14 @@ const Index = () => {
                   </ul>
                   <div className="mt-8 flex-1" />
                   <div className="mt-6 border-t border-white/[0.06] pt-4">
-                    <p className="eyebrow">{s.price}</p>
+                    {s.badge ? (
+                      <p className="eyebrow flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <span className="line-through text-text-secondary">{s.price}</span>
+                        <span style={{ color: 'hsl(var(--accent-base))' }}>{s.badge}</span>
+                      </p>
+                    ) : (
+                      <p className="eyebrow">{s.price}</p>
+                    )}
                   </div>
                 </div>
               ))}
