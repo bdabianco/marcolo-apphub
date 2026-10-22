@@ -390,6 +390,9 @@ const Index = () => {
                     ) : (
                       <p className="eyebrow">{s.price}</p>
                     )}
+                    {s.eligibility && (
+                      <p className="mt-2 text-xs leading-[1.5] text-text-muted">{s.eligibility}</p>
+                    )}
                   </div>
                   {s.cta && (
                     <a
