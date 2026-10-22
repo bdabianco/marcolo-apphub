@@ -6,11 +6,7 @@ import { runInNewContext } from 'node:vm';
 const source = readFileSync(new URL('./Index.tsx', import.meta.url), 'utf8');
 const match = source.match(/const services = (\[[\s\S]*?\n\]);/);
 if (!match) throw new Error('Services catalog not found');
-const services = runInNewContext(match[1]) as Array<{
-  eyebrow: string;
-  price: string;
-  badge?: string;
-}>;
+const services = runInNewContext(match[1]);
 
 describe('Services offers', () => {
   test('Core retains its $1,000 reference price and is free for early adopters', () => {
