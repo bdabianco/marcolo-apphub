@@ -12,12 +12,12 @@ export const MyaiAppsHeader = () => {
 
         <nav className="flex items-center gap-6 text-sm">
           <a
-            href="https://myaicro.marcoloai.com/founders-waitlist"
+            href="https://myaicro.marcoloai.com/signup"
             target="_blank"
             rel="noopener noreferrer"
             className="text-text-secondary transition-colors hover:text-text-primary"
           >
-            Founders Waitlist
+            Launch Package
           </a>
           <a
             href="https://www.marcoloai.com"

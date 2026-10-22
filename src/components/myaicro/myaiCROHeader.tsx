@@ -30,7 +30,7 @@ export const MyaiCroHeader = () => {
         <Button
           size="sm"
           className="bg-primary text-primary-foreground hover:bg-primary/90"
-          onClick={() => window.open('https://myaicro.marcoloai.com', '_blank')}
+          onClick={() => window.open('https://myaicro.marcoloai.com/signup', '_blank')}
         >
           Start Your Free Trial
           <ArrowRight className="ml-1 h-4 w-4" />

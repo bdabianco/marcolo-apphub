@@ -45,8 +45,8 @@ const integrations = [
 /* ───────── Services ───────── */
 const services = [
   {
-    eyebrow: 'CORE',
-    title: 'Onboarding & Configuration',
+    eyebrow: 'LAUNCH PACKAGE',
+    title: 'Early Adopter Launch Package',
     body: 'Get myaiCRO running for your team, set up with you over a few working sessions, starting with a 30-minute kickoff. Workspace, email and calendar, your pipeline, company intelligence, ICP, scoring and your first campaign.',
     items: [
       'Workspace setup and admin configuration',
@@ -60,16 +60,24 @@ const services = [
     ],
     badge: 'FREE FOR EARLY ADOPTERS',
     price: '$1,000 PER ENGAGEMENT',
+    cta: { label: 'Get the Early Adopter Launch Package', href: 'https://myaicro.marcoloai.com/signup', variant: 'primary' },
   },
   {
-    eyebrow: 'VALUE',
+    eyebrow: 'ADD-ON',
     title: 'Integration & Training',
-    body: 'Connect myaiCRO to the rest of your stack and train your team to run it. Apollo, ZeroBounce and Stripe integrations, plus operator training for your sales leaders.',
+    body: 'Picks up where the Launch Package leaves off. Connect the rest of your stack and train your team to run myaiCRO day to day.',
     items: [
-      'Apollo (if not set up in Core), ZeroBounce and Stripe integration setup',
-      'Operator and admin user training sessions',
+      'Apollo enrichment connected (if you started with a contact import)',
+      'ZeroBounce email validation, so every address is checked before anything sends',
+      'Stripe connected, so customer and revenue data flow into your pipeline',
+      'Calendly and Zapier connected, to bridge the rest of your stack',
+      'Sending-domain check: SPF, DKIM and DMARC verified before your first send',
+      'Operator training for sales leaders: daily focus, deal coaching and campaign approvals',
+      'Admin training for workspace owners: users, scoring rules and integrations',
+      '30-day tune-up: scoring and signals reviewed against your first month of replies',
     ],
     price: '$500 PER ENGAGEMENT',
+    cta: { label: 'Book a scoping call', href: 'https://calendly.com/bruce-marcoloai/30min', variant: 'outline' },
   },
 ];
 
@@ -298,7 +306,7 @@ const Index = () => {
                   Run your entire sales operation with one AI executive.
                 </p>
                 <a
-                  href="https://myaicro.marcoloai.com/"
+                  href="https://myaicro.marcoloai.com/signup"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group inline-flex items-center justify-center gap-2 rounded-[6px] px-6 py-3 text-[16px] font-semibold transition-colors"
@@ -382,6 +390,20 @@ const Index = () => {
                       <p className="eyebrow">{s.price}</p>
                     )}
                   </div>
+                  {s.cta && (
+                    <a
+                      href={s.cta.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`group mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[6px] px-7 py-3.5 text-[16px] font-semibold transition-colors ${s.cta.variant === 'outline' ? 'border border-white/[0.12] text-text-primary hover:border-white/[0.24] hover:bg-bg-overlay' : ''}`}
+                      style={s.cta.variant === 'primary' ? { background: 'hsl(var(--accent-base))', color: '#08090A' } : undefined}
+                      onMouseEnter={s.cta.variant === 'primary' ? (e) => (e.currentTarget.style.background = 'hsl(var(--accent-hover))') : undefined}
+                      onMouseLeave={s.cta.variant === 'primary' ? (e) => (e.currentTarget.style.background = 'hsl(var(--accent-base))') : undefined}
+                    >
+                      {s.cta.label}
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-[3px]" />
+                    </a>
+                  )}
                 </div>
               ))}
             </div>
@@ -407,6 +429,16 @@ const Index = () => {
                 Map your myaiCRO Rollout
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-[3px]" />
               </a>
+              <div className="mt-4">
+                <a
+                  href="https://myaicro.marcoloai.com/signup"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-text-secondary transition-colors hover:text-text-primary"
+                >
+                  Or start free with the Early Adopter Launch Package →
+                </a>
+              </div>
             </div>
           </div>
         </div>
