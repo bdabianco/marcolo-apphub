@@ -19,5 +19,12 @@ describe('Services offers', () => {
     const value = services.find((service) => service.eyebrow === 'ADD-ON');
     expect(value?.price).toBe('$500 PER ENGAGEMENT');
     expect(value?.badge).toBeUndefined();
+    expect(value?.eligibility).toBeUndefined();
+  });
+
+  test('Launch Package states early-adopter eligibility with no dates or counts', () => {
+    const core = services.find((service) => service.eyebrow === 'LAUNCH PACKAGE');
+    expect(core?.eligibility).toBe("For teams who join the myaiCRO Early Adopter Wave, until it's full.");
+    expect(core?.eligibility).not.toMatch(/\d/);
   });
 });
