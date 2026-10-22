@@ -60,6 +60,7 @@ const services = [
     ],
     badge: 'FREE FOR EARLY ADOPTERS',
     price: '$1,000 PER ENGAGEMENT',
+    eligibility: "For teams who join the myaiCRO Early Adopter Wave, until it's full.",
     cta: { label: 'Get the Early Adopter Launch Package', href: 'https://myaicro.marcoloai.com/signup', variant: 'primary' },
   },
   {
