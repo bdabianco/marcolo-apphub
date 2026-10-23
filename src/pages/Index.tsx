@@ -20,7 +20,7 @@ import {
 
 /* ───────── myaiCRO native capabilities ───────── */
 const nativeCapabilities = [
-  { label: 'Ingest', sub: 'Lead & prospect capture' },
+  { label: 'Prospect', sub: 'AI Prospecting Agent, on your schedule' },
   { label: 'Score', sub: 'Sales Readiness Index (SRI)', highlight: true },
   { label: 'Nurture', sub: 'Agentic AI campaigns' },
   { label: 'Signal', sub: 'Intent & velocity detection' },
@@ -51,7 +51,7 @@ const services = [
     items: [
       'Workspace setup and admin configuration',
       'Google Workspace or Microsoft 365 email and calendar connection',
-      'First contact import, or enrichment connected (Apollo)',
+      'First contact import or data enrichment connected, plus your Prospecting Agent set to your ICP and schedule',
       'Company and product intelligence, finished with you',
       'ICP profile, vertical and region targeting',
       'Scoring rules and signal configuration, tuned to your ICP',
